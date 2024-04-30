@@ -1,0 +1,123 @@
+######################### Banner ###########################
+banner:
+  enable : true
+  title :  "Hey, I’m James **!**"
+  subtitle : "Incoming Freshman at University of Wisconsin-Madison"
+  social : true
+  # social icons comes from `config.toml` file.
+
+
+####################### About ##############################
+about:
+  enable : true
+  title : ""
+  image : "images/author.png"
+  content : "College graduate with a strong computer science background and experience in exploratory data analysis, machine learning, and statistics. As a Passionate about learning new topics in data science, visualizing data, and doing research. I am like sharing valuable insights and making an impact that helps others learn through.
+  
+
+  code, visualizations, and narratives. Frequent competitor at Kaggle competitions. I'm always open for discussions, so feel free to ask any questions or concerns, I will.
+  "
+
+####################### Education ###########################
+education:
+  enable : true
+  title : "Education"
+  education_item:
+    # education item loop
+    - name : "Computer Science (BS)"
+      duration : "September 2024 - May 2028"
+      academy : "University of Wisconsin-Madison"
+      icon: images/education/uw.svg
+      url: "https://www.wisc.edu/"
+      description: >-
+        Incoming freshman intending to major Computer Science and Data Science, and minor in Manufacturing Engineering
+
+    - name : "High School Diploma"
+      duration : "August 2020 - May 2024"
+      academy : "California Crosspoint Academy"
+      icon: images/education/cca.png
+      url: "https://www.crosspointacademy.org/"
+      description: >-
+        Weighted GPA of 4.313. Taking with 9 APs and 5 Honor classes so far, Relevant coursework includes AP Computer Science A, AP Physics 1, and AP Calculus AB/BC.
+
+    - name : "PreCollege Scholars"
+      duration : "June 2022 - August 2023"
+      academy : "University of California, Berkeley"
+      icon: images/education/cal.svg
+      url: "https://precollege.berkeley.edu/"
+      description: >-
+        Completed coursework in CS61A (Structures and Interpretation of Computer Programs), CSB1BL (Data Structures and Programming Methodology), CS197 and MATHN1A with a 3.9 GPA over the course of two summers.
+
+    - name : "Dual Enrollment"
+      duration : "August 2023 - May 2024"
+      academy : "Chabot College"
+      icon: images/education/chabot.png
+      url: "https://www.chabotcollege.edu/"
+      description: >-
+        Took CAS92A: Introduction to Networks and CAS85: Cloud Infrastructure and Services
+
+####################### Expertise ###########################
+expertise:
+  enable : true
+  title : "Expertise"
+  expertise_item:
+    # expertise item loop
+    - name : "Full Stack Developer"
+      content: >-
+        Familiar with Python, Java, Kotlin, GoLang, SQL, Rust, Scheme, TypeScript, JavaScript, HTML, and CSS
+
+    # expertise item loop
+    - name : "Tech Stack"
+      content : >-
+        Experience with Quarkus, Flutter, Flask, Android SDK, Detox, React, KTor, GCP Suite, AWS, mySQL, NoSQL DBs, CI/CD pipelines, Selenium and Svelte
+
+
+######################## Publication ###########################
+#publication:
+#  enable : true
+#  title : "Publications"
+#  # publication item comes from `content/**/publications/` folder.
+#
+
+############################ Talk ##############################
+#talk:
+#  enable : true
+#  title : "Recent & Upcoming Talks"
+#  # talk item comes from `content/**/talks/` folder.
+
+
+########################## Projects ###########################
+project:
+  enable : true
+  title : "My Projects"
+  # projects item comes from `content/**/projects/` folder.
+
+
+############################ Blog ##############################
+#blog:
+#  enable : true
+#  title : "Blog Post"
+#  # blog item comes from `content/**/blogs/` folder.
+
+
+
+########################## Contact ############################
+# contact foem
+contact_form:
+  enable : true
+  title : "Contact Me"
+  contact_form_action : "#" #contact form works with https://formspree.io
+  name_label : "Your Name"
+  email_label : "Your Email"
+  textarea_label : "Your Message"
+  button_label : "Send Now"
+
+# contact info
+contact_info:
+  enable : true
+  title : "Get In Touch"
+  content : "I'm always open for discussions, whether it be about computer science, robotics, or anything else. Feel free to ask any questions or concerns, I will try to respond as soon as possible."
+  contact_item:
+    # contact item loop
+    - icon : "ti-email" # themify icon : https://themify.me/themify-icons
+      id : "james@twango.dev"
