@@ -123,7 +123,6 @@ weight = 7
 
 #################### default parameters ################################
 [params]
-logo = "images/logo.png"
 # Meta data
 description = "This is meta description"
 author = "James Ding"

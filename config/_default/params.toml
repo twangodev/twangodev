@@ -11,3 +11,5 @@ logo_webp = true # default is true
 
 # logo text will only show when logo is missing.
 logo_text = "twango.dev"
+
+favicon = "images/favicon.png"
