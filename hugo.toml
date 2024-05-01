@@ -140,8 +140,8 @@ preloader = "images/logo.png"
 # Navigation button
 [params.navigation_button]
 enable = true
-label = "contact"
-link = "contact/"
+label = "Resume"
+link = "/resume.pdf"
   
 ############################# social site ########################
 # Icon Reference: https://themify.me/themify-icons
