@@ -20,26 +20,6 @@
 
 .btn-style {
   position: relative;
-
-  &::before {
-    position: absolute;
-    content: "";
-    left: -30px;
-    top: 25%;
-    height: 50%;
-    width: 1px;
-    background: $primary-color;
-  }
-
-  &::after {
-    position: absolute;
-    content: "";
-    right: -30px;
-    top: 25%;
-    height: 50%;
-    width: 1px;
-    background: $primary-color;
-  }
 }
 
 .btn-link {
