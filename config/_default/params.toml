@@ -1,0 +1,15 @@
+# logo
+logo = "images/logo.png"
+
+# use `px` or `x` with logo_width, example: "100px".
+# Note: logo_width is not work with .svg file
+logo_width = "946px"
+
+# default logo height is the image height that you provided
+logo_height = "266px"
+
+# if logo_webp set false, it will not generate WEBP version of logo
+logo_webp = true # default is true
+
+# logo text will only show when logo is missing.
+logo_text = "twango.dev"
