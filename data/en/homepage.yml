@@ -10,13 +10,12 @@ banner:
 ####################### About ##############################
 about:
   enable : true
-  title : ""
   image : "images/author.png"
-  content : "College graduate with a strong computer science background and experience in exploratory data analysis, machine learning, and statistics. As a Passionate about learning new topics in data science, visualizing data, and doing research. I am like sharing valuable insights and making an impact that helps others learn through.
-  
-
-  code, visualizations, and narratives. Frequent competitor at Kaggle competitions. I'm always open for discussions, so feel free to ask any questions or concerns, I will.
-  "
+  content : >-
+    Aspiring computer scientist from the Bay Area. My experience ranges from leading robotics teams to building and enhancing software solutions, driven by a passion for leveraging technology to streamline processes and solve challenging problems. I'm constantly exploring new technologies, striving to blend innovation with practical solutions.
+    
+    
+    Aside from coding, I enjoy biking, tinkering with electronics/3D prints, and playing video games.
 
 ####################### Education ###########################
 education:
