@@ -141,7 +141,7 @@ preloader = "images/logo.png"
 [params.navigation_button]
 enable = true
 label = "Resume"
-link = "/resume.pdf"
+link = "https://flowcv.com/resume/soqdnfsvwo"
   
 ############################# social site ########################
 # Icon Reference: https://themify.me/themify-icons
