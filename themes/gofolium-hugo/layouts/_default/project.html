@@ -1,5 +1,5 @@
-<article class="card bg-dark rounded-0 border-0">
-  {{ partial "image.html" (dict "Src" .Params.image "Alt" .Title "Class" `card-img-top mb-4 rounded-0` "Size" "350x") }}
+<article class="card bg-dark rounded-8 border-0">
+  {{ partial "image.html" (dict "Src" .Params.image "Alt" .Title "Class" `card-img-top mb-4 rounded-8-top` "Size" "350x") }}
   <div class="card-body">
     <h4 class="mb-3"><a href="{{ .Permalink }}">{{ .Title | markdownify }}</a></h4>
     <p>{{ .PublishDate.Format "Jan 06, 2006"}}</p>

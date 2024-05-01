@@ -356,3 +356,20 @@ textarea.form-control {
 #copyright {
   font-size: 14px;
 }
+
+.rounded-8 {
+  border-radius: 8px;
+}
+
+.rounded-8-top {
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.card {
+  transition: ease-in-out 0.3s;
+}
+
+.card:hover {
+  transform: translate3d(-1px, -8px, 0);
+}
