@@ -32,4 +32,4 @@ See the [documentation homepage](https://lfm.twango.dev) for more information on
 
 #### License
 
-This project is licensed under the MIT License. See the [LICENSE](https://github.com/twangodev/lfm/blob/main/LICENSE) file for more information.
+This project is licensed under the MIT License. See the [LICENSE](https://github.com/twangodev/lfm-api/blob/main/LICENSE) file for more information.
