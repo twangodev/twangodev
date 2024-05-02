@@ -68,6 +68,9 @@ unsafe = true
 link = "plugins/bootstrap/bootstrap.min.css"
 [[params.plugins.css]]
 link = "plugins/themify-icons/themify-icons.css"
+[[params.plugins.css]]
+link = "plugins/glightbox/glightbox.css"
+
 
 # JS Plugins
 [[params.plugins.js]]
@@ -80,7 +83,10 @@ link = "plugins/particles/particles.min.js"
 link = "plugins/particles/stats.min.js"
 [[params.plugins.js]]
 link = "plugins/reading-time/readingTime.min.js"
-
+[[params.plugins.js]]
+link = "plugins/glightbox/glightbox.js"
+[[params.plugins.js]]
+link = "js/gallery-slider.js"
 
 ############################## navigation ###############################
 
@@ -183,4 +189,3 @@ weight = 1
 
 [[imports]]
 path = "github.com/gethugothemes/hugo-modules/images"
-

@@ -4,3 +4,6 @@ min = "0.115.1"
 
 [[imports]]
 path = "github.com/gethugothemes/hugo-modules/images"
+
+[[imports]]
+path = "github.com/gethugothemes/hugo-modules/gallery-slider"
