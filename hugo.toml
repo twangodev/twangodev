@@ -71,8 +71,9 @@ link = "plugins/themify-icons/themify-icons.css"
 [[params.plugins.css]]
 link = "plugins/glightbox/glightbox.css"
 
-
 # JS Plugins
+[[params.plugins.js]]
+link = "https://kit.fontawesome.com/19d90086cc.js"
 [[params.plugins.js]]
 link = "plugins/jQuery/jquery.min.js"
 [[params.plugins.js]]
@@ -132,8 +133,12 @@ weight = 7
 #################### default parameters ################################
 [params]
 # Meta data
-description = "James Ding's personal portfolio website."
 author = "James Ding"
+description = """
+Aspiring computer scientist from the Bay Area. My experience ranges from leading robotics teams to building and enhancing software solutions, driven by a passion for leveraging technology to streamline processes and solve challenging problems. I'm constantly exploring new technologies, striving to blend innovation with practical solutions.
+
+Aside from coding, I enjoy biking, tinkering with electronics/3D prints, and playing video games.
+"""
 # Google Analitycs
 google_analitycs_id = "G-BFM5N8HNLQ" # your id
 
@@ -171,7 +176,7 @@ link = "https://www.instagram.com/dingjems/"
 
 [[params.social]]
 title = "github"
-icon = "ti-github"
+icon = "fa-brands fa-github"
 link = "https://github.com/twangodev"
 
 [[params.social]]
@@ -179,6 +184,10 @@ title = "linkedin"
 icon = "ti-linkedin"
 link = "https://www.linkedin.com/in/jamesding365/"
 
+[[params.social]]
+title = "orcid"
+icon = "fa-brands fa-orcid"
+link = "https://orcid.org/0009-0008-4980-8437"
 
 ################################### English language #####################################
 [Languages.en]

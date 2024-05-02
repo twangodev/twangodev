@@ -11,11 +11,6 @@ banner:
 about:
   enable : true
   image : "images/author.png"
-  content : >-
-    Aspiring computer scientist from the Bay Area. My experience ranges from leading robotics teams to building and enhancing software solutions, driven by a passion for leveraging technology to streamline processes and solve challenging problems. I'm constantly exploring new technologies, striving to blend innovation with practical solutions.
-    
-    
-    Aside from coding, I enjoy biking, tinkering with electronics/3D prints, and playing video games.
 
 ####################### Education ###########################
 education:
