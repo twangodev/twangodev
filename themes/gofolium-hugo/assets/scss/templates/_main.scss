@@ -132,6 +132,7 @@ textarea.form-control {
   h5,
   h6 {
     font-weight: 500;
+    margin-top: 8px;
   }
 
   strong {
@@ -154,11 +155,12 @@ textarea.form-control {
 
   ul {
     padding-left: 0;
-    margin-bottom: 20px;
+    margin-top: 8px;
+    margin-bottom: 10px;
     list-style-type: none;
 
     li {
-      padding-left: 20px;
+      padding-left: 30px;
       position: relative;
 
       &::before {
@@ -169,7 +171,7 @@ textarea.form-control {
         border-radius: 50%;
         background: $primary-color;
         left: 3px;
-        top: 8px;
+        top: 5px;
       }
     }
 
@@ -311,6 +313,17 @@ textarea.form-control {
   code {
     margin-bottom: 0 !important;
     font-size: 100%;
+  }
+
+  img {
+    border-radius: 8px;
+  }
+
+  figcaption {
+    font-size: 14px;
+    color: $text-color-light;
+    text-align: center;
+    margin-top: 10px;
   }
 }
 

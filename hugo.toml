@@ -87,6 +87,8 @@ link = "plugins/reading-time/readingTime.min.js"
 link = "plugins/glightbox/glightbox.js"
 [[params.plugins.js]]
 link = "js/gallery-slider.js"
+[[params.plugins.js]]
+link = "plugins/youtube-lite.js"
 
 ############################## navigation ###############################
 
