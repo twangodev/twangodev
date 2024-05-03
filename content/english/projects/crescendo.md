@@ -8,7 +8,7 @@ draft: false
 gallery: "images/projects/crescendo/gallery"
 ---
 
-In CRESCENDO presented by Haas, two competing alliances are invited to score notes, amplify their speaker, harmonize onstage, and take the spotlight before time runs out. Alliances earn additional rewards for meeting specific scoring thresholds and for cooperating with their opponents.
+In CRESCENDO &#8480 presented by Haas, two competing alliances are invited to score notes, amplify their speaker, harmonize onstage, and take the spotlight before time runs out. Alliances earn additional rewards for meeting specific scoring thresholds and for cooperating with their opponents.
 
 My responsibilities as team captain included:
 - Guiding 30+ students in the design and development of the robot
