@@ -20,7 +20,7 @@ My responsibilities as team captain included:
 
 ### Chester
 
-{{< image src="images/projects/crescendo/robot.jpg" caption="Our Robot, Chester, at the 2024 Sacramento Regional at Elk Grove">}}
+{{< image src="images/projects/crescendo/robot.jpg" caption="Our Robot, Chester, at the 2024 Sacramento Regional at Elk Grove" width="730" height="487" >}}
 
 #### Features
 - 4 Module Co-Axial Field Centric Swerve Drive
