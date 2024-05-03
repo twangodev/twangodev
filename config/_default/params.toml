@@ -18,6 +18,5 @@ twitter = "@twangodev"
 
 [metadata]
 keywords = ["James Ding", "twango", "twangodev", "twango.dev", "twango dev"]
-description = "James Ding's personal portfolio website."
 author = "James Ding"
 image = "images/favicon.png" # this image will be used as fallback if a page has no image of its own

@@ -51,7 +51,7 @@
 <!-- meta description -->
 <meta
   name="description"
-  content="{{ .Params.description | default site.Params.metadata.description }}" />
+  content="{{ .Site.Params.description }}" />
 
 <!-- meta author -->
 {{ with site.Params.metadata.author }}
@@ -60,9 +60,9 @@
 
 
 <!-- checking og description -->
-{{ $description := .Summary }}
-{{ if .Params.meta_description }}
-{{ $description = .Params.meta_description }}
+{{ $description := .Site.Params.description }}
+{{ if .Summary }}
+{{ $description = .Summary }}
 <!-- checking page description -->
 {{ else if .Params.description }}
 {{ $description = .Params.description }}
