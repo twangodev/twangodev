@@ -153,7 +153,7 @@ preloader = "images/logo.png"
 # Navigation button
 [params.navigation_button]
 enable = true
-label = "Resume"
+label = "Résumé"
 link = "https://flowcv.com/resume/soqdnfsvwo"
   
 ############################# social site ########################
