@@ -12,11 +12,11 @@ logo_webp = true # default is true
 # logo text will only show when logo is missing.
 logo_text = "twango.dev"
 
-favicon = "images/favicon.png"
+favicon = "images/favicon-dark.png"
 
 twitter = "@twangodev"
 
 [metadata]
 keywords = ["James Ding", "twango", "twangodev", "twango.dev", "twango dev"]
 author = "James Ding"
-image = "images/favicon.png" # this image will be used as fallback if a page has no image of its own
+image = "images/favicon-dark.png" # this image will be used as fallback if a page has no image of its own
