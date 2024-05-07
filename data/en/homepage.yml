@@ -2,7 +2,7 @@
 banner:
   enable : true
   title :  "Hey, I’m James **!**"
-  subtitle : "Incoming Freshman at University of Wisconsin-Madison"
+  subtitle : "Incoming Freshman at the University of Wisconsin-Madison"
   social : true
   # social icons comes from `config.toml` file.
 

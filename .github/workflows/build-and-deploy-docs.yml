@@ -24,6 +24,7 @@ jobs:
         run: hugo --minify
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3
+        if: github.ref == 'refs/heads/main'
         with:
           path: public
 
@@ -37,7 +38,7 @@ jobs:
       id-token: write
     environment:
       name: github-pages
-      url: ${{ steps.deplyoment.outputs.page_url }}
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
