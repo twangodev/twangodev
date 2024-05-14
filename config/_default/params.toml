@@ -14,7 +14,7 @@ logo_text = "twango.dev"
 
 favicon = "images/favicon-dark.png"
 
-twitter = "@twangodev"
+twitter = "twangodev"
 
 [metadata]
 keywords = ["James Ding", "twango", "twangodev", "twango.dev", "twango dev"]
