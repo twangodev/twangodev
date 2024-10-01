@@ -2,7 +2,7 @@
 banner:
   enable : true
   title :  "Hey, I’m James **!**"
-  subtitle : "Incoming Freshman at the University of Wisconsin-Madison"
+  subtitle : "Majoring in Computer Science and minoring in Manufacturing Engineering"
   social : true
   # social icons comes from `config.toml` file.
 
@@ -24,15 +24,7 @@ education:
       icon: images/education/uw.svg
       url: "https://www.wisc.edu/"
       description: >-
-        Incoming freshman intending to major Computer Science and Data Science, and minor in Manufacturing Engineering
-
-    - name : "High School Diploma"
-      duration : "August 2020 - May 2024"
-      academy : "California Crosspoint Academy"
-      icon: images/education/cca.png
-      url: "https://www.crosspointacademy.org/"
-      description: >-
-        Weighted GPA of 4.313. Taking with 9 APs and 5 Honor classes so far, Relevant coursework includes AP Computer Science A, AP Physics 1, and AP Calculus AB/BC.
+        Majoring in Computer Science and minoring in Manufacturing Engineering
 
     - name : "PreCollege Scholars"
       duration : "June 2022 - August 2023"
@@ -40,7 +32,7 @@ education:
       icon: images/education/cal.svg
       url: "https://precollege.berkeley.edu/"
       description: >-
-        Completed coursework in CS61A (Structures and Interpretation of Computer Programs), CSB1BL (Data Structures and Programming Methodology), CS197 and MATHN1A with a 3.9 GPA over the course of two summers.
+        Completed Coursework: Structure and Interp. of Computer Programs, Data Structures, Calculus, and Field Study (Academic Intern)
 
     - name : "Dual Enrollment"
       duration : "August 2023 - May 2024"
@@ -48,22 +40,20 @@ education:
       icon: images/education/chabot.png
       url: "https://www.chabotcollege.edu/"
       description: >-
-        Took CAS92A: Introduction to Networks and CAS85: Cloud Infrastructure and Services
+        Completed Coursework: Computer Networking (CCNA) and Cloud Infrastructure (AWS)
 
 ####################### Expertise ###########################
 expertise:
   enable : true
   title : "Expertise"
   expertise_item:
-    # expertise item loop
-    - name : "Full Stack Developer"
+    - name : "Languages"
       content: >-
-        Familiar with Python, Java, Kotlin, GoLang, SQL, Rust, Scheme, TypeScript, JavaScript, HTML, and CSS
+        Python, Java, Kotlin, GoLang, Dart, Rust, SQL, HTML/CSS/JS/TS
 
-    # expertise item loop
-    - name : "Tech Stack"
+    - name : "Technology"
       content : >-
-        Experience with Quarkus, Flutter, Flask, Android SDK, Detox, React, KTor, GCP Suite, AWS, mySQL, NoSQL DBs, CI/CD pipelines, Selenium and Svelte
+        Flutter, Flask, Quarkus, KTor, Android, Flutter, React, Node.js, Svelte, Hugo, MkDocs, GCP, AWS, Azure, mySQL, MongoDB, Firebase, Docker, Git, GitHub Actions, Jenkins, JUnit, Selenium, Detox, Nightwatch, Beautifulsoup, OpenCV
 
 
 ######################## Publication ###########################
@@ -98,7 +88,7 @@ project:
 ########################## Contact ############################
 # contact foem
 contact_form:
-  enable : true
+  enable : false
   title : "Contact Me"
   contact_form_action : "#" #contact form works with https://formspree.io
   name_label : "Your Name"
