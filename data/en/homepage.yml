@@ -2,7 +2,7 @@
 banner:
   enable : true
   title :  "Hey, I’m James **!**"
-  subtitle : "Majoring in Computer Science and minoring in Manufacturing Engineering"
+  subtitle : "CS @ UW-Madison"
   social : true
   # social icons comes from `config.toml` file.
 
