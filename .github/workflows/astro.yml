@@ -5,23 +5,48 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
-      - name: Checkout your repository using git
+      - name: Checkout
         uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3
+          cache: pipenv
+      - name: Install pipenv
+        run: python3 -m pip install --upgrade pip pipenv
+      - name: Install Dependencies
+        run: pipenv sync
+        working-directory: ./arc-gen
+      - name: Run Python Script
+        run: pipenv run python main.py
+        working-directory: ./arc-gen
+        env:
+          OUTPUT: ../public/globe-arcs.json
+          FLIGHT_RADAR_USERNAME: ${{ secrets.FLIGHT_RADAR_USERNAME }}
+      - name: Commit Changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Sync Flight Data"
+          branch: ${{ github.ref_name }}
+      - name: Commit Changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Auto-update from script"
+          branch: ${{ github.ref_name }}
       - name: Install, build, and upload your site
         uses: withastro/action@v3
 
   deploy:
     needs: build
     runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
