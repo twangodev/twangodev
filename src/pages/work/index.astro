@@ -4,6 +4,7 @@ import PageLayout from "@layouts/PageLayout.astro"
 import TopLayout from "@layouts/TopLayout.astro"
 import BottomLayout from "@layouts/BottomLayout.astro"
 import { WORK } from "@consts"
+import Image from "astro/components/Image.astro"
 
 const collection = await getCollection("work")
 
@@ -49,13 +50,14 @@ function formatWorkDate(input: Date | string) {
             <div class="text-sm uppercase mb-4">
               {formatWorkDate(entry.data.dateStart)} - {formatWorkDate(entry.data.dateEnd)}
             </div>
-            <div class="text-black dark:text-white font-semibold">
-              {entry.data.company}
+            <div class="flex items-center text-black dark:text-white font-semibold my-2">
+              <Image src={entry.data.logo} alt={entry.data.company} class="h-6 w-6 object-contain mr-2" />
+              <span class="leading-none">{entry.data.company}</span>
             </div>
-            <div class="text-sm font-semibold">
+            <div class="text-sm font-semibold ml-8">
               {entry.data.role}
             </div>
-            <article class="prose dark:prose-invert">
+            <article class="prose dark:prose-invert pb-2">
               <entry.Content />
             </article>
           </li>

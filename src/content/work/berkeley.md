@@ -3,6 +3,7 @@ company: "University of California, Berkeley - College of Engineering (EECS Depa
 role: "Academic Intern"
 dateStart: "06/01/2023"
 dateEnd: "08/01/2023"
+logo: "/public/assets/cal-seal.svg"
 ---
 
 - Assisted in labs and gave mini-lectures to reinforce/review lecture topics in CS61A: Structure and Interpretation of Computer Programs.

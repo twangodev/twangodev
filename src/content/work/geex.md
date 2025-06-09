@@ -3,6 +3,7 @@ company: "Glass Education Exchange"
 role: "Contract Software Engineer"
 dateStart: "03/01/2025"
 dateEnd: "Present"
+logo: "/public/assets/geex.png"
 ---
 
 - Solely architected and built the pay-walled, multi-tenant content platform featuring SAML SSO + ASN IP authentication layers, while seamlessly migrating 50 orgs (12K WAUs) with minimal downtime.

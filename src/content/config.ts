@@ -2,11 +2,12 @@ import { defineCollection, z } from "astro:content"
 
 const work = defineCollection({
   type: "content",
-  schema: z.object({
+  schema: ({image}) => z.object({
     company: z.string(),
     role: z.string(),
     dateStart: z.coerce.date(),
     dateEnd: z.union([z.coerce.date(), z.string()]),
+    logo: image(),
   }),
 })
 

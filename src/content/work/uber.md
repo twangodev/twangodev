@@ -3,6 +3,7 @@ company: "Uber"
 role: "Software Engineer Intern (SWE/DevOps)"
 dateStart: "06/01/2021"
 dateEnd: "08/01/2021"
+logo: "/public/assets/uber.svg"
 ---
 
 - Managed and deployed Dockerized backend services on Google Cloud (Compute Engine, Cloud Run), architecting scalable, high-availability systems for backend internal tool.
