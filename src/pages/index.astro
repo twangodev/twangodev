@@ -68,8 +68,8 @@ const stack = [
   <script is:inline src="/js/bg.js"></script>
   
   <!-- HERO -->
-  <section class="relative h-screen w-full">
-    <div id="planetcont" class='animate absolute inset-0 top-1/4 overflow-hidden'>
+  <section id="hero" class="relative h-[calc(100vh-8rem)] w-full">
+    <div id="planetcont" class='fixed animate inset-0 top-1/4 overflow-hidden transition-opacity duration-500'>
       <div id="crescent" class='absolute top-0 left-1/2 -translate-x-1/2 w-[250vw] min-h-[100vh] aspect-square rounded-full p-[1px] bg-gradient-to-b from-black/25 dark:from-white/75 from-0% to-transparent to-5%'>
         <div id="planet" class='w-full h-full bg-white dark:bg-black rounded-full p-[1px] overflow-hidden flex justify-center'>
           <div id="blur" class='w-full h-20 rounded-full bg-neutral-900/25 dark:bg-white/25 blur-3xl'/>
@@ -101,117 +101,120 @@ const stack = [
     </div>
   </section>
 
-  <div class="relative bg-white dark:bg-black">
-    <div class="mx-auto max-w-screen-sm p-5 space-y-24 pb-16">
+  <div class="relative overflow-visible">
+    <div class="inset-x-0 top-0 h-32 pointer-events-none bg-gradient-to-b from-transparent to-white dark:to-black" ></div>
+    <div class="relative bg-white dark:bg-black">
+      <div class="mx-auto max-w-screen-sm p-5 space-y-24 pb-16">
 
-      <!-- About Section -->
-      <section class="animate">
-        <article>
-          <p>I am a <b><i>software engineer</i></b>, <b><i>mentor</i></b>, <b><i>student</i></b>, <b><i>minimalist</i></b>, <b><i>eternal optimist</i></b>, and <b><i>sarcasm connoisseur</i></b>.</p>
-          <p>I love to both build and break things. I run towards challenging projects with self-guided research and dynamic problem solving. Stress fuels me, alongside caffeine.</p>
-          <p>When i’m not coding, i enjoy biking, messing with electronics, and 3d printing.</p>
-          <p>Currently, I am open for internships/co-ops for the 2026 cycle.</p>
-        </article>
-      </section>
+        <!-- About Section -->
+        <section class="animate">
+          <article>
+            <p>I am a <b><i>software engineer</i></b>, <b><i>mentor</i></b>, <b><i>student</i></b>, <b><i>minimalist</i></b>, <b><i>eternal optimist</i></b>, and <b><i>sarcasm connoisseur</i></b>.</p>
+            <p>I love to both build and break things. I run towards challenging projects with self-guided research and dynamic problem solving. Stress fuels me, alongside caffeine.</p>
+            <p>When i’m not coding, i enjoy biking, messing with electronics, and 3d printing.</p>
+            <p>Currently, I am open for internships/co-ops for the 2026 cycle.</p>
+          </article>
+        </section>
 
-      <!-- Blog Preview Section -->
-      <section class="animate">
-        <div class="space-y-4">
-          <div class="flex justify-between">
-            <p class="font-semibold text-black dark:text-white">
-              Recent posts
-            </p>
-            <a href="/blog" class="w-fit col-span-3 group flex gap-1 items-center underline decoration-[.5px] decoration-black/25 dark:decoration-white/50 hover:decoration-black dark:hover:decoration-white text-black dark:text-white underline-offset-2 blend">
-              <span class="text-black/75 dark:text-white/75 group-hover:text-black group-hover:dark:text-white blend">
-                All posts
-              </span>
-            </a>
-          </div>
-          <ul class="space-y-4">
-            {posts.map((post) => (
-              <li>
-                <ArrowCard entry={post} />
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
-
-      <!-- Tech Stack Section -->
-      <section class="animate">
-        <div class="space-y-4">
-          <p class="font-semibold text-black dark:text-white">
-            Website build with
-          </p>
-          <div class="flex flex-wrap items-center gap-2 mt-5">
-            {stack.map(item => (
-              <StackCard 
-                text={item.text}
-                icon={item.icon}
-                href={item.href}
-              />
-            ))}
-          </div>
-          <div>
-            Performing reactivity and statefulness, special guest
-            <a href="https://www.solidjs.com/" target="_blank" class="w-fit group underline decoration-[.5px] decoration-black/25 dark:decoration-white/50 hover:decoration-black dark:hover:decoration-white text-black dark:text-white underline-offset-2 blend">
-              <span class="text-black/75 dark:text-white/75 group-hover:text-black group-hover:dark:text-white blend">
-                SolidJS
-              </span>
-            </a>
-          </div>
-        </div>
-      </section>
-
-      <!-- Project Preview Section -->
-      <section class="animate">
-        <div class="space-y-4">
-          <div class="flex justify-between">
-            <p class="font-semibold text-black dark:text-white">
-              Recent projects
-            </p>
-            <a href="/projects" class="w-fit col-span-3 group flex gap-1 items-center underline decoration-[.5px] decoration-black/25 dark:decoration-white/50 hover:decoration-black dark:hover:decoration-white text-black dark:text-white underline-offset-2 blend">
-              <span class="text-black/75 dark:text-white/75 group-hover:text-black group-hover:dark:text-white blend">
-                All projects
-              </span>
-            </a>
-          </div>
-          <ul class="space-y-4">
-            {projects.map((project) => (
-              <li>
-                <ArrowCard entry={project} />
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
-
-      <!-- Contact Section -->
-      <section class="animate">
-        <div>
-          <p class="font-semibold text-black dark:text-white">
-            Let's Connect
-          </p>
-          <p>
-            Reach out to me via email or on social media.
-          </p>
-          <div class="grid grid-cols-4 gap-y-2 mt-4 auto-cols-min">
-            {SOCIALS.map(social => (
-              <div class="col-span-1 flex items-center gap-1">
-                <span class="whitespace-nowrap truncate">
-                  {social.NAME}
+        <!-- Blog Preview Section -->
+        <section class="animate">
+          <div class="space-y-4">
+            <div class="flex justify-between">
+              <p class="font-semibold text-black dark:text-white">
+                Recent posts
+              </p>
+              <a href="/blog" class="w-fit col-span-3 group flex gap-1 items-center underline decoration-[.5px] decoration-black/25 dark:decoration-white/50 hover:decoration-black dark:hover:decoration-white text-black dark:text-white underline-offset-2 blend">
+                <span class="text-black/75 dark:text-white/75 group-hover:text-black group-hover:dark:text-white blend">
+                  All posts
                 </span>
-              </div>
-              <div class="col-span-3 truncate">
-                <a href={social.HREF} target="_blank" class="w-fit col-span-3 group flex gap-1 items-center underline decoration-[.5px] decoration-black/25 dark:decoration-white/50 hover:decoration-black dark:hover:decoration-white text-black dark:text-white underline-offset-2 blend">
-                  <span class="text-black/75 dark:text-white/75 group-hover:text-black group-hover:dark:text-white blend">
-                    {social.TEXT}
+              </a>
+            </div>
+            <ul class="space-y-4">
+              {posts.map((post) => (
+                <li>
+                  <ArrowCard entry={post} />
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+
+        <!-- Tech Stack Section -->
+        <section class="animate">
+          <div class="space-y-4">
+            <p class="font-semibold text-black dark:text-white">
+              Website build with
+            </p>
+            <div class="flex flex-wrap items-center gap-2 mt-5">
+              {stack.map(item => (
+                <StackCard
+                  text={item.text}
+                  icon={item.icon}
+                  href={item.href}
+                />
+              ))}
+            </div>
+            <div>
+              Performing reactivity and statefulness, special guest
+              <a href="https://www.solidjs.com/" target="_blank" class="w-fit group underline decoration-[.5px] decoration-black/25 dark:decoration-white/50 hover:decoration-black dark:hover:decoration-white text-black dark:text-white underline-offset-2 blend">
+                <span class="text-black/75 dark:text-white/75 group-hover:text-black group-hover:dark:text-white blend">
+                  SolidJS
+                </span>
+              </a>
+            </div>
+          </div>
+        </section>
+
+        <!-- Project Preview Section -->
+        <section class="animate">
+          <div class="space-y-4">
+            <div class="flex justify-between">
+              <p class="font-semibold text-black dark:text-white">
+                Recent projects
+              </p>
+              <a href="/projects" class="w-fit col-span-3 group flex gap-1 items-center underline decoration-[.5px] decoration-black/25 dark:decoration-white/50 hover:decoration-black dark:hover:decoration-white text-black dark:text-white underline-offset-2 blend">
+                <span class="text-black/75 dark:text-white/75 group-hover:text-black group-hover:dark:text-white blend">
+                  All projects
+                </span>
+              </a>
+            </div>
+            <ul class="space-y-4">
+              {projects.map((project) => (
+                <li>
+                  <ArrowCard entry={project} />
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section class="animate">
+          <div>
+            <p class="font-semibold text-black dark:text-white">
+              Let's Connect
+            </p>
+            <p>
+              Reach out to me via email or on social media.
+            </p>
+            <div class="grid grid-cols-4 gap-y-2 mt-4 auto-cols-min">
+              {SOCIALS.map(social => (
+                <div class="col-span-1 flex items-center gap-1">
+                  <span class="whitespace-nowrap truncate">
+                    {social.NAME}
                   </span>
-                </a>
-              </div>
-            ))}
-        </div>
-      </section>
+                </div>
+                <div class="col-span-3 truncate">
+                  <a href={social.HREF} target="_blank" class="w-fit col-span-3 group flex gap-1 items-center underline decoration-[.5px] decoration-black/25 dark:decoration-white/50 hover:decoration-black dark:hover:decoration-white text-black dark:text-white underline-offset-2 blend">
+                    <span class="text-black/75 dark:text-white/75 group-hover:text-black group-hover:dark:text-white blend">
+                      {social.TEXT}
+                    </span>
+                  </a>
+                </div>
+              ))}
+          </div>
+        </section>
+      </div>
     </div>
   </div>
 </PageLayout>
