@@ -26,6 +26,8 @@ function changeTheme() {
   window.getComputedStyle(css).opacity
   document.head.removeChild(css)
   localStorage.theme = theme
+
+  element.dispatchEvent(new CustomEvent("theme-changed", { detail: theme }))
 }
 
 function preloadTheme() {

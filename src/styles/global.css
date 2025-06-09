@@ -89,7 +89,7 @@ article {
   }
 }
 
-/** styles for public /animation.js */
+/** styles for public /animation.scripts */
 .animate {
   opacity: 0;
   transform: translateY(50px);
