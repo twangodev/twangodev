@@ -69,13 +69,13 @@ const stack = [
   <script src="../scripts/globe.js"></script>
 
   <!-- HERO -->
-  <section id="hero" class="relative h-[calc(100vh-8rem)] w-full">
+  <section id="hero" class="relative h-[calc(100vh-12rem)] w-full">
     <div id="planetcont" class='fixed animate inset-0 overflow-hidden'>
       <canvas id="globeCanvas" class="w-full h-full"></canvas>
     </div>
-    <div class="animate absolute h-full w-full flex items-center justify-center">
+    <div class="animate absolute h-full w-full flex items-center justify-center pointer-events-none">
       <div class='relative w-full h-full flex items-center justify-center'>
-        <div class='p-5 text-center'>
+        <div class='p-5 text-center pointer-events-auto'>
           <p class='animated text-lg md:text-xl lg:text-2xl font-semibold opacity-75'>
             twango.dev
           </p>
@@ -83,7 +83,7 @@ const stack = [
             James Ding
           </p>
           <p class='animated text-sm md:text-base lg:text-lg opacity-75'>
-            Computer Sciences @ UW-Madison
+            Computer Science @ UW-Madison
           </p>
           <div id="ctaButtons" class='animated flex flex-wrap gap-4 justify-center mt-5'>
             <a href='/blog' class='py-2 px-4 rounded truncate text-xs md:text-sm lg:text-base bg-black dark:bg-white text-white dark:text-black hover:opacity-75 blend'>
@@ -99,7 +99,24 @@ const stack = [
   </section>
 
   <div class="relative overflow-visible">
-    <div class="inset-x-0 top-0 h-32 pointer-events-none bg-gradient-to-b from-transparent to-white dark:to-black" ></div>
+    <div class="relative inset-x-0 top-0 h-48 bg-gradient-to-b from-transparent to-white dark:to-black" >
+      <div class="flex h-48 justify-center items-center">
+        <a
+          href="#scroll"
+          aria-label="Scroll down"
+          class="focus:outline-none hover:text-black dark:hover:text-white"
+          id="scroll"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 6 5 5 5-5"/><path d="m7 13 5 5 5-5"/></svg>
+        </a>
+      </div>
+      <a
+        href="/blog/hello-world"
+        class="absolute right-4 top-1/2 transform -translate-y-1/2 text-sm font-medium text-xs hover:text-black dark:hover:text-white"
+      >
+        What do the arcs represent?
+      </a>
+    </div>
     <div class="relative bg-white dark:bg-black">
       <div class="mx-auto max-w-screen-sm p-5 space-y-24 pb-16">
 
@@ -108,7 +125,7 @@ const stack = [
           <article>
             <p>I am a <b><i>software engineer</i></b>, <b><i>mentor</i></b>, <b><i>student</i></b>, <b><i>minimalist</i></b>, <b><i>eternal optimist</i></b>, and <b><i>sarcasm connoisseur</i></b>.</p>
             <p>I love to both build and break things. I run towards challenging projects with self-guided research and dynamic problem solving. Stress fuels me, alongside caffeine.</p>
-            <p>When I’m not coding, I enjoy biking, messing with electronics, and 3D printing.</p>
+            <p>When I’m not coding, I enjoy biking, messing with electronics/homelab, and 3D printing.</p>
             <p>Currently, I am open for internships/co-ops for the 2026 cycle.</p>
           </article>
         </section>
