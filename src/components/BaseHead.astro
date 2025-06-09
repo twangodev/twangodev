@@ -50,7 +50,7 @@ const { title, description, image = "/open-graph.jpg" } = Astro.props
 <link rel="alternate" type="application/rss+xml" title={title} href={`${Astro.site}rss.xml`}/>
 
 <!-- Global Scripts -->
-<script src="https://rybbit.twango.dev/api/script.js" data-site-id="3" defer></script>
+<script is:inline src="https://rybbit.twango.dev/api/script.js" data-site-id="3" defer></script>
 <script is:inline src="/js/theme.js"></script>
 <script is:inline src="/js/scroll.js"></script>
 <script is:inline src="/js/animate.js"></script>
