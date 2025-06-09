@@ -3,7 +3,7 @@ import { getCollection } from "astro:content"
 import PageLayout from "@layouts/PageLayout.astro"
 import TopLayout from "@layouts/TopLayout.astro"
 import BottomLayout from "@layouts/BottomLayout.astro"
-import { EXPERIENCE } from "@consts"
+import { WORK } from "@consts"
 
 const collection = await getCollection("work")
 
@@ -28,11 +28,18 @@ function formatWorkDate(input: Date | string) {
 }
 ---
 
-<PageLayout title={EXPERIENCE.TITLE} description={EXPERIENCE.DESCRIPTION}>
+<PageLayout title={WORK.TITLE} description={WORK.DESCRIPTION}>
   <TopLayout>
     <div class="animate page-heading">
-      {EXPERIENCE.TITLE}
+      {WORK.TITLE}
     </div>
+    <p class="animate mt-4">
+      View my
+      <a
+          href="https://flowcv.com/resume/soqdnfsvwo"
+          class="underline underline-offset-4"
+      >resume</a>
+    </p>
   </TopLayout>
   <BottomLayout>
     <ul>

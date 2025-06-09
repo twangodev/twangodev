@@ -29,7 +29,9 @@ import Container from "@components/Container.astro"
               <svg class="size-6 fill-current">
                 <use href="/brand.svg#brand"/>
               </svg>
-              {SITE.TITLE}
+              <div class="pt-0.5">
+                {SITE.TITLE}
+              </div>
             </a>
           </div>
           <div class="flex gap-2 justify-center sm:justify-end items-center">
@@ -37,7 +39,9 @@ import Container from "@components/Container.astro"
               <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-300"></span>
               <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
             </span>
-            All systems normal
+            <a href="https://kener.twango.dev" class="underline underline-offset-4">
+              View Service Status
+            </a>
           </div>
         </div>
       </Container>
