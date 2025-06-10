@@ -4,12 +4,12 @@ summary: "Explore the courses offered by UW-Madison in a visual and interactive 
 date: "Mar 18 2022"
 draft: false
 tags:
-- Svelte
-- SvelteKit
-- Typescript
-- Tailwind
-- Python
-- Docker
+  - Svelte
+  - SvelteKit
+  - Typescript
+  - Tailwind
+  - Python
+  - Docker
 demoUrl: https://uwcourses.com/
 repoUrl: https://github.com/twangodev/uw-coursemap
 ---

@@ -1,15 +1,16 @@
-import { defineCollection, z } from "astro:content"
+import { defineCollection, z } from "astro:content";
 
 const work = defineCollection({
   type: "content",
-  schema: ({image}) => z.object({
-    company: z.string(),
-    role: z.string(),
-    dateStart: z.coerce.date(),
-    dateEnd: z.union([z.coerce.date(), z.string()]),
-    logo: image(),
-  }),
-})
+  schema: ({ image }) =>
+    z.object({
+      company: z.string(),
+      role: z.string(),
+      dateStart: z.coerce.date(),
+      dateEnd: z.union([z.coerce.date(), z.string()]),
+      logo: image(),
+    }),
+});
 
 const blog = defineCollection({
   type: "content",
@@ -20,7 +21,7 @@ const blog = defineCollection({
     tags: z.array(z.string()),
     draft: z.boolean().optional(),
   }),
-})
+});
 
 const projects = defineCollection({
   type: "content",
@@ -33,7 +34,7 @@ const projects = defineCollection({
     demoUrl: z.string().optional(),
     repoUrl: z.string().optional(),
   }),
-})
+});
 
 const legal = defineCollection({
   type: "content",
@@ -41,6 +42,6 @@ const legal = defineCollection({
     title: z.string(),
     date: z.coerce.date(),
   }),
-})
+});
 
-export const collections = { work, blog, projects, legal }
+export const collections = { work, blog, projects, legal };

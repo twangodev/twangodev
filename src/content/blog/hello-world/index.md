@@ -4,7 +4,7 @@ summary: "Not much of a blogger, but we all start somewhere"
 date: "Jun 8 2025"
 draft: false
 tags:
-- misc
+  - misc
 ---
 
 Just revamped my portfolio, I guess this is going to be my first blog post. I'll walk you through the process of building this site, and share some of my insights along the way.
@@ -13,13 +13,13 @@ To preface, I enjoy backend development more than frontend—it's nothing person
 
 ![astro.jpg](../../../../public/assets/astro.jpg)
 
-Setup was pretty straight-forward, and I was able to get the site up and running in no time. 
+Setup was pretty straight-forward, and I was able to get the site up and running in no time.
 
-But *your* website should really be *yours* right? So we obviously need to tweak it a bit.
+But _your_ website should really be _yours_ right? So we obviously need to tweak it a bit.
 
 ## Hello World
 
-The biggest tweak I made was to the homepage. As you may have noticed, there's a giant globe, with a bunch of arcs from seemingly arbitrary locations (though the SF Bay Area seems like a hotspot). 
+The biggest tweak I made was to the homepage. As you may have noticed, there's a giant globe, with a bunch of arcs from seemingly arbitrary locations (though the SF Bay Area seems like a hotspot).
 
 I've enjoyed the topic of aviation for a while now—I've been a member of [VATSIM](https://vatsim.net) for a couple years at this point, I thought it would be fun to show all my IRL flights around the world. I guess you could say some inspiration came from [Cloudflare's Home Page](https://cloudflare.com), which has a similar globe animation, or even [GitHub's Globe](https://github.com/globe).
 

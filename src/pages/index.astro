@@ -1,225 +1,224 @@
 ---
-import { getCollection } from "astro:content"
-import PageLayout from "@layouts/PageLayout.astro"
-import ArrowCard from "@components/ArrowCard"
-import StackCard from "@components/StackCard.astro"
-import { SITE, SOCIALS } from "@consts"
-import TwinklingStars from "@components/TwinklingStars.astro"
-import MeteorShower from "@components/MeteorShower.astro"
+import { getCollection } from "astro:content";
+import PageLayout from "@layouts/PageLayout.astro";
+import ArrowCard from "@components/ArrowCard";
+import StackCard from "@components/StackCard.astro";
+import { SITE, SOCIALS } from "@consts";
+import TwinklingStars from "@components/TwinklingStars.astro";
+import MeteorShower from "@components/MeteorShower.astro";
 
 const posts = (await getCollection("blog"))
-  .filter(post => !post.data.draft)
+  .filter((post) => !post.data.draft)
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
-  .slice(0,3)
+  .slice(0, 3);
 
 const projects = (await getCollection("projects"))
-  .filter(project => !project.data.draft)
+  .filter((project) => !project.data.draft)
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
-  .slice(0,3)
+  .slice(0, 3);
 
 const skills = {
-  "Languages": [
+  Languages: [
     {
       text: "Python",
       icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/python/python-original.svg",
-      href: "https://python.org"
+      href: "https://python.org",
     },
     {
       text: "Java",
       icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/java/java-original.svg",
-      href: "https://java.com"
+      href: "https://java.com",
     },
     {
       text: "Kotlin",
       icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/kotlin/kotlin-original.svg",
-      href: "https://kotlinlang.org"
+      href: "https://kotlinlang.org",
     },
     {
       text: "GoLang",
       icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/go/go-original-wordmark.svg",
-      href: "https://golang.org"
+      href: "https://golang.org",
     },
     {
       text: "Dart",
       icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/dart/dart-original.svg",
-      href: "https://dart.dev"
+      href: "https://dart.dev",
     },
     {
       text: "Rust",
       icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/rust/rust-original.svg",
-      href: "https://rust-lang.org"
+      href: "https://rust-lang.org",
     },
     {
       text: "C",
       icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/c/c-original.svg",
-      href: "https://www.c-language.org/"
+      href: "https://www.c-language.org/",
     },
     {
       text: "SQL",
       icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/mysql/mysql-original.svg",
-      href: "https://www.mysql.com/"
+      href: "https://www.mysql.com/",
     },
     {
       text: "HTML",
       icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/html5/html5-original.svg",
-      href: "https://html.spec.whatwg.org/multipage/"
+      href: "https://html.spec.whatwg.org/multipage/",
     },
     {
       text: "CSS",
       icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/css3/css3-original.svg",
-      href: "https://www.w3.org/Style/CSS/Overview.en.html"
+      href: "https://www.w3.org/Style/CSS/Overview.en.html",
     },
     {
       text: "JavaScript",
       icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/javascript/javascript-original.svg",
-      href: "https://www.javascript.com/"
+      href: "https://www.javascript.com/",
     },
     {
       text: "TypeScript",
       icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/typescript/typescript-original.svg",
-      href: "https://www.typescriptlang.org/"
+      href: "https://www.typescriptlang.org/",
     },
   ],
-  "Frameworks": [
+  Frameworks: [
     {
       text: "Flask",
       icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/flask/flask-original.svg",
-      href: "https://flask.palletsprojects.com/"
-      },
+      href: "https://flask.palletsprojects.com/",
+    },
     {
       text: "KTor",
       icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/ktor/ktor-original.svg",
-      href: "https://ktor.io"
+      href: "https://ktor.io",
     },
-      {
+    {
       text: "Flutter",
       icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/flutter/flutter-original.svg",
-      href: "https://flutter.dev"
-      },
+      href: "https://flutter.dev",
+    },
     {
       text: "Android",
       icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/android/android-plain.svg",
-      href: "https://developer.android.com"
+      href: "https://developer.android.com",
     },
     {
       text: "React",
       icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/react/react-original.svg",
-      href: "https://reactjs.org"
+      href: "https://reactjs.org",
     },
     {
       text: "Next.js",
       icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nextjs/nextjs-original.svg",
-      href: "https://nextjs.org"
-      },
+      href: "https://nextjs.org",
+    },
     {
       text: "Vite",
       icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vitejs/vitejs-original.svg",
-      href: "https://vitejs.dev"
+      href: "https://vitejs.dev",
     },
     {
       text: "Svelte/Kit",
       icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/svelte/svelte-original.svg",
-      href: "https://svelte.dev"
+      href: "https://svelte.dev",
     },
     {
       text: "Hugo",
       icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/hugo/hugo-original.svg",
-      href: "https://gohugo.io"
+      href: "https://gohugo.io",
     },
     {
       text: "Astro",
       icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/astro/astro-original.svg",
-      href: "https://astro.build"
+      href: "https://astro.build",
     },
     {
       text: "Quarkus",
       icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/quarkus/quarkus-original.svg",
-      href: "https://quarkus.io"
+      href: "https://quarkus.io",
     },
   ],
   "DevOps & Cloud": [
     {
       text: "Docker",
       icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/docker/docker-original.svg",
-      href: "https://www.docker.com/"
+      href: "https://www.docker.com/",
     },
     {
       text: "Oracle",
       icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/oracle/oracle-original.svg",
-      href: "https://www.oracle.com/cloud/"
+      href: "https://www.oracle.com/cloud/",
     },
     {
       text: "Amazon",
       icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/amazonwebservices/amazonwebservices-original-wordmark.svg",
-      href: "https://aws.amazon.com"
+      href: "https://aws.amazon.com",
     },
     {
       text: "Google",
       icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/googlecloud/googlecloud-original.svg",
-      href: "https://cloud.google.com"
+      href: "https://cloud.google.com",
     },
     {
       text: "Cloudflare",
       icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/cloudflare/cloudflare-original.svg",
-      href: "https://www.cloudflare.com"
-    }
+      href: "https://www.cloudflare.com",
+    },
   ],
   "Testing and CI/CD": [
     {
       text: "Selenium",
       icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/selenium/selenium-original.svg",
-      href: "https://www.selenium.dev"
+      href: "https://www.selenium.dev",
     },
     {
       text: "Vitest",
       icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vitest/vitest-original.svg",
-      href: "https://vitest.dev"
+      href: "https://vitest.dev",
     },
     {
       text: "Detox",
       icon: "/assets/detox.svg",
-      href: "https://wix.github.io/Detox/"
+      href: "https://wix.github.io/Detox/",
     },
     {
       text: "Nightwatch",
       icon: "/assets/nightwatch.svg",
-      href: "https://nightwatchjs.org/"
+      href: "https://nightwatchjs.org/",
     },
     {
       text: "JUnit",
       icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/junit/junit-original.svg",
-      href: "https://junit.org/junit5/"
+      href: "https://junit.org/junit5/",
     },
     {
       text: "GitHub Actions",
       icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/github/github-original.svg",
-      href: "https://github.com/features/actions"
-    }
-  ]
-}
+      href: "https://github.com/features/actions",
+    },
+  ],
+};
 ---
 
 <PageLayout title="Home" description={SITE.DESCRIPTION}>
-
   <!-- Light Mode: Particles -->
-  <div class='absolute inset-0 block dark:hidden'>
-    <div id='particles1' class='fixed inset-0'></div>
-    <div id='particles2' class='fixed inset-0'></div>
-    <div id='particles3' class='fixed inset-0'></div>
+  <div class="absolute inset-0 block dark:hidden">
+    <div id="particles1" class="fixed inset-0"></div>
+    <div id="particles2" class="fixed inset-0"></div>
+    <div id="particles3" class="fixed inset-0"></div>
   </div>
 
   <!-- Dark Theme: Stars -->
-  <div class='absolute inset-0 bg-black hidden dark:block'>
-    <div id='stars1' class='fixed inset-0'></div>
-    <div id='stars2' class='fixed inset-0'></div>
-    <div id='stars3' class='fixed inset-0'></div>
+  <div class="absolute inset-0 hidden bg-black dark:block">
+    <div id="stars1" class="fixed inset-0"></div>
+    <div id="stars2" class="fixed inset-0"></div>
+    <div id="stars3" class="fixed inset-0"></div>
   </div>
 
   <!-- Dark Theme: Twinkling Stars / Metors -->
   <div id="galaxy" class="fixed inset-0">
     <div class="hidden dark:block">
-      <TwinklingStars/>
-      <MeteorShower/>
+      <TwinklingStars />
+      <MeteorShower />
     </div>
   </div>
 
@@ -228,26 +227,41 @@ const skills = {
 
   <!-- HERO -->
   <section id="hero" class="relative h-[calc(100vh-12rem)] w-full">
-    <div id="planetcont" class='fixed animate inset-0 overflow-hidden'>
-      <canvas id="globeCanvas" class="w-full h-full"></canvas>
+    <div id="planetcont" class="animate fixed inset-0 overflow-hidden">
+      <canvas id="globeCanvas" class="h-full w-full"></canvas>
     </div>
-    <div class="animate absolute h-full w-full flex items-center justify-center pointer-events-none">
-      <div class='relative w-full h-full flex items-center justify-center'>
-        <div class='p-5 text-center pointer-events-auto'>
-          <p class='animated text-lg md:text-xl lg:text-2xl font-semibold opacity-75'>
+    <div
+      class="animate pointer-events-none absolute flex h-full w-full items-center justify-center"
+    >
+      <div class="relative flex h-full w-full items-center justify-center">
+        <div class="pointer-events-auto p-5 text-center">
+          <p
+            class="animated text-lg font-semibold opacity-75 md:text-xl lg:text-2xl"
+          >
             twango.dev
           </p>
-          <p class='animated text-2xl md:text-3xl lg:text-4xl font-bold text-black dark:text-white'>
+          <p
+            class="animated text-2xl font-bold text-black dark:text-white md:text-3xl lg:text-4xl"
+          >
             James Ding
           </p>
-          <p class='animated text-sm md:text-base lg:text-lg opacity-75'>
+          <p class="animated text-sm opacity-75 md:text-base lg:text-lg">
             Computer Science @ UW-Madison
           </p>
-          <div id="ctaButtons" class='animated flex flex-wrap gap-4 justify-center mt-5'>
-            <a href='/blog' class='py-2 px-4 rounded truncate text-xs md:text-sm lg:text-base bg-black dark:bg-white text-white dark:text-black hover:opacity-75 blend'>
+          <div
+            id="ctaButtons"
+            class="animated mt-5 flex flex-wrap justify-center gap-4"
+          >
+            <a
+              href="/blog"
+              class="blend truncate rounded bg-black px-4 py-2 text-xs text-white hover:opacity-75 dark:bg-white dark:text-black md:text-sm lg:text-base"
+            >
               Read my blog
             </a>
-            <a href='/work' class='py-2 px-4 truncate rounded text-xs md:text-sm lg:text-base border border-black/25 dark:border-white/25 hover:bg-black/5 hover:dark:bg-white/15 blend'>
+            <a
+              href="/work"
+              class="blend truncate rounded border border-black/25 px-4 py-2 text-xs hover:bg-black/5 dark:border-white/25 hover:dark:bg-white/15 md:text-sm lg:text-base"
+            >
               View my work
             </a>
           </div>
@@ -257,107 +271,145 @@ const skills = {
   </section>
 
   <div class="relative overflow-visible">
-    <div class="relative inset-x-0 top-0 h-48 bg-gradient-to-b from-transparent to-white dark:to-black" >
-      <div class="flex h-48 justify-center items-center">
+    <div
+      class="relative inset-x-0 top-0 h-48 bg-gradient-to-b from-transparent to-white dark:to-black"
+    >
+      <div class="flex h-48 items-center justify-center">
         <a
           href="#scroll"
           aria-label="Scroll down"
-          class="focus:outline-none hover:text-black dark:hover:text-white"
+          class="hover:text-black focus:outline-none dark:hover:text-white"
           id="scroll"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 6 5 5 5-5"/><path d="m7 13 5 5 5-5"/></svg>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            ><path d="m7 6 5 5 5-5"></path><path d="m7 13 5 5 5-5"></path></svg
+          >
         </a>
       </div>
       <a
         href="/blog/hello-world"
-        class="absolute right-4 top-1/2 transform -translate-y-1/2 text-sm font-medium text-xs hover:text-black dark:hover:text-white"
+        class="absolute right-4 top-1/2 -translate-y-1/2 transform text-sm text-xs font-medium hover:text-black dark:hover:text-white"
       >
         What do the arcs represent?
       </a>
     </div>
     <div class="relative bg-white dark:bg-black">
-      <div class="mx-auto max-w-screen-sm p-5 space-y-24 pb-16">
-
+      <div class="mx-auto max-w-screen-sm space-y-24 p-5 pb-16">
         <!-- About Section -->
         <section class="animate">
           <article>
-            <p>I am a <b><i>software engineer</i></b>, <b><i>mentor</i></b>, <b><i>student</i></b>, <b><i>minimalist</i></b>, <b><i>eternal optimist</i></b>, and <b><i>sarcasm connoisseur</i></b>.</p>
-            <p>I love to both build and break things. I run towards challenging projects with self-guided research and dynamic problem solving. Stress fuels me, alongside caffeine.</p>
-            <p>When I’m not coding, I enjoy biking, messing with electronics/homelab, and 3D printing.</p>
-            <p>Currently, I am open for internships/co-ops for the 2026 cycle.</p>
+            <p>
+              I am a <b><i>software engineer</i></b>, <b><i>mentor</i></b>, <b
+                ><i>student</i></b
+              >, <b><i>minimalist</i></b>, <b><i>eternal optimist</i></b>, and <b
+                ><i>sarcasm connoisseur</i></b
+              >.
+            </p>
+            <p>
+              I love to both build and break things. I run towards challenging
+              projects with self-guided research and dynamic problem solving.
+              Stress fuels me, alongside caffeine.
+            </p>
+            <p>
+              When I’m not coding, I enjoy biking, messing with
+              electronics/homelab, and 3D printing.
+            </p>
+            <p>
+              Currently, I am open for internships/co-ops for the 2026 cycle.
+            </p>
           </article>
         </section>
 
-      <!-- Project Preview Section -->
-      <section class="animate">
-        <div class="space-y-4">
-          <div class="flex justify-between">
-            <p class="font-semibold text-black dark:text-white">
-      Recent projects
-      </p>
-      <a href="/projects" class="w-fit col-span-3 group flex gap-1 items-center underline decoration-[.5px] decoration-black/25 dark:decoration-white/50 hover:decoration-black dark:hover:decoration-white text-black dark:text-white underline-offset-2 blend">
-      <span class="text-black/75 dark:text-white/75 group-hover:text-black group-hover:dark:text-white blend">
-      All projects
-      </span>
-      </a>
-      </div>
-      <ul class="space-y-4">
-      {projects.map((project) => (
-          <li>
-          <ArrowCard entry={project} />
-        </li>
-        ))}
-        </ul>
-        </div>
-        </section>
-
+        <!-- Project Preview Section -->
         <section class="animate">
-          <p class="font-semibold text-black dark:text-white">
-            My Skillset
-          </p>
-          <div class="mt-2">
-            {Object.entries(skills).map(([category, items]) => (
-              <div class="space-y-4 mt-8 first:mt-0">
-                <p>
-                  {category}
-                </p>
-                <div class="flex flex-wrap items-center gap-2 mt-2">
-                  {items.map(item => (
-                    <StackCard
-                      text={item.text}
-                      icon={item.icon}
-                      href={item.href}
-                    />
-                  ))}
-                </div>
-              </div>
-            ))}
+          <div class="space-y-4">
+            <div class="flex justify-between">
+              <p class="font-semibold text-black dark:text-white">
+                Recent projects
+              </p>
+              <a
+                href="/projects"
+                class="blend group col-span-3 flex w-fit items-center gap-1 text-black underline decoration-black/25 decoration-[.5px] underline-offset-2 hover:decoration-black dark:text-white dark:decoration-white/50 dark:hover:decoration-white"
+              >
+                <span
+                  class="blend text-black/75 group-hover:text-black dark:text-white/75 group-hover:dark:text-white"
+                >
+                  All projects
+                </span>
+              </a>
+            </div>
+            <ul class="space-y-4">
+              {
+                projects.map((project) => (
+                  <li>
+                    <ArrowCard entry={project} />
+                  </li>
+                ))
+              }
+            </ul>
           </div>
         </section>
 
+        <section class="animate">
+          <p class="font-semibold text-black dark:text-white">My Skillset</p>
+          <div class="mt-2">
+            {
+              Object.entries(skills).map(([category, items]) => (
+                <div class="mt-8 space-y-4 first:mt-0">
+                  <p>{category}</p>
+                  <div class="mt-2 flex flex-wrap items-center gap-2">
+                    {items.map((item) => (
+                      <StackCard
+                        text={item.text}
+                        icon={item.icon}
+                        href={item.href}
+                      />
+                    ))}
+                  </div>
+                </div>
+              ))
+            }
+          </div>
+        </section>
 
-  <!-- Blog Preview Section -->
-  <section class="animate">
-  <div class="space-y-4">
-  <div class="flex justify-between">
-  <p class="font-semibold text-black dark:text-white">
-  Recent posts
-  </p>
-  <a href="/blog" class="w-fit col-span-3 group flex gap-1 items-center underline decoration-[.5px] decoration-black/25 dark:decoration-white/50 hover:decoration-black dark:hover:decoration-white text-black dark:text-white underline-offset-2 blend">
-  <span class="text-black/75 dark:text-white/75 group-hover:text-black group-hover:dark:text-white blend">
-  All posts
-  </span>
-  </a>
-  </div>
-  <ul class="space-y-4">
-  {posts.map((post) => (
-      <li>
-      <ArrowCard entry={post} />
-    </li>
-    ))}
-    </ul>
-    </div>
-    </section>
+        <!-- Blog Preview Section -->
+        <section class="animate">
+          <div class="space-y-4">
+            <div class="flex justify-between">
+              <p class="font-semibold text-black dark:text-white">
+                Recent posts
+              </p>
+              <a
+                href="/blog"
+                class="blend group col-span-3 flex w-fit items-center gap-1 text-black underline decoration-black/25 decoration-[.5px] underline-offset-2 hover:decoration-black dark:text-white dark:decoration-white/50 dark:hover:decoration-white"
+              >
+                <span
+                  class="blend text-black/75 group-hover:text-black dark:text-white/75 group-hover:dark:text-white"
+                >
+                  All posts
+                </span>
+              </a>
+            </div>
+            <ul class="space-y-4">
+              {
+                posts.map((post) => (
+                  <li>
+                    <ArrowCard entry={post} />
+                  </li>
+                ))
+              }
+            </ul>
+          </div>
+        </section>
 
         <!-- Contact Section -->
         <section class="animate">
@@ -365,24 +417,31 @@ const skills = {
             <p class="font-semibold text-black dark:text-white">
               Let's Connect
             </p>
-            <p>
-              Reach out to me via email or on social media.
-            </p>
-            <div class="grid grid-cols-4 gap-y-2 mt-4 auto-cols-min">
-              {SOCIALS.map(social => (
-                <div class="col-span-1 flex items-center gap-1">
-                  <span class="whitespace-nowrap truncate">
-                    {social.NAME}
-                  </span>
-                </div>
-                <div class="col-span-3 truncate">
-                  <a href={social.HREF} target="_blank" class="w-fit col-span-3 group flex gap-1 items-center underline decoration-[.5px] decoration-black/25 dark:decoration-white/50 hover:decoration-black dark:hover:decoration-white text-black dark:text-white underline-offset-2 blend">
-                    <span class="text-black/75 dark:text-white/75 group-hover:text-black group-hover:dark:text-white blend">
-                      {social.TEXT}
-                    </span>
-                  </a>
-                </div>
-              ))}
+            <p>Reach out to me via email or on social media.</p>
+            <div class="mt-4 grid auto-cols-min grid-cols-4 gap-y-2">
+              {
+                SOCIALS.map((social) => (
+                  <div>
+                    <div class="col-span-1 flex items-center gap-1">
+                      <span class="truncate whitespace-nowrap">
+                        {social.NAME}
+                      </span>
+                    </div>
+                    <div class="col-span-3 truncate">
+                      <a
+                        href={social.HREF}
+                        target="_blank"
+                        class="blend group col-span-3 flex w-fit items-center gap-1 text-black underline decoration-black/25 decoration-[.5px] underline-offset-2 hover:decoration-black dark:text-white dark:decoration-white/50 dark:hover:decoration-white"
+                      >
+                        <span class="blend text-black/75 group-hover:text-black dark:text-white/75 group-hover:dark:text-white">
+                          {social.TEXT}
+                        </span>
+                      </a>
+                    </div>
+                  </div>
+                ))
+              }
+            </div>
           </div>
         </section>
       </div>

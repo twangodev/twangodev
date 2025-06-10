@@ -1,31 +1,34 @@
 ---
-import { getCollection } from "astro:content"
-import PageLayout from "@layouts/PageLayout.astro"
-import TopLayout from "@layouts/TopLayout.astro"
-import BottomLayout from "@layouts/BottomLayout.astro"
-import { WORK } from "@consts"
-import Image from "astro/components/Image.astro"
+import { getCollection } from "astro:content";
+import PageLayout from "@layouts/PageLayout.astro";
+import TopLayout from "@layouts/TopLayout.astro";
+import BottomLayout from "@layouts/BottomLayout.astro";
+import { WORK } from "@consts";
+import Image from "astro/components/Image.astro";
 
-const collection = await getCollection("work")
+const collection = await getCollection("work");
 
-collection.sort((a, b) => new Date(b.data.dateStart).getTime() - new Date(a.data.dateStart).getTime())
+collection.sort(
+  (a, b) =>
+    new Date(b.data.dateStart).getTime() - new Date(a.data.dateStart).getTime(),
+);
 
 const work = await Promise.all(
   collection.map(async (item) => {
-    const { Content } = await item.render()
-    return { ...item, Content }
-  })
-)
+    const { Content } = await item.render();
+    return { ...item, Content };
+  }),
+);
 
 function formatWorkDate(input: Date | string) {
-  if (typeof input === "string") return input
+  if (typeof input === "string") return input;
 
   const month = input.toLocaleDateString("en-US", {
     month: "short",
-  })
+  });
 
-  const year = new Date(input).getFullYear()
-  return `${month} ${year}`
+  const year = new Date(input).getFullYear();
+  return `${month} ${year}`;
 }
 ---
 
@@ -37,27 +40,30 @@ function formatWorkDate(input: Date | string) {
     <p class="animate mt-4">
       View my
       <a
-          href="https://flowcv.com/resume/soqdnfsvwo"
-          class="underline underline-offset-4"
-      >resume</a>
+        href="https://flowcv.com/resume/soqdnfsvwo"
+        class="underline underline-offset-4">resume</a
+      >
     </p>
   </TopLayout>
   <BottomLayout>
     <ul>
-      { 
+      {
         work.map((entry) => (
-          <li class="animate border-b border-black/10 dark:border-white/25 mt-4 py-8 first-of-type:mt-0 first-of-type:pt-0 last-of-type:border-none">
-            <div class="text-sm uppercase mb-4">
-              {formatWorkDate(entry.data.dateStart)} - {formatWorkDate(entry.data.dateEnd)}
+          <li class="animate mt-4 border-b border-black/10 py-8 first-of-type:mt-0 first-of-type:pt-0 last-of-type:border-none dark:border-white/25">
+            <div class="mb-4 text-sm uppercase">
+              {formatWorkDate(entry.data.dateStart)} -{" "}
+              {formatWorkDate(entry.data.dateEnd)}
             </div>
-            <div class="flex items-center text-black dark:text-white font-semibold my-2">
-              <Image src={entry.data.logo} alt={entry.data.company} class="h-6 w-6 object-contain mr-2" />
+            <div class="my-2 flex items-center font-semibold text-black dark:text-white">
+              <Image
+                src={entry.data.logo}
+                alt={entry.data.company}
+                class="mr-2 h-6 w-6 object-contain"
+              />
               <span class="leading-none">{entry.data.company}</span>
             </div>
-            <div class="text-sm font-semibold ml-8">
-              {entry.data.role}
-            </div>
-            <article class="prose dark:prose-invert pb-2">
+            <div class="ml-8 text-sm font-semibold">{entry.data.role}</div>
+            <article class="prose pb-2 dark:prose-invert">
               <entry.Content />
             </article>
           </li>
