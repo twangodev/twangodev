@@ -1,7 +1,7 @@
 ---
 title: "UW Course Map"
 summary: "Explore the courses offered by UW-Madison in a visual and interactive way."
-date: "Mar 18 2022"
+date: "Mar 18 2025"
 draft: false
 tags:
   - Svelte
