@@ -3,8 +3,7 @@ import type { Site, Page, Links, Socials } from "@types";
 // Global
 export const SITE: Site = {
   TITLE: "twango.dev",
-  DESCRIPTION:
-    "Welcome to Astro Sphere, a portfolio and blog for designers and developers.",
+  DESCRIPTION: "James Ding's portfolio, blog, and projects.",
   AUTHOR: "James Ding",
 };
 
