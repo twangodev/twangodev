@@ -31,12 +31,12 @@ jobs:
           OUTPUT: ../public/globe-arcs.json
           FLIGHT_RADAR_USERNAME: ${{ secrets.FLIGHT_RADAR_USERNAME }}
       - name: Commit Changes
-        uses: stefanzweifel/git-auto-commit-action@v5
+        uses: stefanzweifel/git-auto-commit-action@v6
         with:
           commit_message: "Sync Flight Data"
           branch: ${{ github.ref_name }}
       - name: Commit Changes
-        uses: stefanzweifel/git-auto-commit-action@v5
+        uses: stefanzweifel/git-auto-commit-action@v6
         with:
           commit_message: "Auto-update from script"
           branch: ${{ github.ref_name }}
