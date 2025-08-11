@@ -3,10 +3,22 @@ from os import environ
 
 import requests
 from bs4 import BeautifulSoup
+from dotenv import load_dotenv
+from fake_useragent import UserAgent
+
+load_dotenv()
 
 MY_FLIGHT_RADAR_BASE = "https://my.flightradar24.com/"
 
+# Initialize UserAgent instance
+ua = UserAgent()
+
 def fetch_soup(url: str, headers: dict | None = None, timeout: float = 10.0) -> BeautifulSoup:
+    if headers is None:
+        headers = {}
+    if 'User-Agent' not in headers:
+        headers['User-Agent'] = ua.random
+    
     resp = requests.get(url, headers=headers, timeout=timeout)
     resp.raise_for_status()
     return BeautifulSoup(resp.text, 'html.parser')
