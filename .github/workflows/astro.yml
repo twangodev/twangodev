@@ -1,8 +1,8 @@
-name: Deploy to GitHub Pages
+name: Build and Deploy
 
 on:
-  push:
-    branches: [main]
+  push:  # Run on all pushes to any branch
+  pull_request:  # Run on all pull requests
   workflow_dispatch:
   schedule:
     - cron: '0 0 * * *' # Runs daily at midnight UTC
@@ -45,6 +45,7 @@ jobs:
 
   deploy:
     needs: build
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
       pages: write
