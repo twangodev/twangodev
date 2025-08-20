@@ -8,10 +8,23 @@ import { Image } from "astro:assets";
 
 const collection = await getCollection("work");
 
-collection.sort(
-  (a, b) =>
-    new Date(b.data.dateStart).getTime() - new Date(a.data.dateStart).getTime(),
-);
+collection.sort((a, b) => {
+  // Check if either job is "Present"
+  const aIsPresent = a.data.dateEnd === "Present";
+  const bIsPresent = b.data.dateEnd === "Present";
+  
+  // If one is Present and the other isn't, Present comes first
+  if (aIsPresent && !bIsPresent) return -1;
+  if (!aIsPresent && bIsPresent) return 1;
+  
+  // If both are Present, sort by start date (latest first)
+  if (aIsPresent && bIsPresent) {
+    return new Date(b.data.dateStart).getTime() - new Date(a.data.dateStart).getTime();
+  }
+  
+  // If neither is Present, sort by end date (latest first)
+  return new Date(b.data.dateEnd).getTime() - new Date(a.data.dateEnd).getTime();
+});
 
 const work = await Promise.all(
   collection.map(async (item) => {
@@ -41,7 +54,7 @@ function formatWorkDate(input: Date | string) {
       View my
       <a
         href="https://flowcv.com/resume/soqdnfsvwo"
-        class="underline underline-offset-4">resume</a
+        class="underline underline-offset-4">resume.</a
       >
     </p>
   </TopLayout>
