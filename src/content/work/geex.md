@@ -1,6 +1,6 @@
 ---
 company: "Glass Education Exchange"
-role: "Contract Software Engineer"
+role: "Full Stack Software Engineer"
 dateStart: "03/01/2025"
 dateEnd: "Present"
 logo: "/public/assets/geex.png"
