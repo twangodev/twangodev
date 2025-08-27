@@ -73,7 +73,18 @@ function formatWorkDate(input: Date | string) {
                 alt={entry.data.company}
                 class="mr-2 h-6 w-6 object-contain"
               />
-              <span class="leading-none">{entry.data.company}</span>
+              {entry.data.companyUrl ? (
+                <a
+                  href={entry.data.companyUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="leading-none hover:underline"
+                >
+                  {entry.data.company}
+                </a>
+              ) : (
+                <span class="leading-none">{entry.data.company}</span>
+              )}
             </div>
             <div class="ml-8 text-sm font-semibold">{entry.data.role}</div>
             <article class="prose pb-2 dark:prose-invert">

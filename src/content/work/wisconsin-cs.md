@@ -4,6 +4,7 @@ role: "Peer Mentor"
 dateStart: "09/01/2025"
 dateEnd: "Present"
 logo: "/public/assets/uw-crest.svg"
+companyUrl: "https://cs.wisc.edu"
 ---
 
 - Accepted offer for CS300 (Programming II) Peer Mentor position.

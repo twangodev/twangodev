@@ -4,6 +4,7 @@ role: "Full Stack Software Engineer"
 dateStart: "03/01/2025"
 dateEnd: "Present"
 logo: "/public/assets/geex.png"
+companyUrl: "https://geex.glass"
 ---
 
 - Solely architected and built the pay-walled, multi-tenant content platform featuring SAML SSO + ASN IP authentication layers, while seamlessly migrating 50 orgs (12K WAUs) with minimal downtime.

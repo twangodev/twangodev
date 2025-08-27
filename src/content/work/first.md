@@ -4,6 +4,7 @@ role: "Team Captain, Software Lead"
 dateStart: "09/01/2020"
 dateEnd: "05/01/2024"
 logo: "/public/assets/first.svg"
+companyUrl: "https://firstinspires.org"
 ---
 
 - Led team meetings, drove critical decision-making processes in a fast paced environment.
