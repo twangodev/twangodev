@@ -14,7 +14,7 @@ demoUrl: https://uwcourses.com/
 repoUrl: https://github.com/twangodev/uw-coursemap
 ---
 
-![UW Course Map Card](/public/assets/uw-coursemap/card.png)
+![UW Course Map Card](/assets/uw-coursemap/card.png)
 
 UW Course Map began as a hackathon project in 2024, and has turned into a widely used tool for students at the University of Wisconsin-Madison to explore and plan their academic journey. The platform aggregates course data, professor ratings, grade distributions, and prerequisite relationships into an intuitive interface that helps students discover courses and make informed decisions.
 
@@ -35,7 +35,7 @@ Some solutions to this problem laying courses out on a graph, with directed edge
 
 <small style="text-align: center;">
 
-![HKN-Screenshot](/public/assets/uw-coursemap/hkn.png)
+![HKN-Screenshot](/assets/uw-coursemap/hkn.png)
 
 It served as a great initial inspiration for UW Course Map, especially with the interactive elements.
 
@@ -56,7 +56,7 @@ And here's what I came up with:
 
 <small style="text-align: center;">
 
-![Prototype](/public/assets/uw-coursemap/prototype.png)
+![Prototype](/assets/uw-coursemap/prototype.png)
 
 The CS department of UW-Madison, as of August 2024. I don't have a public preview as it's on my private server.
 
@@ -120,15 +120,15 @@ Here's some fun stuff from the hackathon:
 
 <small style="text-align: center;">
 
-![All Hackathon](/public/assets/uw-coursemap/all-hackathon.png)
+![All Hackathon](/assets/uw-coursemap/all-hackathon.png)
 
 All the courses in the UW-Madison course catalog, visualized as a graph.
 
-![Zoom Hackathon](/public/assets/uw-coursemap/zoom-hackathon.png)
+![Zoom Hackathon](/assets/uw-coursemap/zoom-hackathon.png)
 
 Neat right?
 
-![Cursed Hackathon](/public/assets/uw-coursemap/cursed-hackathon.png)
+![Cursed Hackathon](/assets/uw-coursemap/cursed-hackathon.png)
 
 what the fuck.
 
