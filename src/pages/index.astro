@@ -275,25 +275,28 @@ const skills = {
       class="relative inset-x-0 top-0 h-48 bg-gradient-to-b from-transparent to-white dark:to-black"
     >
       <div class="flex h-48 justify-center xl:items-center">
-        <a
-          href="#scroll"
-          aria-label="Scroll down"
-          class="hover:text-black focus:outline-none dark:hover:text-white mb-6 xl:mb-0 px-8"
-          id="scroll"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            ><path d="m7 6 5 5 5-5"></path><path d="m7 13 5 5 5-5"></path></svg
+        <div class="flex flex-col items-center">
+          <a
+            href="#scroll"
+            aria-label="Scroll down"
+            class="hover:text-black focus:outline-none dark:hover:text-white mb-2 px-8"
+            id="scroll"
           >
-        </a>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              ><path d="m7 6 5 5 5-5"></path><path d="m7 13 5 5 5-5"></path></svg
+            >
+          </a>
+          <p class="text-xs text-black/60 dark:text-white/60">Keep scrolling</p>
+        </div>
       </div>
       <a
         href="/blog/hello-world"
