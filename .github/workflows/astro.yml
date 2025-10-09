@@ -15,17 +15,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v5
-      - uses: actions/setup-python@v5
-        with:
-          python-version: 3
-          cache: pipenv
-      - name: Install pipenv
-        run: python3 -m pip install --upgrade pip pipenv
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
       - name: Install Dependencies
-        run: pipenv sync
+        run: uv sync
         working-directory: ./arc-gen
       - name: Run Python Script
-        run: pipenv run python main.py
+        run: uv run python main.py
         working-directory: ./arc-gen
         env:
           OUTPUT: ../public/globe-arcs.json
