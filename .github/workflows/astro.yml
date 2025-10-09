@@ -25,7 +25,7 @@ jobs:
         working-directory: ./arc-gen
         env:
           OUTPUT: ../public/globe-arcs.json
-          FLIGHT_RADAR_USERNAME: ${{ secrets.FLIGHT_RADAR_USERNAME }}
+          FLIGHT_RADAR_USERNAME: ${{ vars.FLIGHT_RADAR_USERNAME }}
       - name: Commit Changes
         uses: stefanzweifel/git-auto-commit-action@v6
         with:
