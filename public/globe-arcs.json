@@ -343,12 +343,6 @@
       "endLng": 177.443611
     },
     {
-      "startLat": 33.942522,
-      "startLng": -118.407161,
-      "endLat": 37.362667,
-      "endLng": -121.929111
-    },
-    {
       "startLat": 41.978603,
       "startLng": -87.904842,
       "endLat": 33.942522,
@@ -365,6 +359,12 @@
       "startLng": -122.374889,
       "endLat": 44.881956,
       "endLng": -93.221764
+    },
+    {
+      "startLat": 33.942522,
+      "startLng": -118.407161,
+      "endLat": 37.618972,
+      "endLng": -122.374889
     }
   ],
   "airports": [
@@ -596,7 +596,7 @@
       "city": "San Francisco",
       "name": "San Francisco International",
       "country": "US",
-      "count": 33
+      "count": 34
     },
     {
       "lat": 37.448524,
@@ -616,7 +616,7 @@
       "city": "San Jose",
       "name": "San Jose",
       "country": "US",
-      "count": 9
+      "count": 8
     },
     {
       "lat": 36.080056,
