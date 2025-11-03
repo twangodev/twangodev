@@ -37,7 +37,7 @@ jobs:
           commit_message: "Auto-update from script"
           branch: ${{ github.ref_name }}
       - name: Install, build, and upload your site
-        uses: withastro/action@v4
+        uses: withastro/action@v5
 
   deploy:
     needs: build
