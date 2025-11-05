@@ -40,16 +40,35 @@ if __name__ == '__main__':
 
     main_map = soup.find(id="main-map")
     data_paths = main_map.get("data-paths")
+    data_points = main_map.get("data-points")
 
     data_paths = json.loads(data_paths)
+    data_points = json.loads(data_points)
 
-    keys = ["startLat", "startLng", "endLat", "endLng"]
+    arc_keys = ["startLat", "startLng", "endLat", "endLng"]
 
     arcs = [
-        { key: float(val) for key, val in zip(keys, path) }
+        { key: float(val) for key, val in zip(arc_keys, path) }
         for path in data_paths
     ]
 
-    write_to_data(arcs)
+    airports = [
+        {
+            "lat": float(point["lat"]),
+            "lng": float(point["lon"]),
+            "iata": point["iata"],
+            "icao": point["icao"],
+            "city": point["city"],
+            "name": point["name"],
+            "country": point["country"],
+            "count": point["count"]
+        }
+        for point in data_points
+    ]
+
+    write_to_data({
+        "arcs": arcs,
+        "airports": airports
+    })
 
 

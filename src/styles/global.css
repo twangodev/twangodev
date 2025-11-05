@@ -166,3 +166,24 @@ article img {
 .copy-svg {
   @apply aspect-square w-full text-white opacity-70 hover:opacity-90;
 }
+
+/**
+ * Airport markers on globe
+ */
+.airport-dot {
+  @apply h-2 w-2 rounded-full;
+  @apply bg-white/50 dark:bg-white/50;
+  @apply shadow-lg shadow-white/50;
+  @apply transition-all duration-200;
+}
+
+.airport-dot:hover {
+  @apply scale-150 bg-white/90;
+}
+
+.airport-label {
+  @apply text-white dark:text-white;
+  @apply font-medium whitespace-nowrap;
+  pointer-events: none;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}

@@ -140,11 +140,76 @@ async function initGlobe() {
   const container = document.getElementById("planetcont");
   if (!container) return;
 
-  let arcsData = await (await fetch("/globe-arcs.json")).json();
+  let data = await (await fetch("/globe-arcs.json")).json();
+
+  // Handle both old format (array) and new format (object with arcs/airports)
+  let arcsData = Array.isArray(data) ? data : data.arcs;
+  let airportsData = data.airports || [];
 
   arcsData.forEach((element) => {
     element.color = generateColorPair();
   });
+
+  // Calculate min/max flight counts for dynamic text sizing
+  const minCount = Math.min(...airportsData.map(a => a.count));
+  const maxCount = Math.max(...airportsData.map(a => a.count));
+  const minFontSize = 8;
+  const maxFontSize = 18;
+
+  function calculateFontSize(count) {
+    if (maxCount === minCount) return minFontSize;
+    const ratio = (count - minCount) / (maxCount - minCount);
+    return minFontSize + ratio * (maxFontSize - minFontSize);
+  }
+
+  function calculateOpacity(count) {
+    if (maxCount === minCount) return 0.7;
+    const ratio = (count - minCount) / (maxCount - minCount);
+    return 0.7 + ratio * 0.3; // 70% to 100%
+  }
+
+  // Spread out nearby airport labels
+  function separateNearbyLabels(airports) {
+    // Start with labels offset slightly below the dots
+    const result = airports.map(a => ({
+      ...a,
+      labelLat: a.lat - 0.8, // offset below the dot
+      labelLng: a.lng
+    }));
+    const minDistance = 3; // degrees apart
+
+    for (let i = 0; i < result.length; i++) {
+      for (let j = i + 1; j < result.length; j++) {
+        const a = result[i];
+        const b = result[j];
+
+        const dLat = b.lat - a.lat;
+        const dLng = b.lng - a.lng;
+        const distance = Math.sqrt(dLat * dLat + dLng * dLng);
+
+        if (distance < minDistance && distance > 0) {
+          const overlap = minDistance - distance;
+          const angle = Math.atan2(dLat, dLng);
+          const pushLat = Math.cos(angle) * overlap * 0.5;
+          const pushLng = Math.sin(angle) * overlap * 0.5;
+
+          a.labelLat -= pushLng;
+          a.labelLng -= pushLat;
+          b.labelLat += pushLng;
+          b.labelLng += pushLat;
+        }
+      }
+    }
+
+    return result;
+  }
+
+  const labelData = separateNearbyLabels(airportsData);
+
+  // Create combined data: dots at actual position + labels at separated positions
+  const dotsData = airportsData.map(a => ({ ...a, type: 'dot' }));
+  const labelsData = labelData.map(a => ({ ...a, type: 'label' }));
+  const combinedData = [...dotsData, ...labelsData];
 
   const globe = new Globe(container)
     .globeImageUrl(determineGlobeImageUrl())
@@ -155,6 +220,35 @@ async function initGlobe() {
     .arcDashGap(() => Math.random())
     .backgroundColor("rgba(0,0,0,0)")
     .arcDashAnimateTime(() => Math.random() * 4000 + 500)
+    .htmlElementsData(combinedData)
+    .htmlLat(d => d.type === 'label' ? d.labelLat : d.lat)
+    .htmlLng(d => d.type === 'label' ? d.labelLng : d.lng)
+    .htmlElement(d => {
+      const el = document.createElement('div');
+
+      if (d.type === 'dot') {
+        // Just the dot at actual airport location
+        el.innerHTML = `<div class="airport-dot"></div>`;
+        el.style.transition = 'opacity 250ms';
+        el.dataset.baseOpacity = '0.5';
+      } else {
+        // Just the label at adjusted position
+        const fontSize = calculateFontSize(d.count);
+        const opacity = calculateOpacity(d.count);
+        el.innerHTML = `<div class="airport-label" style="font-size: ${fontSize}px">${d.iata}</div>`;
+        el.style.transition = 'opacity 250ms';
+        el.dataset.baseOpacity = opacity;
+      }
+
+      el.style.color = 'white';
+      el.style.pointerEvents = d.type === 'dot' ? 'auto' : 'none';
+      el.style.cursor = d.type === 'dot' ? 'pointer' : 'default';
+      return el;
+    })
+    .htmlElementVisibilityModifier((el, isVisible) => {
+      const baseOpacity = parseFloat(el.dataset.baseOpacity) || 1;
+      el.style.opacity = isVisible ? baseOpacity : 0;
+    })
     .pointOfView(
       { lat: 37, lng: -122, altitude: calculateScrollAltitude() },
       1000, // transition duration in ms
@@ -163,7 +257,7 @@ async function initGlobe() {
   const globeControls = globe.controls();
 
   globeControls.autoRotate = true;
-  globeControls.autoRotateSpeed = -1.5;
+  globeControls.autoRotateSpeed = -1.0;
   globeControls.enableZoom = false;
 
   window.addEventListener("resize", (event) => {
