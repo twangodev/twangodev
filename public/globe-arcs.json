@@ -496,7 +496,7 @@
       "city": "Madison",
       "name": "Dane Co Regl-Truax Fld",
       "country": "US",
-      "count": 5
+      "count": 7
     },
     {
       "lat": 42.775278,
@@ -566,7 +566,7 @@
       "city": "Denver",
       "name": "Denver",
       "country": "US",
-      "count": 8
+      "count": 12
     },
     {
       "lat": 38.944533,
@@ -596,7 +596,7 @@
       "city": "San Francisco",
       "name": "San Francisco International",
       "country": "US",
-      "count": 34
+      "count": 36
     },
     {
       "lat": 37.448524,
