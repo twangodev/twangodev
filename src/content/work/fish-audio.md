@@ -1,6 +1,6 @@
 ---
 company: "Fish Audio"
-role: "Software Engineer"
+role: "Founding Engineer"
 dateStart: "08/01/2025"
 dateEnd: "Present"
 logo: "/public/assets/fish.svg"
