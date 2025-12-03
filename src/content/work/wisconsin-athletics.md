@@ -2,7 +2,7 @@
 company: "Wisconsin Athletics"
 role: "Audio Visual Technician"
 dateStart: "08/01/2024"
-dateEnd: "Present"
+dateEnd: "12/31/2025"
 logo: "/public/assets/badgers.jpeg"
 companyUrl: "https://uwbadgers.com"
 ---
