@@ -3,10 +3,20 @@ revision = 3
 requires-python = ">=3.12"
 
 [[package]]
+name = "airportsdata"
+version = "20250909"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/6d/c6/17ae8a65f7fa5bbbeee166f8070063eb8b70c89501a65c2e6885db61fc08/airportsdata-20250909.tar.gz", hash = "sha256:f39974fe1101817ced4ccf7c6ed336408469e5e778395d0a3e7a5112ec298f90", size = 907204, upload-time = "2025-09-09T01:07:31.256Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/16/87/59b570b9c4b014532777dc3baffc9bea10cf0cc8b232cf3c17e4bd0754a6/airportsdata-20250909-py3-none-any.whl", hash = "sha256:ce7dc6e1485afe3915e708212c7024ad158470c1c934e6a6cb217cf28b798ac7", size = 914391, upload-time = "2025-09-09T01:07:29.364Z" },
+]
+
+[[package]]
 name = "arc-gen"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
+    { name = "airportsdata" },
     { name = "beautifulsoup4" },
     { name = "fake-useragent" },
     { name = "python-dotenv" },
@@ -15,6 +25,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
+    { name = "airportsdata", specifier = ">=20250909" },
     { name = "beautifulsoup4", specifier = ">=4.14.2" },
     { name = "fake-useragent", specifier = ">=2.2.0" },
     { name = "python-dotenv", specifier = ">=1.1.1" },
