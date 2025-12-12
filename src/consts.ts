@@ -13,6 +13,9 @@ export const WORK: Page = {
   DESCRIPTION: "Places I have worked.",
 };
 
+// Resume
+export const RESUME_URL = "https://flowcv.com/resume/soqdnfsvwo";
+
 // Blog Page
 export const BLOG: Page = {
   TITLE: "Blog",

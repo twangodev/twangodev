@@ -3,7 +3,7 @@ import { getCollection } from "astro:content";
 import PageLayout from "@layouts/PageLayout.astro";
 import TopLayout from "@layouts/TopLayout.astro";
 import BottomLayout from "@layouts/BottomLayout.astro";
-import { WORK } from "@consts";
+import { WORK, RESUME_URL } from "@consts";
 import { Image } from "astro:assets";
 
 const collection = await getCollection("work");
@@ -52,11 +52,75 @@ function formatWorkDate(input: Date | string) {
     </div>
     <p class="animate mt-4">
       View my
-      <a
-        href="https://flowcv.com/resume/soqdnfsvwo"
-        class="underline underline-offset-4">resume.</a
+      <button
+        id="resume-btn"
+        class="underline underline-offset-4 cursor-pointer bg-transparent border-none p-0 text-[length:inherit] font-[inherit] text-current">resume.</button
       >
     </p>
+
+    <!-- Gru Resume Modal -->
+    <div id="resume-modal" class="fixed inset-0 z-50 hidden items-center justify-center">
+      <!-- Backdrop with blur -->
+      <div class="absolute inset-0 bg-black/70 backdrop-blur-md"></div>
+
+      <!-- Content -->
+      <div class="relative z-10 flex flex-col items-center text-center text-white">
+        <img
+          src="/assets/misc/gru.png"
+          alt="Gru"
+          class="w-64 h-64 object-contain mb-4 animate-pulse"
+        />
+
+        <!-- Loading spinner -->
+        <div class="mb-4">
+          <svg class="animate-spin h-8 w-8 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+        </div>
+
+        <p class="text-sm font-bold mb-2">You better hire me if you're looking at my resume</p>
+
+        <p class="text-xs">
+          Redirecting in <span id="countdown" class="font-mono font-bold">3.000</span>...
+        </p>
+        <p class="text-xs mt-2 opacity-70">
+          If this doesn't redirect, <a href={RESUME_URL} class="underline">click here</a>.
+        </p>
+      </div>
+    </div>
+
+    <script define:vars={{ RESUME_URL }}>
+      const resumeBtn = document.getElementById('resume-btn');
+      const modal = document.getElementById('resume-modal');
+      const countdown = document.getElementById('countdown');
+      const resumeUrl = RESUME_URL;
+
+      resumeBtn?.addEventListener('click', () => {
+        modal?.classList.remove('hidden');
+        modal?.classList.add('flex');
+
+        const duration = 3000;
+        const startTime = performance.now();
+
+        function updateCountdown(currentTime: number) {
+          const elapsed = currentTime - startTime;
+          const remaining = Math.max(0, duration - elapsed);
+
+          if (countdown) {
+            countdown.textContent = (remaining / 1000).toFixed(3);
+          }
+
+          if (remaining > 0) {
+            requestAnimationFrame(updateCountdown);
+          } else {
+            window.location.href = resumeUrl;
+          }
+        }
+
+        requestAnimationFrame(updateCountdown);
+      });
+    </script>
   </TopLayout>
   <BottomLayout>
     <ul>
