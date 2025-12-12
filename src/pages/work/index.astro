@@ -145,16 +145,16 @@ function formatWorkDate(input: Date | string) {
       {
         work.map((entry) => (
           <li class="animate mt-4 border-b border-black/10 py-8 first-of-type:mt-0 first-of-type:pt-0 last-of-type:border-none dark:border-white/25">
-            <div class="mb-4 text-sm uppercase">
+            <div class="mb-4 text-xs uppercase font-mono">
               {formatWorkDate(entry.data.dateStart)} -{" "}
               {formatWorkDate(entry.data.dateEnd)}
               {entry.data.location && (
-                <span class="normal-case">  •  <a
+                <>  •  <a
                   href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(entry.data.location)}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   class="hover:underline"
-                >{entry.data.location}</a></span>
+                >{entry.data.location}</a></>
               )}
             </div>
             <div class="my-2 flex items-center font-semibold text-black dark:text-white">
