@@ -59,7 +59,7 @@ function formatWorkDate(input: Date | string) {
     </p>
 
     <!-- Gru Resume Modal -->
-    <div id="resume-modal" class="fixed inset-0 z-50 hidden items-center justify-center">
+    <div id="resume-modal" class="fixed inset-0 z-50 hidden items-center justify-center" data-resume-url={RESUME_URL}>
       <!-- Backdrop with blur -->
       <div class="absolute inset-0 bg-black/70 backdrop-blur-md"></div>
 
@@ -90,11 +90,11 @@ function formatWorkDate(input: Date | string) {
       </div>
     </div>
 
-    <script define:vars={{ RESUME_URL }}>
+    <script>
       const resumeBtn = document.getElementById('resume-btn');
       const modal = document.getElementById('resume-modal');
       const countdown = document.getElementById('countdown');
-      const resumeUrl = RESUME_URL;
+      const resumeUrl = modal?.dataset.resumeUrl ?? '';
 
       resumeBtn?.addEventListener('click', () => {
         modal?.classList.remove('hidden');
