@@ -148,6 +148,14 @@ function formatWorkDate(input: Date | string) {
             <div class="mb-4 text-sm uppercase">
               {formatWorkDate(entry.data.dateStart)} -{" "}
               {formatWorkDate(entry.data.dateEnd)}
+              {entry.data.location && (
+                <span class="normal-case">  •  <a
+                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(entry.data.location)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="hover:underline"
+                >{entry.data.location}</a></span>
+              )}
             </div>
             <div class="my-2 flex items-center font-semibold text-black dark:text-white">
               <Image

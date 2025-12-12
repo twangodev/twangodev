@@ -5,6 +5,7 @@ dateStart: "07/01/2025"
 dateEnd: "08/01/2025"
 logo: "/public/assets/idtech.svg"
 companyUrl: "https://idtech.com"
+location: "Stanford, CA"
 ---
 
 - Taught Python, Linux CLI, CUDA programming, and embedded systems development while troubleshooting hardware/software issues across 15 Jetson Orin Nano workstations for students ranging from beginners to advanced programmers.

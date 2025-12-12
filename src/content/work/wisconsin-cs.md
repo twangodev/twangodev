@@ -5,6 +5,7 @@ dateStart: "09/01/2025"
 dateEnd: "12/31/2025"
 logo: "/public/assets/uw-crest.svg"
 companyUrl: "https://cs.wisc.edu"
+location: "Madison, WI"
 ---
 
 - Held weekly office hours helping students with Java OOP concepts, data structures (lists, stacks, queues, BSTs), and Big-O complexity analysis.

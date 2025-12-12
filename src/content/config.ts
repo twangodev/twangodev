@@ -10,6 +10,7 @@ const work = defineCollection({
       dateEnd: z.union([z.coerce.date(), z.string()]),
       logo: image(),
       companyUrl: z.string().optional(),
+      location: z.string().optional(),
     }),
 });
 

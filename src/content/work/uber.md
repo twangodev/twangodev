@@ -5,6 +5,7 @@ dateStart: "06/01/2021"
 dateEnd: "08/01/2021"
 logo: "/public/assets/uber.svg"
 companyUrl: "https://uber.com"
+location: "San Francisco Bay Area, CA"
 ---
 
 - Managed and deployed Dockerized backend services on Google Cloud (Compute Engine, Cloud Run), architecting scalable, high-availability systems for backend internal tool.
