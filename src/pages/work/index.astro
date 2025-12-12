@@ -61,15 +61,17 @@ function formatWorkDate(input: Date | string) {
     <!-- Gru Resume Modal -->
     <div id="resume-modal" class="fixed inset-0 z-50 hidden items-center justify-center" data-resume-url={RESUME_URL}>
       <!-- Backdrop with blur -->
-      <div class="absolute inset-0 bg-black/70 backdrop-blur-md"></div>
+      <div id="resume-backdrop" class="absolute inset-0 bg-black/70 backdrop-blur-md cursor-pointer"></div>
 
       <!-- Content -->
       <div class="relative z-10 flex flex-col items-center text-center text-white">
-        <img
-          src="/assets/misc/gru.png"
-          alt="Gru"
-          class="w-64 h-64 object-contain mb-4 animate-pulse"
-        />
+        <div class="w-64 h-64 mb-4 rounded-2xl overflow-hidden">
+          <img
+            src="/assets/misc/gru.png"
+            alt="Gru"
+            class="w-full h-full object-cover animate-pulse"
+          />
+        </div>
 
         <!-- Loading spinner -->
         <div class="mb-4">
@@ -85,7 +87,7 @@ function formatWorkDate(input: Date | string) {
           Redirecting in <span id="countdown" class="font-mono font-bold">3.000</span>...
         </p>
         <p class="text-xs mt-2 opacity-70">
-          If this doesn't redirect, <a href={RESUME_URL} class="underline">click here</a>.
+          If this doesn't redirect, <a href={RESUME_URL} target="_blank" rel="noopener noreferrer" class="underline">click here</a>.
         </p>
       </div>
     </div>
@@ -93,8 +95,23 @@ function formatWorkDate(input: Date | string) {
     <script>
       const resumeBtn = document.getElementById('resume-btn');
       const modal = document.getElementById('resume-modal');
+      const backdrop = document.getElementById('resume-backdrop');
       const countdown = document.getElementById('countdown');
       const resumeUrl = modal?.dataset.resumeUrl ?? '';
+
+      let animationId: number | null = null;
+
+      function closeModal() {
+        if (animationId) {
+          cancelAnimationFrame(animationId);
+          animationId = null;
+        }
+        modal?.classList.add('hidden');
+        modal?.classList.remove('flex');
+        if (countdown) countdown.textContent = '3.000';
+      }
+
+      backdrop?.addEventListener('click', closeModal);
 
       resumeBtn?.addEventListener('click', () => {
         modal?.classList.remove('hidden');
@@ -112,13 +129,14 @@ function formatWorkDate(input: Date | string) {
           }
 
           if (remaining > 0) {
-            requestAnimationFrame(updateCountdown);
+            animationId = requestAnimationFrame(updateCountdown);
           } else {
-            window.location.href = resumeUrl;
+            window.open(resumeUrl, '_blank', 'noopener,noreferrer');
+            closeModal();
           }
         }
 
-        requestAnimationFrame(updateCountdown);
+        animationId = requestAnimationFrame(updateCountdown);
       });
     </script>
   </TopLayout>
