@@ -1,15 +1,28 @@
 ---
 import { ViewTransitions } from "astro:transitions";
+import { OgisClient } from "ogis";
 
 interface Props {
   title: string;
+  ogTitle?: string;
   description: string;
   image?: string;
 }
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
-const { title, description, image = "/open-graph.jpg" } = Astro.props;
+const { title, ogTitle, description, image } = Astro.props;
+
+const ogis = new OgisClient({
+  baseUrl: "https://img.ogis.dev",
+  defaults: {
+    template: "gradient-cobalt",
+    logo: "https://twango.dev/logo.png",
+    subtitle: "James Ding",
+  },
+});
+
+const ogImage = image ?? ogis.generateUrl({ title: ogTitle ?? title, description });
 ---
 
 <!-- Global Metadata -->
@@ -46,14 +59,14 @@ const { title, description, image = "/open-graph.jpg" } = Astro.props;
 <meta property="og:url" content={Astro.url} />
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
-<meta property="og:image" content={new URL(image, Astro.url)} />
+<meta property="og:image" content={ogImage} />
 
 <!-- Twitter -->
 <meta property="twitter:card" content="summary_large_image" />
 <meta property="twitter:url" content={Astro.url} />
 <meta property="twitter:title" content={title} />
 <meta property="twitter:description" content={description} />
-<meta property="twitter:image" content={new URL(image, Astro.url)} />
+<meta property="twitter:image" content={ogImage} />
 
 <!-- Sitemap -->
 <link rel="sitemap" href="/sitemap-index.xml" />
