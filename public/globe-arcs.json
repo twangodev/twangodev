@@ -1,6 +1,18 @@
 {
   "arcs": [
     {
+      "startLat": -45.0211,
+      "startLng": 168.739,
+      "endLat": -37.0081,
+      "endLng": 174.79201
+    },
+    {
+      "startLat": -33.9461,
+      "startLng": 151.177,
+      "endLat": -43.4894,
+      "endLng": 172.532
+    },
+    {
       "startLat": -17.7554,
       "startLng": 177.44299,
       "endLat": -33.9461,
@@ -289,16 +301,16 @@
       "endLng": -112.01158
     },
     {
-      "startLat": 50.0264,
-      "startLng": 8.54313,
-      "endLat": 37.61881,
-      "endLng": -122.37542
-    },
-    {
       "startLat": 50.9014,
       "startLng": 4.48444,
       "endLat": 50.0264,
       "endLng": 8.54313
+    },
+    {
+      "startLat": 37.61881,
+      "startLng": -122.37542,
+      "endLat": 51.4706,
+      "endLng": -0.46194
     },
     {
       "startLat": 34.20069,
@@ -561,14 +573,24 @@
   ],
   "airports": [
     {
-      "lat": -17.7554,
-      "lng": 177.44299,
-      "iata": "NAN",
-      "icao": "NFFN",
-      "city": "Nadi",
-      "name": "Nadi International Airport",
-      "country": "FJ",
-      "count": 2
+      "lat": -45.0211,
+      "lng": 168.739,
+      "iata": "ZQN",
+      "icao": "NZQN",
+      "city": "Queenstown",
+      "name": "Queenstown International Airport",
+      "country": "NZ",
+      "count": 1
+    },
+    {
+      "lat": -37.0081,
+      "lng": 174.79201,
+      "iata": "AKL",
+      "icao": "NZAA",
+      "city": "Auckland",
+      "name": "Auckland International Airport",
+      "country": "NZ",
+      "count": 1
     },
     {
       "lat": -33.9461,
@@ -578,7 +600,27 @@
       "city": "Sydney",
       "name": "Sydney Kingsford Smith International Airport",
       "country": "AU",
+      "count": 2
+    },
+    {
+      "lat": -43.4894,
+      "lng": 172.532,
+      "iata": "CHC",
+      "icao": "NZCH",
+      "city": "Christchurch",
+      "name": "Christchurch International Airport",
+      "country": "NZ",
       "count": 1
+    },
+    {
+      "lat": -17.7554,
+      "lng": 177.44299,
+      "iata": "NAN",
+      "icao": "NFFN",
+      "city": "Nadi",
+      "name": "Nadi International Airport",
+      "country": "FJ",
+      "count": 2
     },
     {
       "lat": 37.61881,
@@ -811,16 +853,6 @@
       "count": 2
     },
     {
-      "lat": 50.0264,
-      "lng": 8.54313,
-      "iata": "FRA",
-      "icao": "EDDF",
-      "city": "Frankfurt am Main",
-      "name": "Frankfurt am Main International Airport",
-      "country": "DE",
-      "count": 2
-    },
-    {
       "lat": 50.9014,
       "lng": 4.48444,
       "iata": "BRU",
@@ -828,6 +860,26 @@
       "city": "Brussels",
       "name": "Brussels Airport",
       "country": "BE",
+      "count": 1
+    },
+    {
+      "lat": 50.0264,
+      "lng": 8.54313,
+      "iata": "FRA",
+      "icao": "EDDF",
+      "city": "Frankfurt am Main",
+      "name": "Frankfurt am Main International Airport",
+      "country": "DE",
+      "count": 1
+    },
+    {
+      "lat": 51.4706,
+      "lng": -0.46194,
+      "iata": "LHR",
+      "icao": "EGLL",
+      "city": "London",
+      "name": "London Heathrow Airport",
+      "country": "GB",
       "count": 1
     },
     {
