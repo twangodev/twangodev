@@ -31,11 +31,6 @@ jobs:
         with:
           commit_message: "Sync Flight Data"
           branch: ${{ github.ref_name }}
-      - name: Commit Changes
-        uses: stefanzweifel/git-auto-commit-action@v6
-        with:
-          commit_message: "Auto-update from script"
-          branch: ${{ github.ref_name }}
       - name: Install, build, and upload your site
         uses: withastro/action@v4
 
