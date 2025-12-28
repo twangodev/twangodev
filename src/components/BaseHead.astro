@@ -1,5 +1,5 @@
 ---
-import { ViewTransitions } from "astro:transitions";
+import { ClientRouter } from "astro:transitions";
 import { OgisClient } from "ogis";
 
 interface Props {
@@ -90,8 +90,9 @@ const ogImage = image ?? ogis.generateUrl({ title: ogTitle ?? title, description
 <script is:inline src="/js/scroll.js"></script>
 <script is:inline src="/js/animate.js"></script>
 <script defer is:inline src="/js/copy.js"></script>
+<script src="../scripts/globe.js"></script>
 
-<!-- <ViewTransitions  /> -->
+<ClientRouter />
 
 <script>
   import type { TransitionBeforeSwapEvent } from "astro:transitions/client";

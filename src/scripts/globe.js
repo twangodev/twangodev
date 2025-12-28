@@ -287,13 +287,29 @@ async function initGlobe() {
   return globe;
 }
 
-const globe = await initGlobe();
+let globe = null;
+
+function destroy() {
+  if (!globe) return;
+  globe.pauseAnimation();
+  globe.renderer().dispose();
+  globe.controls().dispose();
+  document.getElementById("planetcont")?.replaceChildren();
+  globe = null;
+}
+
+async function setup() {
+  destroy();
+  globe = await initGlobe();
+}
+
+document.addEventListener("astro:page-load", setup);
+document.addEventListener("astro:before-swap", destroy);
 
 function refreshGlobeTexture() {
-  globe.globeImageUrl(determineGlobeImageUrl());
+  globe?.globeImageUrl(determineGlobeImageUrl());
 }
 
 function onScroll() {
-  let altitude = calculateScrollAltitude();
-  globe.pointOfView({ altitude }, 5);
+  globe?.pointOfView({ altitude: calculateScrollAltitude() }, 5);
 }
