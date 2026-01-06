@@ -21,7 +21,7 @@ jobs:
         run: uv sync
         working-directory: ./arc-gen
       - name: Run Python Script
-        run: uv run python main.py
+        run: uv run main.py
         working-directory: ./arc-gen
         env:
           OUTPUT: ../public/globe-arcs.json
