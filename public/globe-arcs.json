@@ -1,6 +1,30 @@
 {
   "arcs": [
     {
+      "startLat": 33.6367,
+      "startLng": -84.42786,
+      "endLat": 41.97694,
+      "endLng": -87.90815
+    },
+    {
+      "startLat": 37.61881,
+      "startLng": -122.37542,
+      "endLat": 33.6367,
+      "endLng": -84.42786
+    },
+    {
+      "startLat": -17.7554,
+      "startLng": 177.44299,
+      "endLat": 37.61881,
+      "endLng": -122.37542
+    },
+    {
+      "startLat": -37.0081,
+      "startLng": 174.79201,
+      "endLat": -17.7554,
+      "endLng": 177.44299
+    },
+    {
       "startLat": -45.0211,
       "startLng": 168.739,
       "endLat": -37.0081,
@@ -277,12 +301,6 @@
       "endLng": -122.37542
     },
     {
-      "startLat": 41.97694,
-      "startLng": -87.90815,
-      "endLat": 43.13988,
-      "endLng": -89.3375
-    },
-    {
       "startLat": 39.99695,
       "startLng": -82.89216,
       "endLat": 41.97694,
@@ -299,6 +317,12 @@
       "startLng": -122.37542,
       "endLat": 33.43428,
       "endLng": -112.01158
+    },
+    {
+      "startLat": 50.0264,
+      "startLng": 8.54313,
+      "endLat": 37.61881,
+      "endLng": -122.37542
     },
     {
       "startLat": 50.9014,
@@ -573,14 +597,44 @@
   ],
   "airports": [
     {
-      "lat": -45.0211,
-      "lng": 168.739,
-      "iata": "ZQN",
-      "icao": "NZQN",
-      "city": "Queenstown",
-      "name": "Queenstown International Airport",
-      "country": "NZ",
-      "count": 1
+      "lat": 33.6367,
+      "lng": -84.42786,
+      "iata": "ATL",
+      "icao": "KATL",
+      "city": "Atlanta",
+      "name": "Hartsfield - Jackson Atlanta International Airport",
+      "country": "US",
+      "count": 2
+    },
+    {
+      "lat": 41.97694,
+      "lng": -87.90815,
+      "iata": "ORD",
+      "icao": "KORD",
+      "city": "Chicago",
+      "name": "Chicago O'Hare International Airport",
+      "country": "US",
+      "count": 11
+    },
+    {
+      "lat": 37.61881,
+      "lng": -122.37542,
+      "iata": "SFO",
+      "icao": "KSFO",
+      "city": "San Francisco",
+      "name": "San Francisco International Airport",
+      "country": "US",
+      "count": 37
+    },
+    {
+      "lat": -17.7554,
+      "lng": 177.44299,
+      "iata": "NAN",
+      "icao": "NFFN",
+      "city": "Nadi",
+      "name": "Nadi International Airport",
+      "country": "FJ",
+      "count": 4
     },
     {
       "lat": -37.0081,
@@ -589,6 +643,16 @@
       "icao": "NZAA",
       "city": "Auckland",
       "name": "Auckland International Airport",
+      "country": "NZ",
+      "count": 2
+    },
+    {
+      "lat": -45.0211,
+      "lng": 168.739,
+      "iata": "ZQN",
+      "icao": "NZQN",
+      "city": "Queenstown",
+      "name": "Queenstown International Airport",
       "country": "NZ",
       "count": 1
     },
@@ -613,26 +677,6 @@
       "count": 1
     },
     {
-      "lat": -17.7554,
-      "lng": 177.44299,
-      "iata": "NAN",
-      "icao": "NFFN",
-      "city": "Nadi",
-      "name": "Nadi International Airport",
-      "country": "FJ",
-      "count": 2
-    },
-    {
-      "lat": 37.61881,
-      "lng": -122.37542,
-      "iata": "SFO",
-      "icao": "KSFO",
-      "city": "San Francisco",
-      "name": "San Francisco International Airport",
-      "country": "US",
-      "count": 34
-    },
-    {
       "lat": 44.88197,
       "lng": -93.22178,
       "iata": "MSP",
@@ -641,16 +685,6 @@
       "name": "Minneapolis-St Paul International/Wold-Chamberlain Airport",
       "country": "US",
       "count": 2
-    },
-    {
-      "lat": 41.97694,
-      "lng": -87.90815,
-      "iata": "ORD",
-      "icao": "KORD",
-      "city": "Chicago",
-      "name": "Chicago O'Hare International Airport",
-      "country": "US",
-      "count": 11
     },
     {
       "lat": 39.86167,
@@ -670,7 +704,7 @@
       "city": "Madison",
       "name": "Dane County Regional/Truax Field",
       "country": "US",
-      "count": 7
+      "count": 6
     },
     {
       "lat": 33.9425,
@@ -853,16 +887,6 @@
       "count": 2
     },
     {
-      "lat": 50.9014,
-      "lng": 4.48444,
-      "iata": "BRU",
-      "icao": "EBBR",
-      "city": "Brussels",
-      "name": "Brussels Airport",
-      "country": "BE",
-      "count": 1
-    },
-    {
       "lat": 50.0264,
       "lng": 8.54313,
       "iata": "FRA",
@@ -870,6 +894,16 @@
       "city": "Frankfurt am Main",
       "name": "Frankfurt am Main International Airport",
       "country": "DE",
+      "count": 2
+    },
+    {
+      "lat": 50.9014,
+      "lng": 4.48444,
+      "iata": "BRU",
+      "icao": "EBBR",
+      "city": "Brussels",
+      "name": "Brussels Airport",
+      "country": "BE",
       "count": 1
     },
     {
