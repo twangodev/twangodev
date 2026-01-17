@@ -93,50 +93,85 @@ function formatWorkDate(input: Date | string) {
     </div>
 
     <script>
-      const resumeBtn = document.getElementById('resume-btn');
-      const modal = document.getElementById('resume-modal');
-      const backdrop = document.getElementById('resume-backdrop');
-      const countdown = document.getElementById('countdown');
-      const resumeUrl = modal?.dataset.resumeUrl ?? '';
-
       let animationId: number | null = null;
+      let cleanupFn: (() => void) | null = null;
 
-      function closeModal() {
-        if (animationId) {
-          cancelAnimationFrame(animationId);
-          animationId = null;
+      function initResumeButton() {
+        // Clean up previous listeners if any
+        cleanupFn?.();
+
+        const resumeBtn = document.getElementById('resume-btn');
+        const modal = document.getElementById('resume-modal');
+        const backdrop = document.getElementById('resume-backdrop');
+        const countdown = document.getElementById('countdown');
+        const resumeUrl = modal?.dataset.resumeUrl ?? '';
+
+        if (!resumeBtn || !modal) return;
+
+        function closeModal() {
+          if (animationId) {
+            cancelAnimationFrame(animationId);
+            animationId = null;
+          }
+          modal?.classList.add('hidden');
+          modal?.classList.remove('flex');
+          if (countdown) countdown.textContent = '3.000';
         }
-        modal?.classList.add('hidden');
-        modal?.classList.remove('flex');
-        if (countdown) countdown.textContent = '3.000';
+
+        function handleBackdropClick() {
+          closeModal();
+        }
+
+        function handleResumeClick() {
+          modal?.classList.remove('hidden');
+          modal?.classList.add('flex');
+
+          const duration = 3000;
+          const startTime = performance.now();
+
+          function updateCountdown(currentTime: number) {
+            const elapsed = currentTime - startTime;
+            const remaining = Math.max(0, duration - elapsed);
+
+            if (countdown) {
+              countdown.textContent = (remaining / 1000).toFixed(3);
+            }
+
+            if (remaining > 0) {
+              animationId = requestAnimationFrame(updateCountdown);
+            } else {
+              window.open(resumeUrl, '_blank', 'noopener,noreferrer');
+              closeModal();
+            }
+          }
+
+          animationId = requestAnimationFrame(updateCountdown);
+        }
+
+        backdrop?.addEventListener('click', handleBackdropClick);
+        resumeBtn.addEventListener('click', handleResumeClick);
+
+        // Store cleanup function for when we navigate away
+        cleanupFn = () => {
+          backdrop?.removeEventListener('click', handleBackdropClick);
+          resumeBtn.removeEventListener('click', handleResumeClick);
+          if (animationId) {
+            cancelAnimationFrame(animationId);
+            animationId = null;
+          }
+        };
       }
 
-      backdrop?.addEventListener('click', closeModal);
+      // Initialize on first load
+      initResumeButton();
 
-      resumeBtn?.addEventListener('click', () => {
-        modal?.classList.remove('hidden');
-        modal?.classList.add('flex');
+      // Re-initialize on client-side navigation (ClientRouter)
+      document.addEventListener('astro:page-load', initResumeButton);
 
-        const duration = 3000;
-        const startTime = performance.now();
-
-        function updateCountdown(currentTime: number) {
-          const elapsed = currentTime - startTime;
-          const remaining = Math.max(0, duration - elapsed);
-
-          if (countdown) {
-            countdown.textContent = (remaining / 1000).toFixed(3);
-          }
-
-          if (remaining > 0) {
-            animationId = requestAnimationFrame(updateCountdown);
-          } else {
-            window.open(resumeUrl, '_blank', 'noopener,noreferrer');
-            closeModal();
-          }
-        }
-
-        animationId = requestAnimationFrame(updateCountdown);
+      // Cleanup on navigation away
+      document.addEventListener('astro:before-swap', () => {
+        cleanupFn?.();
+        cleanupFn = null;
       });
     </script>
   </TopLayout>
