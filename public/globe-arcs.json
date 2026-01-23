@@ -1,6 +1,30 @@
 {
   "arcs": [
     {
+      "startLat": 33.43428,
+      "startLng": -112.01158,
+      "endLat": 43.13988,
+      "endLng": -89.3375
+    },
+    {
+      "startLat": 37.36299,
+      "startLng": -121.92862,
+      "endLat": 33.43428,
+      "endLng": -112.01158
+    },
+    {
+      "startLat": 32.73356,
+      "startLng": -117.18966,
+      "endLat": 37.36299,
+      "endLng": -121.92862
+    },
+    {
+      "startLat": 41.97694,
+      "startLng": -87.90815,
+      "endLat": 32.73356,
+      "endLng": -117.18966
+    },
+    {
       "startLat": 33.6367,
       "startLng": -84.42786,
       "endLat": 41.97694,
@@ -277,12 +301,6 @@
       "endLng": -121.92862
     },
     {
-      "startLat": 21.31782,
-      "startLng": -157.92023,
-      "endLat": 19.72026,
-      "endLng": -155.04847
-    },
-    {
       "startLat": 37.36299,
       "startLng": -121.92862,
       "endLat": 21.31782,
@@ -299,6 +317,12 @@
       "startLng": -104.67317,
       "endLat": 37.61881,
       "endLng": -122.37542
+    },
+    {
+      "startLat": 41.97694,
+      "startLng": -87.90815,
+      "endLat": 43.13988,
+      "endLng": -89.3375
     },
     {
       "startLat": 39.99695,
@@ -577,12 +601,6 @@
       "endLng": -122.37542
     },
     {
-      "startLat": 31.1434,
-      "startLng": 121.805,
-      "endLat": 49.1939,
-      "endLng": -123.184
-    },
-    {
       "startLat": 49.1939,
       "startLng": -123.184,
       "endLat": 31.1434,
@@ -597,12 +615,42 @@
   ],
   "airports": [
     {
-      "lat": 33.6367,
-      "lng": -84.42786,
-      "iata": "ATL",
-      "icao": "KATL",
-      "city": "Atlanta",
-      "name": "Hartsfield - Jackson Atlanta International Airport",
+      "lat": 33.43428,
+      "lng": -112.01158,
+      "iata": "PHX",
+      "icao": "KPHX",
+      "city": "Phoenix",
+      "name": "Phoenix Sky Harbor International Airport",
+      "country": "US",
+      "count": 4
+    },
+    {
+      "lat": 43.13988,
+      "lng": -89.3375,
+      "iata": "MSN",
+      "icao": "KMSN",
+      "city": "Madison",
+      "name": "Dane County Regional/Truax Field",
+      "country": "US",
+      "count": 8
+    },
+    {
+      "lat": 37.36299,
+      "lng": -121.92862,
+      "iata": "SJC",
+      "icao": "KSJC",
+      "city": "San Jose",
+      "name": "Norman Y Mineta San Jose International Airport",
+      "country": "US",
+      "count": 10
+    },
+    {
+      "lat": 32.73356,
+      "lng": -117.18966,
+      "iata": "SAN",
+      "icao": "KSAN",
+      "city": "San Diego",
+      "name": "San Diego International Airport",
       "country": "US",
       "count": 2
     },
@@ -614,7 +662,17 @@
       "city": "Chicago",
       "name": "Chicago O'Hare International Airport",
       "country": "US",
-      "count": 11
+      "count": 13
+    },
+    {
+      "lat": 33.6367,
+      "lng": -84.42786,
+      "iata": "ATL",
+      "icao": "KATL",
+      "city": "Atlanta",
+      "name": "Hartsfield - Jackson Atlanta International Airport",
+      "country": "US",
+      "count": 2
     },
     {
       "lat": 37.61881,
@@ -697,16 +755,6 @@
       "count": 12
     },
     {
-      "lat": 43.13988,
-      "lng": -89.3375,
-      "iata": "MSN",
-      "icao": "KMSN",
-      "city": "Madison",
-      "name": "Dane County Regional/Truax Field",
-      "country": "US",
-      "count": 6
-    },
-    {
       "lat": 33.9425,
       "lng": -118.40805,
       "iata": "LAX",
@@ -715,16 +763,6 @@
       "name": "Los Angeles International Airport",
       "country": "US",
       "count": 2
-    },
-    {
-      "lat": 37.36299,
-      "lng": -121.92862,
-      "iata": "SJC",
-      "icao": "KSJC",
-      "city": "San Jose",
-      "name": "Norman Y Mineta San Jose International Airport",
-      "country": "US",
-      "count": 8
     },
     {
       "lat": 32.89723,
@@ -854,17 +892,7 @@
       "city": "Honolulu",
       "name": "Daniel K Inouye International Airport",
       "country": "US",
-      "count": 4
-    },
-    {
-      "lat": 19.72026,
-      "lng": -155.04847,
-      "iata": "ITO",
-      "icao": "PHTO",
-      "city": "Hilo",
-      "name": "Hilo International Airport",
-      "country": "US",
-      "count": 1
+      "count": 3
     },
     {
       "lat": 39.99695,
@@ -873,16 +901,6 @@
       "icao": "KCMH",
       "city": "Columbus",
       "name": "John Glenn Columbus International Airport",
-      "country": "US",
-      "count": 2
-    },
-    {
-      "lat": 33.43428,
-      "lng": -112.01158,
-      "iata": "PHX",
-      "icao": "KPHX",
-      "city": "Phoenix",
-      "name": "Phoenix Sky Harbor International Airport",
       "country": "US",
       "count": 2
     },
@@ -1034,7 +1052,7 @@
       "city": "Shanghai",
       "name": "Shanghai Pudong International Airport",
       "country": "CN",
-      "count": 6
+      "count": 5
     },
     {
       "lat": 34.4273,
@@ -1094,7 +1112,7 @@
       "city": "Richmond",
       "name": "Vancouver International Airport",
       "country": "CA",
-      "count": 4
+      "count": 3
     }
   ]
 }
