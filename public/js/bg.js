@@ -1,15 +1,15 @@
-function generateParticles(n) {
-  let value = `${getRandom(2560)}px ${getRandom(2560)}px #000`;
+function generateParticles(n, maxX, maxY) {
+  let value = `${getRandom(maxX)}px ${getRandom(maxY)}px #000`;
   for (let i = 2; i <= n; i++) {
-    value += `, ${getRandom(2560)}px ${getRandom(2560)}px #000`;
+    value += `, ${getRandom(maxX)}px ${getRandom(maxY)}px #000`;
   }
   return value;
 }
 
-function generateStars(n) {
-  let value = `${getRandom(2560)}px ${getRandom(2560)}px #fff`;
+function generateStars(n, maxX, maxY) {
+  let value = `${getRandom(maxX)}px ${getRandom(maxY)}px #fff`;
   for (let i = 2; i <= n; i++) {
-    value += `, ${getRandom(2560)}px ${getRandom(2560)}px #fff`;
+    value += `, ${getRandom(maxX)}px ${getRandom(maxY)}px #fff`;
   }
   return value;
 }
@@ -19,9 +19,12 @@ function getRandom(max) {
 }
 
 function initBG() {
-  const particlesSmall = generateParticles(1000);
-  const particlesMedium = generateParticles(500);
-  const particlesLarge = generateParticles(250);
+  const maxX = Math.max(window.innerWidth, 2560);
+  const maxY = Math.max(window.innerHeight, 2560);
+
+  const particlesSmall = generateParticles(1000, maxX, maxY);
+  const particlesMedium = generateParticles(500, maxX, maxY);
+  const particlesLarge = generateParticles(250, maxX, maxY);
   const particles1 = document.getElementById("particles1");
   const particles2 = document.getElementById("particles2");
   const particles3 = document.getElementById("particles3");
@@ -32,7 +35,7 @@ function initBG() {
       height: 1px;
       border-radius: 50%;
       box-shadow: ${particlesSmall};
-      animation: animStar 50s linear infinite;
+      animation: animateParticle 50s linear infinite;
       `;
   }
 
@@ -56,9 +59,9 @@ function initBG() {
       `;
   }
 
-  const starsSmall = generateStars(1000);
-  const starsMedium = generateStars(500);
-  const starsLarge = generateStars(250);
+  const starsSmall = generateStars(1000, maxX, maxY);
+  const starsMedium = generateStars(500, maxX, maxY);
+  const starsLarge = generateStars(250, maxX, maxY);
   const stars1 = document.getElementById("stars1");
   const stars2 = document.getElementById("stars2");
   const stars3 = document.getElementById("stars3");
@@ -69,6 +72,7 @@ function initBG() {
       height: 1px;
       border-radius: 50%;
       box-shadow: ${starsSmall};
+      animation: animateParticle 150s linear infinite;
       `;
   }
 
@@ -78,6 +82,7 @@ function initBG() {
       height: 1.5px;
       border-radius: 50%;
       box-shadow: ${starsMedium};
+      animation: animateParticle 200s linear infinite;
       `;
   }
 
@@ -87,6 +92,7 @@ function initBG() {
       height: 2px;
       border-radius: 50%;
       box-shadow: ${starsLarge};
+      animation: animateParticle 250s linear infinite;
       `;
   }
 }
