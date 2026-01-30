@@ -1,6 +1,30 @@
 {
   "arcs": [
     {
+      "startLat": 37.61881,
+      "startLng": -122.37542,
+      "endLat": 32.89723,
+      "endLng": -97.03769
+    },
+    {
+      "startLat": 32.89723,
+      "startLng": -97.03769,
+      "endLat": 43.13988,
+      "endLng": -89.3375
+    },
+    {
+      "startLat": 32.89723,
+      "startLng": -97.03769,
+      "endLat": 37.36299,
+      "endLng": -121.92862
+    },
+    {
+      "startLat": 43.13988,
+      "startLng": -89.3375,
+      "endLat": 32.89723,
+      "endLng": -97.03769
+    },
+    {
       "startLat": 33.43428,
       "startLng": -112.01158,
       "endLat": 43.13988,
@@ -277,12 +301,6 @@
       "endLng": 126.451
     },
     {
-      "startLat": 37.61881,
-      "startLng": -122.37542,
-      "endLat": 35.7647,
-      "endLng": 140.386
-    },
-    {
       "startLat": 41.97694,
       "startLng": -87.90815,
       "endLat": 37.61881,
@@ -299,6 +317,12 @@
       "startLng": -156.0,
       "endLat": 37.36299,
       "endLng": -121.92862
+    },
+    {
+      "startLat": 21.31782,
+      "startLng": -157.92023,
+      "endLat": 19.72026,
+      "endLng": -155.04847
     },
     {
       "startLat": 37.36299,
@@ -577,12 +601,6 @@
       "endLng": -122.37542
     },
     {
-      "startLat": 40.0801,
-      "startLng": 116.585,
-      "endLat": 47.44989,
-      "endLng": -122.31178
-    },
-    {
       "startLat": 47.44989,
       "startLng": -122.31178,
       "endLat": 40.0801,
@@ -601,6 +619,12 @@
       "endLng": -122.37542
     },
     {
+      "startLat": 31.1434,
+      "startLng": 121.805,
+      "endLat": 49.1939,
+      "endLng": -123.184
+    },
+    {
       "startLat": 49.1939,
       "startLng": -123.184,
       "endLat": 31.1434,
@@ -615,14 +639,24 @@
   ],
   "airports": [
     {
-      "lat": 33.43428,
-      "lng": -112.01158,
-      "iata": "PHX",
-      "icao": "KPHX",
-      "city": "Phoenix",
-      "name": "Phoenix Sky Harbor International Airport",
+      "lat": 37.61881,
+      "lng": -122.37542,
+      "iata": "SFO",
+      "icao": "KSFO",
+      "city": "San Francisco",
+      "name": "San Francisco International Airport",
       "country": "US",
-      "count": 4
+      "count": 37
+    },
+    {
+      "lat": 32.89723,
+      "lng": -97.03769,
+      "iata": "DFW",
+      "icao": "KDFW",
+      "city": "Dallas-Fort Worth",
+      "name": "Dallas-Fort Worth International Airport",
+      "country": "US",
+      "count": 8
     },
     {
       "lat": 43.13988,
@@ -632,7 +666,7 @@
       "city": "Madison",
       "name": "Dane County Regional/Truax Field",
       "country": "US",
-      "count": 8
+      "count": 10
     },
     {
       "lat": 37.36299,
@@ -642,7 +676,17 @@
       "city": "San Jose",
       "name": "Norman Y Mineta San Jose International Airport",
       "country": "US",
-      "count": 10
+      "count": 11
+    },
+    {
+      "lat": 33.43428,
+      "lng": -112.01158,
+      "iata": "PHX",
+      "icao": "KPHX",
+      "city": "Phoenix",
+      "name": "Phoenix Sky Harbor International Airport",
+      "country": "US",
+      "count": 4
     },
     {
       "lat": 32.73356,
@@ -673,16 +717,6 @@
       "name": "Hartsfield - Jackson Atlanta International Airport",
       "country": "US",
       "count": 2
-    },
-    {
-      "lat": 37.61881,
-      "lng": -122.37542,
-      "iata": "SFO",
-      "icao": "KSFO",
-      "city": "San Francisco",
-      "name": "San Francisco International Airport",
-      "country": "US",
-      "count": 37
     },
     {
       "lat": -17.7554,
@@ -765,16 +799,6 @@
       "count": 2
     },
     {
-      "lat": 32.89723,
-      "lng": -97.03769,
-      "iata": "DFW",
-      "icao": "KDFW",
-      "city": "Dallas-Fort Worth",
-      "name": "Dallas-Fort Worth International Airport",
-      "country": "US",
-      "count": 4
-    },
-    {
       "lat": 36.08004,
       "lng": -115.15223,
       "iata": "LAS",
@@ -832,7 +856,7 @@
       "city": "Tokyo",
       "name": "Narita International Airport",
       "country": "JP",
-      "count": 4
+      "count": 3
     },
     {
       "lat": 42.7752,
@@ -872,7 +896,7 @@
       "city": "Beijing",
       "name": "Beijing Capital International Airport",
       "country": "CN",
-      "count": 8
+      "count": 7
     },
     {
       "lat": 19.7,
@@ -892,7 +916,17 @@
       "city": "Honolulu",
       "name": "Daniel K Inouye International Airport",
       "country": "US",
-      "count": 3
+      "count": 4
+    },
+    {
+      "lat": 19.72026,
+      "lng": -155.04847,
+      "iata": "ITO",
+      "icao": "PHTO",
+      "city": "Hilo",
+      "name": "Hilo International Airport",
+      "country": "US",
+      "count": 1
     },
     {
       "lat": 39.99695,
@@ -1052,7 +1086,7 @@
       "city": "Shanghai",
       "name": "Shanghai Pudong International Airport",
       "country": "CN",
-      "count": 5
+      "count": 6
     },
     {
       "lat": 34.4273,
@@ -1092,7 +1126,7 @@
       "city": "Seattle",
       "name": "Seattle-Tacoma International Airport",
       "country": "US",
-      "count": 8
+      "count": 7
     },
     {
       "lat": 61.17408,
@@ -1112,7 +1146,7 @@
       "city": "Richmond",
       "name": "Vancouver International Airport",
       "country": "CA",
-      "count": 3
+      "count": 4
     }
   ]
 }
