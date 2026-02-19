@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: GitHub Metrics
-        uses: lowlighter/metrics@latest
+        uses: lowlighter/metrics@2749fcf2aa6473c7a1d0daafab622b6394d552bd
         with:
           token: ${{ secrets.METRICS_TOKEN }}
           user: ${{ github.repository_owner }}
@@ -26,7 +26,7 @@ jobs:
           plugin_languages_other: yes
 
       - name: Last.fm Metrics
-        uses: lowlighter/metrics@latest
+        uses: lowlighter/metrics@2749fcf2aa6473c7a1d0daafab622b6394d552bd
         with:
           token: NOT_NEEDED
           user: ${{ github.repository_owner }}
@@ -35,10 +35,12 @@ jobs:
           base: ""
           plugin_music: yes
           plugin_music_provider: lastfm
+          plugin_music_mode: top
+          plugin_music_top_type: tracks
+          plugin_music_time_range: short
           plugin_music_user: ${{ vars.LASTFM_USER }}
           plugin_music_token: ${{ secrets.LASTFM_TOKEN }}
           plugin_music_limit: 4
-          plugin_music_played_at: yes
 
       - name: Upload Metrics
         uses: actions/upload-artifact@v4
