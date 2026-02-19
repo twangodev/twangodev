@@ -49,8 +49,6 @@ jobs:
   build:
     needs: metrics
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -70,11 +68,6 @@ jobs:
         env:
           OUTPUT: ../public/globe-arcs.json
           FLIGHT_RADAR_USERNAME: ${{ vars.FLIGHT_RADAR_USERNAME }}
-      - name: Commit Changes
-        uses: stefanzweifel/git-auto-commit-action@v6
-        with:
-          commit_message: "Sync Flight Data"
-          branch: ${{ github.ref_name }}
       - name: Install, build, and upload your site
         uses: withastro/action@v5
 

@@ -1,6 +1,9 @@
 # build output
 dist/
 
+# generated at build time
+public/globe-arcs.json
+
 # generated types
 .astro/
 
