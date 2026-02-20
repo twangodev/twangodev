@@ -9,18 +9,9 @@
 </div>
 
 <br>
+<br>
 
 <div align="center">
-  <table>
-    <tr>
-      <td>
-        <img src="https://twango.dev/metrics/github-metrics.svg" alt="GitHub Metrics" width="400">
-      </td>
-      <td>
-        <img src="https://twango.dev/metrics/github-metrics-wakatime.svg" alt="WakaTime" width="400">
-        <br>
-        <img src="https://twango.dev/metrics/github-metrics-music.svg" alt="Last.fm" width="400">
-      </td>
-    </tr>
-  </table>
+  <img src="https://twango.dev/metrics/github-metrics.svg" alt="GitHub Metrics" width="387">
+  <img src="https://twango.dev/metrics/github-metrics-sidebar.svg" alt="WakaTime & Last.fm" width="400">
 </div>
