@@ -6,11 +6,21 @@
 
   Read more about me at [twango.dev](https://twango.dev/?utm_source=github.com) :)
 
-  ![GitHub Metrics](https://twango.dev/metrics/github-metrics.svg)
-  ![WakaTime](https://twango.dev/metrics/github-metrics-wakatime.svg)
-  ![Last.fm](https://twango.dev/metrics/github-metrics-music.svg)
 </div>
 
+<br>
 
-
-
+<div align="center">
+  <table>
+    <tr>
+      <td>
+        <img src="https://twango.dev/metrics/github-metrics.svg" alt="GitHub Metrics" width="400">
+      </td>
+      <td>
+        <img src="https://twango.dev/metrics/github-metrics-wakatime.svg" alt="WakaTime" width="400">
+        <br>
+        <img src="https://twango.dev/metrics/github-metrics-music.svg" alt="Last.fm" width="400">
+      </td>
+    </tr>
+  </table>
+</div>
