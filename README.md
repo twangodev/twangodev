@@ -5,6 +5,10 @@
   [![Static Badge](https://img.shields.io/badge/GPG-twangodev-blue?logo=gnuprivacyguard)](https://github.com/twangodev.gpg)
 
   Read more about me at [twango.dev](https://twango.dev/?utm_source=github.com) :)
+
+  ![GitHub Metrics](https://twango.dev/metrics/github-metrics.svg)
+  ![WakaTime](https://twango.dev/metrics/github-metrics-wakatime.svg)
+  ![Last.fm](https://twango.dev/metrics/github-metrics-music.svg)
 </div>
 
 
