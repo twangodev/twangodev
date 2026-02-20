@@ -28,14 +28,18 @@ jobs:
           plugin_languages_categories: markup, programming
           plugin_languages_other: yes
 
-      - name: Last.fm Metrics
+      - name: WakaTime & Last.fm Metrics
         uses: lowlighter/metrics@65836723097537a54cd8eb90f61839426b4266b6 # v3.34
         with:
           token: NOT_NEEDED
           user: ${{ github.repository_owner }}
-          filename: github-metrics-music.svg
+          filename: github-metrics-sidebar.svg
           output_action: none
           base: ""
+          plugin_wakatime: yes
+          plugin_wakatime_token: ${{ secrets.WAKATIME_TOKEN }}
+          plugin_wakatime_sections: time, projects, projects-graphs, languages, languages-graphs, editors, os
+          plugin_wakatime_days: 7
           plugin_music: yes
           plugin_music_provider: lastfm
           plugin_music_mode: top
@@ -44,19 +48,6 @@ jobs:
           plugin_music_user: ${{ vars.LASTFM_USER }}
           plugin_music_token: ${{ secrets.LASTFM_TOKEN }}
           plugin_music_limit: 4
-
-      - name: WakaTime Metrics
-        uses: lowlighter/metrics@65836723097537a54cd8eb90f61839426b4266b6 # v3.34
-        with:
-          token: NOT_NEEDED
-          user: ${{ github.repository_owner }}
-          filename: github-metrics-wakatime.svg
-          output_action: none
-          base: ""
-          plugin_wakatime: yes
-          plugin_wakatime_token: ${{ secrets.WAKATIME_TOKEN }}
-          plugin_wakatime_sections: time, projects, projects-graphs, languages, languages-graphs, editors, os
-          plugin_wakatime_days: 7
 
       - name: Upload Metrics
         uses: actions/upload-artifact@v4
