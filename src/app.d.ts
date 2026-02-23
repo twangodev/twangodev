@@ -4,7 +4,9 @@ declare global {
 	namespace App {
 		// interface Error {}
 		// interface Locals {}
-		// interface PageData {}
+		interface PageData {
+			bioExpanded?: boolean;
+		}
 		// interface PageState {}
 		// interface Platform {}
 	}

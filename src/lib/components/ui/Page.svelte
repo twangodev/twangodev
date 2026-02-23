@@ -22,8 +22,8 @@
 	let { width = 'md', center = true, class: className, children }: Props = $props();
 </script>
 
-<main class="flex flex-1 flex-col {center ? 'justify-center' : ''} pb-24 {className}">
+<div class="flex flex-col {center ? 'justify-center' : ''} pb-24 {className}">
 	<div class={widthMap[width]}>
 		{@render children()}
 	</div>
-</main>
+</div>
