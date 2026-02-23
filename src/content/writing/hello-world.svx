@@ -6,6 +6,9 @@ published: true
 tags:
   - meta
 category: general
+series:
+  name: changelog
+  order: 1
 ---
 
 New site just dropped. This is where I'll be writing about things I'm building and things I'm learning. Stay tuned.
