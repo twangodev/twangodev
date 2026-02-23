@@ -41,6 +41,7 @@
 	"dependencies": {
 		"@lucide/svelte": "^0.575.0",
 		"bits-ui": "^2.16.2",
+		"cobe": "^0.6.5",
 		"mode-watcher": "^1.1.0"
 	}
 }
