@@ -1,74 +1,77 @@
 <script module lang="ts">
 	declare const __BUILD_TIME__: string;
+	declare const __COMMIT_HASH__: string;
 </script>
 
 <script lang="ts">
+	import { Row, Stack, Logo, Text, Link, LinkGroup, StatusBadge } from './ui';
+	import { scramble } from '$lib/actions/scramble';
+
 	const buildDate = new Date(__BUILD_TIME__);
-	const buildStr = buildDate.toLocaleDateString('en-US', {
+	const formattedStr = buildDate.toLocaleDateString('en-US', {
 		month: 'short',
 		day: 'numeric',
 		year: 'numeric'
 	});
+	const isoStr = __BUILD_TIME__.replace(/\.\d{3}Z$/, 'Z');
+	const commitHash = __COMMIT_HASH__;
+
+	const maxLen = Math.max(isoStr.length, formattedStr.length);
+	let buildHovered = $state(false);
 </script>
 
-<footer class="flex items-end justify-between font-mono text-xs tracking-wide text-muted">
-	<div class="flex flex-col gap-3">
-		<div class="flex items-baseline gap-2">
-			<span class="text-lg font-semibold text-text">td.</span>
-			<span>twango.dev</span>
-		</div>
-		<div class="flex items-center gap-3">
-			<a
-				href="https://github.com/twangodev/twangodev/blob/main/LICENSE"
-				target="_blank"
-				rel="noopener noreferrer"
-				class="transition-colors hover:text-accent"
-			>AGPL-3.0</a>
-			<span class="select-none">·</span>
-			<span>built {buildStr}</span>
-		</div>
-	</div>
-	<div class="flex flex-col items-end gap-3">
-		<div class="flex items-center gap-3">
-			<a
-				href="https://github.com/twangodev"
-				target="_blank"
-				rel="noopener noreferrer"
-				class="transition-colors hover:text-accent"
-			>github</a>
-			<span class="select-none">·</span>
-			<a
-				href="https://linkedin.com/in/jamesding365"
-				target="_blank"
-				rel="noopener noreferrer"
-				class="transition-colors hover:text-accent"
-			>linkedin</a>
-			<span class="select-none">·</span>
-			<a
-				href="https://x.com/twangodev"
-				target="_blank"
-				rel="noopener noreferrer"
-				class="transition-colors hover:text-accent"
-			>x</a>
-			<span class="select-none">·</span>
-			<a href="mailto:james@twango.dev" class="transition-colors hover:text-accent">email</a>
-		</div>
-		<div class="flex items-center gap-3">
-			<a
-				href="https://status.twango.dev"
-				target="_blank"
-				rel="noopener noreferrer"
-				class="inline-flex items-center gap-2 transition-colors hover:text-accent"
-			>
-				<img
-					src="https://kener.twango.dev/badge/_/dot?animate=ping"
-					alt="Service status"
-					class="h-3 w-3 translate-y-px sepia-[.2] saturate-[.7]"
-				/>
-				service status
-			</a>
-			<span class="select-none">·</span>
-			<a href="/security" class="transition-colors hover:text-accent">security</a>
-		</div>
-	</div>
+{#snippet license()}
+	<Link href="https://github.com/twangodev/twangodev/blob/main/LICENSE">AGPL-3.0</Link>
+{/snippet}
+{#snippet built()}
+	<Text as="span" variant="muted" size="xs">
+		<!-- svelte-ignore a11y_no_static_element_interactions -->
+		<span
+			class="inline-flex cursor-default"
+			onmouseenter={() => (buildHovered = true)}
+			onmouseleave={() => (buildHovered = false)}
+		>
+			{#if commitHash}{commitHash} @&nbsp;{/if}<span
+				use:scramble={{ text: buildHovered ? formattedStr : isoStr }}
+				style="display: inline-block; min-width: {maxLen}ch"
+			></span>
+		</span>
+	</Text>
+{/snippet}
+{#snippet github()}
+	<Link href="https://github.com/twangodev">github</Link>
+{/snippet}
+{#snippet linkedin()}
+	<Link href="https://linkedin.com/in/jamesding365">linkedin</Link>
+{/snippet}
+{#snippet x()}
+	<Link href="https://x.com/twangodev">x</Link>
+{/snippet}
+{#snippet email()}
+	<Link href="mailto:james@twango.dev">email</Link>
+{/snippet}
+{#snippet status()}
+	<Link href="https://status.twango.dev" class="inline-flex items-center gap-2">
+		<StatusBadge />
+		service status
+	</Link>
+{/snippet}
+{#snippet security()}
+	<Link href="/security">security</Link>
+{/snippet}
+
+<footer>
+	<Row justify="between" align="end" class="font-mono text-xs tracking-wide text-muted">
+		<Stack gap="md">
+			<Row gap="sm" align="baseline">
+				<Logo size="lg" />
+				<Text as="span" variant="muted" size="xs">twango.dev</Text>
+			</Row>
+			<LinkGroup items={[license, built]} />
+		</Stack>
+		<Stack gap="md" align="end">
+			<LinkGroup items={[github, linkedin, x, email]} />
+			<LinkGroup items={[status, security]} />
+		</Stack>
+	</Row>
 </footer>

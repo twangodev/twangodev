@@ -1,8 +1,11 @@
 <script lang="ts">
 	import ThemeToggle from './ThemeToggle.svelte';
+	import { Row, Logo } from './ui';
 </script>
 
-<header class="flex items-center justify-between font-mono text-sm tracking-wide">
-	<a href="/" class="text-muted transition-colors hover:text-text">td.</a>
-	<ThemeToggle />
+<header>
+	<Row align="center" justify="between" class="font-mono text-sm tracking-wide">
+		<Logo size="sm" href="/" />
+		<ThemeToggle />
+	</Row>
 </header>
