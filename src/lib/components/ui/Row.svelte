@@ -42,7 +42,9 @@
 </script>
 
 <div
-	class="flex {gapMap[gap]} {align ? alignMap[align] : ''} {justify ? justifyMap[justify] : ''} {className}"
+	class="flex {gapMap[gap]} {align ? alignMap[align] : ''} {justify
+		? justifyMap[justify]
+		: ''} {className}"
 >
 	{@render children()}
 </div>

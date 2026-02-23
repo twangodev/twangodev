@@ -14,7 +14,7 @@
 
 	let userOverride = $state<boolean | null>(null);
 
-	const pageWantsExpanded = $derived(page.data.bioExpanded ?? (page.url.pathname === '/'));
+	const pageWantsExpanded = $derived(page.data.bioExpanded ?? page.url.pathname === '/');
 	const collapsed = $derived(userOverride !== null ? userOverride : !pageWantsExpanded);
 
 	afterNavigate(() => {
@@ -37,9 +37,7 @@
 	}
 
 	const isRoot = $derived(page.url.pathname === '/');
-	const gridColumns = $derived(
-		isRoot ? '1fr 2fr' : collapsed ? '0fr 0fr 1fr' : '1fr 3.5rem 2fr'
-	);
+	const gridColumns = $derived(isRoot ? '1fr 2fr' : collapsed ? '0fr 0fr 1fr' : '1fr 3.5rem 2fr');
 </script>
 
 <ModeWatcher defaultMode="dark" />
@@ -57,7 +55,10 @@
 			</div>
 		</aside>
 		{#if !isRoot}
-			<div class="hidden md:flex items-center justify-center select-none overflow-hidden transition-opacity duration-300" class:opacity-0={collapsed}>
+			<div
+				class="hidden items-center justify-center overflow-hidden transition-opacity duration-300 select-none md:flex"
+				class:opacity-0={collapsed}
+			>
 				<button
 					onclick={toggle}
 					aria-label="Collapse bio"

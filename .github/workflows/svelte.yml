@@ -35,7 +35,7 @@ jobs:
           user: ${{ github.repository_owner }}
           filename: github-metrics-sidebar.svg
           output_action: none
-          base: ""
+          base: ''
           plugin_wakatime: yes
           plugin_wakatime_token: ${{ secrets.WAKATIME_TOKEN }}
           plugin_wakatime_sections: time, projects, projects-graphs, languages, languages-graphs, editors, os

@@ -41,7 +41,9 @@
 </script>
 
 <div
-	class="flex flex-col {gapMap[gap]} {align ? alignMap[align] : ''} {justify ? justifyMap[justify] : ''} {className}"
+	class="flex flex-col {gapMap[gap]} {align ? alignMap[align] : ''} {justify
+		? justifyMap[justify]
+		: ''} {className}"
 >
 	{@render children()}
 </div>

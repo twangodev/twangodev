@@ -38,7 +38,10 @@ export const scramble: Action<HTMLElement, ScrambleParams> = (node, params) => {
 			ignore = new Set([' '])
 		} = p;
 
-		if (typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+		if (
+			typeof window !== 'undefined' &&
+			window.matchMedia('(prefers-reduced-motion: reduce)').matches
+		) {
 			node.textContent = text;
 			return;
 		}

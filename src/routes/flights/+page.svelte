@@ -47,11 +47,15 @@
 	let rayHeads = $derived(flights.map((_: unknown, i: number) => i / flights.length));
 
 	// Stable random hue per flight, computed once from index
-	const flightHues = $derived(
-		flights.map((_: unknown, i: number) => (i * 137.508) % 360)
-	);
+	const flightHues = $derived(flights.map((_: unknown, i: number) => (i * 137.508) % 360));
 
-	function drawArcs(ctx: CanvasRenderingContext2D, w: number, h: number, phi: number, theta: number) {
+	function drawArcs(
+		ctx: CanvasRenderingContext2D,
+		w: number,
+		h: number,
+		phi: number,
+		theta: number
+	) {
 		ctx.clearRect(0, 0, w, h);
 		ctx.save();
 		ctx.scale(DPR, DPR);
@@ -146,7 +150,14 @@
 	// Project airport to screen without hard occlusion cutoff.
 	// Returns null only for fully behind the globe; otherwise returns depth
 	// that can go slightly negative (for smooth fade at limb).
-	function projectAirport(lat: number, lng: number, phi: number, theta: number, cssW: number, cssH: number) {
+	function projectAirport(
+		lat: number,
+		lng: number,
+		phi: number,
+		theta: number,
+		cssW: number,
+		cssH: number
+	) {
 		const latRad = (lat * Math.PI) / 180;
 		const lngRad = (lng * Math.PI) / 180 - Math.PI;
 
@@ -178,7 +189,13 @@
 		return { x, y, depth };
 	}
 
-	function drawLabels(ctx: CanvasRenderingContext2D, w: number, h: number, phi: number, theta: number) {
+	function drawLabels(
+		ctx: CanvasRenderingContext2D,
+		w: number,
+		h: number,
+		phi: number,
+		theta: number
+	) {
 		const cssW = w / DPR;
 		const cssH = h / DPR;
 
@@ -346,10 +363,9 @@
 
 <div class="flex flex-1 items-center justify-center">
 	<div class="relative aspect-square w-full max-w-5xl">
-		<canvas bind:this={canvasEl} style="cursor: grab" class="absolute inset-0 h-full w-full"></canvas>
-		<canvas
-			bind:this={overlayEl}
-			class="pointer-events-none absolute inset-0 h-full w-full"
+		<canvas bind:this={canvasEl} style="cursor: grab" class="absolute inset-0 h-full w-full"
+		></canvas>
+		<canvas bind:this={overlayEl} class="pointer-events-none absolute inset-0 h-full w-full"
 		></canvas>
 	</div>
 </div>

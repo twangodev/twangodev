@@ -14,4 +14,4 @@
 	}: Props = $props();
 </script>
 
-<img {src} {alt} class="h-3 w-3 translate-y-px sepia-[.2] saturate-[.7] {className}" />
+<img {src} {alt} class="h-3 w-3 translate-y-px saturate-[.7] sepia-[.2] {className}" />

@@ -23,7 +23,7 @@
 	</div>
 
 	<!-- Monospace cascade pattern -->
-	<div class="hidden flex-1 select-none items-center justify-center overflow-hidden md:flex">
+	<div class="hidden flex-1 items-center justify-center overflow-hidden select-none md:flex">
 		<div class="flex flex-col gap-4 font-mono text-2xl tracking-widest text-muted">
 			{#each { length: lines } as _, i (i)}
 				{@const vertFade = 1 - Math.abs(i - lines / 2) / (lines / 2)}
