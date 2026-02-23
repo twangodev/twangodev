@@ -72,7 +72,9 @@
 {/snippet}
 
 <footer>
-	<Row justify="between" align="end" class="font-mono text-xs tracking-wide text-muted">
+	<div
+		class="flex flex-col gap-6 font-mono text-xs tracking-wide text-muted sm:flex-row sm:items-end sm:justify-between"
+	>
 		<Stack gap="md">
 			<Row gap="sm" align="baseline">
 				<Logo size="lg" />
@@ -80,9 +82,9 @@
 			</Row>
 			<LinkGroup items={[license, built]} />
 		</Stack>
-		<Stack gap="md" align="end">
+		<Stack gap="md" class="sm:items-end">
 			<LinkGroup items={[github, linkedin, x, email]} />
 			<LinkGroup items={[status, security]} />
 		</Stack>
-	</Row>
+	</div>
 </footer>
