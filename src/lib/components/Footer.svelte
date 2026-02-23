@@ -51,7 +51,7 @@
 	<Link href="mailto:james@twango.dev">email</Link>
 {/snippet}
 {#snippet status()}
-	<Link href="https://status.twango.dev" class="inline-flex items-center gap-2">
+	<Link href="https://status.twango.dev" icon={false} class="inline-flex items-center gap-2">
 		<StatusBadge />
 		service status
 	</Link>

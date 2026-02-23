@@ -62,7 +62,7 @@
 			{@render children()}
 		</main>
 	</div>
-	{#if !isRoot}
+	{#if !isRoot && !page.error}
 		<BioToggle {collapsed} ontoggle={toggle} />
 	{/if}
 	<Footer />
