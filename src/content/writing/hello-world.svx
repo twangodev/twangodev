@@ -1,0 +1,11 @@
+---
+title: Hello World
+description: First post. New site, new writing section.
+date: '2026-02-23'
+published: true
+tags:
+  - meta
+category: general
+---
+
+New site just dropped. This is where I'll be writing about things I'm building and things I'm learning. Stay tuned.

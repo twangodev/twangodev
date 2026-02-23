@@ -24,10 +24,15 @@
 	<Link href="https://github.com/twangodev/twangodev/blob/main/LICENSE">AGPL-3.0</Link>
 {/snippet}
 {#snippet built()}
-	<Text as="span" variant="muted" size="xs">
+	<Link
+		href={commitHash
+			? `https://github.com/twangodev/twangodev/commit/${commitHash}`
+			: 'https://github.com/twangodev/twangodev'}
+		icon={false}
+	>
 		<!-- svelte-ignore a11y_no_static_element_interactions -->
 		<span
-			class="inline-flex cursor-default"
+			class="inline-flex"
 			onmouseenter={() => (buildHovered = true)}
 			onmouseleave={() => (buildHovered = false)}
 		>
@@ -36,7 +41,7 @@
 				style="display: inline-block; min-width: {maxLen}ch"
 			></span>
 		</span>
-	</Text>
+	</Link>
 {/snippet}
 {#snippet github()}
 	<Link href="https://github.com/twangodev">github</Link>
@@ -59,13 +64,19 @@
 {#snippet security()}
 	<Link href="/security">security</Link>
 {/snippet}
+{#snippet twangodev()}
+	<Text as="span" variant="muted" size="xs">twango.dev</Text>
+{/snippet}
+{#snippet rss()}
+	<Link href="/rss.xml">rss</Link>
+{/snippet}
 
 <footer>
 	<Row justify="between" align="end" class="font-mono text-xs tracking-wide text-muted">
 		<Stack gap="md">
 			<Row gap="sm" align="baseline">
 				<Logo size="lg" />
-				<Text as="span" variant="muted" size="xs">twango.dev</Text>
+				<LinkGroup items={[twangodev, rss]} />
 			</Row>
 			<LinkGroup items={[license, built]} />
 		</Stack>

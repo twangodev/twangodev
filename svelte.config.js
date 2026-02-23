@@ -1,5 +1,9 @@
 import { mdsvex } from 'mdsvex';
 import adapter from '@sveltejs/adapter-static';
+import { dirname, join } from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
@@ -11,7 +15,13 @@ const config = {
 			handleHttpError: 'warn'
 		}
 	},
-	preprocess: [mdsvex()],
+	preprocess: [
+		mdsvex({
+			layout: {
+				writing: join(__dirname, 'src/lib/components/writing/PostLayout.svelte')
+			}
+		})
+	],
 	extensions: ['.svelte', '.svx']
 };
 
