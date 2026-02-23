@@ -1,2 +1,55 @@
 @import 'tailwindcss';
 @plugin '@tailwindcss/typography';
+
+@font-face {
+	font-family: 'Overused Grotesk';
+	src: url('/fonts/OverusedGrotesk-VF.woff2') format('woff2');
+	font-weight: 300 900;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Overused Grotesk';
+	src: url('/fonts/OverusedGroteskItalic-VF.woff2') format('woff2');
+	font-weight: 400;
+	font-style: italic;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'JetBrains Mono';
+	src: url('/fonts/JetBrainsMono-VF.woff2') format('woff2');
+	font-weight: 100 800;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'JetBrains Mono';
+	src: url('/fonts/JetBrainsMono-Italic-VF.woff2') format('woff2');
+	font-weight: 100 800;
+	font-style: italic;
+	font-display: swap;
+}
+
+@theme {
+	--font-sans: 'Overused Grotesk', system-ui, sans-serif;
+	--font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+	--color-bg: #f8f6f1;
+	--color-surface: #efede7;
+	--color-text: #1a1916;
+	--color-muted: #8a8578;
+	--color-subtle: #e2dfd8;
+	--color-accent: #167bff;
+}
+
+:root.dark {
+	--color-bg: #1a1916;
+	--color-surface: #23221e;
+	--color-text: #e8e5df;
+	--color-muted: #7a7568;
+	--color-subtle: #2e2d28;
+	--color-accent: #167bff;
+}

@@ -3,7 +3,12 @@ import adapter from '@sveltejs/adapter-static';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
-	kit: { adapter: adapter() },
+	kit: {
+		adapter: adapter(),
+		prerender: {
+			handleHttpError: 'warn'
+		}
+	},
 	preprocess: [mdsvex()],
 	extensions: ['.svelte', '.svx']
 };
