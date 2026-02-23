@@ -1,11 +1,11 @@
 name: Build and Deploy
 
 on:
-  push:  # Run on all pushes to any branch
-  pull_request:  # Run on all pull requests
+  push:
+  pull_request:
   workflow_dispatch:
   schedule:
-    - cron: '0 */3 * * *' # Runs every 3 hours
+    - cron: '0 */3 * * *'
 
 jobs:
   metrics:
@@ -53,17 +53,11 @@ jobs:
           name: metrics
           path: /metrics_renders/
 
-  build:
-    needs: metrics
+  arc-gen:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v6
-      - name: Download Metrics
-        uses: actions/download-artifact@v4
-        with:
-          name: metrics
-          path: public/metrics/
       - name: Install uv
         uses: astral-sh/setup-uv@v7
       - name: Install Dependencies
@@ -73,10 +67,40 @@ jobs:
         run: uv run main.py
         working-directory: ./arc-gen
         env:
-          OUTPUT: ../public/globe-arcs.json
+          OUTPUT: ../globe-arcs.json
           FLIGHT_RADAR_USERNAME: ${{ vars.FLIGHT_RADAR_USERNAME }}
-      - name: Install, build, and upload your site
-        uses: withastro/action@v5
+      - name: Upload Arc Data
+        uses: actions/upload-artifact@v4
+        with:
+          name: arc-data
+          path: globe-arcs.json
+
+  build:
+    needs: [metrics, arc-gen]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Download Metrics
+        uses: actions/download-artifact@v4
+        with:
+          name: metrics
+          path: static/metrics/
+      - name: Download Arc Data
+        uses: actions/download-artifact@v4
+        with:
+          name: arc-data
+          path: static/
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+      - name: Install Dependencies
+        run: bun install --frozen-lockfile
+      - name: Build
+        run: bun run build
+      - name: Upload Pages Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: build
 
   deploy:
     needs: build
