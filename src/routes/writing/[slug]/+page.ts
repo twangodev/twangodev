@@ -8,7 +8,6 @@ export const load = ({ params }) => {
 	const seriesPosts = post.metadata.series ? getPostsBySeries(post.metadata.series.name) : [];
 
 	return {
-		bioExpanded: true,
 		metadata: post.metadata,
 		component: post.component,
 		seriesPosts
