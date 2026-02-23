@@ -26,11 +26,11 @@
 		{href}
 		target="_blank"
 		rel="noopener noreferrer"
-		class="{baseStyles} {underline ? underlineStyles : ''} {showIcon ? 'group/link inline-flex items-center gap-1' : ''} {className}"
+		class="{baseStyles} {underline ? underlineStyles : ''} {showIcon ? 'group/link inline-flex items-center' : ''} {className}"
 	>
 		{@render children()}
 		{#if showIcon}
-			<span class="inline-flex w-0 overflow-hidden opacity-0 transition-all duration-200 group-hover/link:w-3 group-hover/link:opacity-100">
+			<span class="inline-flex w-0 overflow-hidden opacity-0 transition-all duration-200 group-hover/link:ml-1 group-hover/link:w-3 group-hover/link:opacity-100">
 				<ExternalLink size={12} strokeWidth={1.5} class="shrink-0" />
 			</span>
 		{/if}
