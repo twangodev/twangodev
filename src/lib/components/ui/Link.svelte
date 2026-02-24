@@ -18,7 +18,7 @@
 	const showIcon = $derived(icon ?? isExternal);
 
 	const baseStyles = 'transition-colors hover:text-accent';
-	const underlineStyles = 'underline decoration-subtle underline-offset-2';
+	const underlineStyles = 'underline decoration-muted underline-offset-2';
 </script>
 
 {#if isExternal}
