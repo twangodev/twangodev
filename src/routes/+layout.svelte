@@ -46,10 +46,10 @@
 	<link rel="alternate" type="application/rss+xml" title="twango.dev" href="/rss.xml" />
 </svelte:head>
 
-<div class="flex min-h-svh flex-col bg-bg px-6 py-6 text-text antialiased sm:px-10 md:px-16">
+<div class="flex min-h-svh flex-col gap-10 bg-bg px-6 py-6 text-text antialiased sm:px-10 md:gap-12 md:px-16">
 	<Header />
 	<div
-		class="bio-layout flex flex-1 flex-col md:grid md:items-stretch md:gap-12"
+		class="bio-layout flex flex-1 flex-col gap-8 md:grid md:items-stretch md:gap-12"
 		style:grid-template-columns={gridColumns}
 	>
 		<aside class="flex flex-col justify-center overflow-hidden">
