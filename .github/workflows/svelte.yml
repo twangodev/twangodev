@@ -48,7 +48,7 @@ jobs:
           plugin_music_limit: 4
 
       - name: Upload Metrics
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: metrics
           path: /metrics_renders/
@@ -70,7 +70,7 @@ jobs:
           OUTPUT: ../globe-arcs.json
           FLIGHT_RADAR_USERNAME: ${{ vars.FLIGHT_RADAR_USERNAME }}
       - name: Upload Arc Data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: arc-data
           path: globe-arcs.json
@@ -82,12 +82,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
       - name: Download Metrics
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: metrics
           path: static/metrics/
       - name: Download Arc Data
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: arc-data
           path: static/
@@ -98,7 +98,7 @@ jobs:
       - name: Build
         run: bun run build
       - name: Upload Pages Artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: build
 
