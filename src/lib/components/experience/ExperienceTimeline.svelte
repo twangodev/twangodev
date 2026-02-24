@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { ExperienceMetadata } from '$lib/types/experience';
+	import { SvelteSet } from 'svelte/reactivity';
 	import ExperienceEntry from './ExperienceEntry.svelte';
 	import CommitRow from './CommitRow.svelte';
 
@@ -20,7 +21,7 @@
 		'#f47067'
 	];
 
-	let expandedSlug = $state<string | null>(null);
+	const expandedSlugs = new SvelteSet<string>();
 
 	function getColor(exp: ExperienceMetadata, index: number): string {
 		return exp.color ?? COLORS[index % COLORS.length];
@@ -34,7 +35,11 @@
 	const initialHash = generateHash();
 
 	function toggle(slug: string) {
-		expandedSlug = expandedSlug === slug ? null : slug;
+		if (expandedSlugs.has(slug)) {
+			expandedSlugs.delete(slug);
+		} else {
+			expandedSlugs.add(slug);
+		}
 	}
 </script>
 
@@ -45,7 +50,7 @@
 			color={getColor(exp, i)}
 			hash={hashes[i]}
 			index={i}
-			expanded={expandedSlug === exp.slug}
+			expanded={expandedSlugs.has(exp.slug)}
 			ontoggle={() => toggle(exp.slug)}
 			isLast={false}
 		/>
