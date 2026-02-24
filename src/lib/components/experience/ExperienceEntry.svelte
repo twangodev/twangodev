@@ -91,17 +91,33 @@
 				{#if !ongoing}
 					<div class="flex" style:height="{CURVE_H}px">
 						<div class="relative shrink-0" style:width="{EXPANDED_W}px">
-							<div class="absolute top-0 bottom-0" style:left="{MAIN_X - 1}px; width: 2px; background: var(--color-muted)"></div>
-							<svg width={EXPANDED_W} height={CURVE_H} class="absolute top-0 left-0 block" aria-hidden="true">
+							<div
+								class="absolute top-0 bottom-0"
+								style:left="{MAIN_X - 1}px; width: 2px; background: var(--color-muted)"
+							></div>
+							<svg
+								width={EXPANDED_W}
+								height={CURVE_H}
+								class="absolute top-0 left-0 block"
+								aria-hidden="true"
+							>
 								<defs>
-									<linearGradient id="branch-in-{index}" gradientUnits="userSpaceOnUse" x1={BRANCH_X} y1={CURVE_H} x2={MAIN_X} y2="0">
+									<linearGradient
+										id="branch-in-{index}"
+										gradientUnits="userSpaceOnUse"
+										x1={BRANCH_X}
+										y1={CURVE_H}
+										x2={MAIN_X}
+										y2="0"
+									>
 										<stop offset="0%" stop-color={color} stop-opacity="1" />
 										<stop offset="75%" stop-color={color} stop-opacity="1" />
 										<stop offset="100%" stop-color={color} stop-opacity="0" />
 									</linearGradient>
 								</defs>
 								<path
-									d="M {BRANCH_X} {CURVE_H} C {BRANCH_X} {CURVE_H / 2}, {MAIN_X} {CURVE_H / 2}, {MAIN_X} 0"
+									d="M {BRANCH_X} {CURVE_H} C {BRANCH_X} {CURVE_H / 2}, {MAIN_X} {CURVE_H /
+										2}, {MAIN_X} 0"
 									fill="none"
 									stroke="url(#branch-in-{index})"
 									stroke-width="2"
@@ -115,15 +131,23 @@
 				<!-- Role/tags row -->
 				<div class="flex">
 					<div class="relative shrink-0" style:width="{EXPANDED_W}px">
-						<div class="absolute top-0 bottom-0" style:left="{MAIN_X - 1}px; width: 2px; background: var(--color-muted)"></div>
+						<div
+							class="absolute top-0 bottom-0"
+							style:left="{MAIN_X - 1}px; width: 2px; background: var(--color-muted)"
+						></div>
 						{#if !ongoing}
-							<div class="absolute top-0 bottom-0" style:left="{BRANCH_X - 1}px; width: 2px; background: {color}"></div>
+							<div
+								class="absolute top-0 bottom-0"
+								style:left="{BRANCH_X - 1}px; width: 2px; background: {color}"
+							></div>
 						{/if}
 					</div>
 					<div class="flex min-h-7 flex-wrap items-center gap-2 pr-4">
 						<span class="font-sans text-sm font-medium text-text">{experience.role}</span>
 						{#each experience.tags as tag (tag)}
-							<span class="inline-block rounded-full border border-subtle px-2 py-0.5 font-mono text-xs text-muted">
+							<span
+								class="inline-block rounded-full border border-subtle px-2 py-0.5 font-mono text-xs text-muted"
+							>
 								{tag}
 							</span>
 						{/each}
@@ -134,11 +158,19 @@
 				{#each experience.commits as commit, ci (ci)}
 					<div class="commit-line flex" style:--commit-delay="{ci * 60 + 100}ms">
 						<div class="relative shrink-0" style:width="{EXPANDED_W}px">
-							<div class="absolute top-0 bottom-0" style:left="{MAIN_X - 1}px; width: 2px; background: var(--color-muted)"></div>
-							<div class="absolute bottom-0" style:left="{BRANCH_X - 1}px; width: 2px; top: {ongoing && ci === 0 ? '50%' : '0'}; background: {color}"></div>
+							<div
+								class="absolute top-0 bottom-0"
+								style:left="{MAIN_X - 1}px; width: 2px; background: var(--color-muted)"
+							></div>
+							<div
+								class="absolute bottom-0"
+								style:left="{BRANCH_X - 1}px; width: 2px; top: {ongoing && ci === 0 ? '50%' : '0'};
+								background: {color}"
+							></div>
 							<div
 								class="branch-dot absolute top-1/2 rounded-full"
-								style:left="{BRANCH_X - COMMIT_R}px; width: {COMMIT_R * 2}px; height: {COMMIT_R * 2}px; background: {color}; transform: translateY(-50%)"
+								style:left="{BRANCH_X - COMMIT_R}px; width: {COMMIT_R * 2}px; height: {COMMIT_R *
+									2}px; background: {color}; transform: translateY(-50%)"
 								style:--branch-dot-delay="{ci * 60 + 150}ms"
 							></div>
 						</div>
@@ -152,17 +184,33 @@
 				<!-- Branch-out curve at bottom -->
 				<div class="flex" style:height="{CURVE_H}px">
 					<div class="relative shrink-0" style:width="{EXPANDED_W}px">
-						<div class="absolute top-0 bottom-0" style:left="{MAIN_X - 1}px; width: 2px; background: var(--color-muted)"></div>
-						<svg width={EXPANDED_W} height={CURVE_H} class="absolute top-0 left-0 block" aria-hidden="true">
+						<div
+							class="absolute top-0 bottom-0"
+							style:left="{MAIN_X - 1}px; width: 2px; background: var(--color-muted)"
+						></div>
+						<svg
+							width={EXPANDED_W}
+							height={CURVE_H}
+							class="absolute top-0 left-0 block"
+							aria-hidden="true"
+						>
 							<defs>
-								<linearGradient id="branch-out-{index}" gradientUnits="userSpaceOnUse" x1={MAIN_X} y1={CURVE_H} x2={BRANCH_X} y2="0">
+								<linearGradient
+									id="branch-out-{index}"
+									gradientUnits="userSpaceOnUse"
+									x1={MAIN_X}
+									y1={CURVE_H}
+									x2={BRANCH_X}
+									y2="0"
+								>
 									<stop offset="0%" stop-color={color} stop-opacity="0" />
 									<stop offset="25%" stop-color={color} stop-opacity="1" />
 									<stop offset="100%" stop-color={color} stop-opacity="1" />
 								</linearGradient>
 							</defs>
 							<path
-								d="M {MAIN_X} {CURVE_H} C {MAIN_X} {CURVE_H / 2}, {BRANCH_X} {CURVE_H / 2}, {BRANCH_X} 0"
+								d="M {MAIN_X} {CURVE_H} C {MAIN_X} {CURVE_H / 2}, {BRANCH_X} {CURVE_H /
+									2}, {BRANCH_X} 0"
 								fill="none"
 								stroke="url(#branch-out-{index})"
 								stroke-width="2"

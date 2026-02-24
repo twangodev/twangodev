@@ -54,7 +54,12 @@
 	>
 		<aside class="flex flex-col justify-center overflow-hidden">
 			<div class="md:min-w-80">
-				<Bio compact={collapsed} />
+				<Bio
+					compact={collapsed}
+					heading={page.data.bioHeading}
+					description={page.data.bioDescription}
+					details={page.data.bioDetails}
+				/>
 			</div>
 		</aside>
 		{#if !isRoot}
