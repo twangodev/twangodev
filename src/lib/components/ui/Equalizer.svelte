@@ -1,3 +1,13 @@
+<script lang="ts">
+	import type { ClassValue } from 'svelte/elements';
+
+	interface Props {
+		class?: ClassValue;
+	}
+
+	let { class: className }: Props = $props();
+</script>
+
 <style>
 	.equalizer {
 		display: flex;
@@ -47,7 +57,7 @@
 	}
 </style>
 
-<span class="equalizer" aria-hidden="true">
+<span class="equalizer {className}" aria-hidden="true">
 	<span></span>
 	<span></span>
 	<span></span>
