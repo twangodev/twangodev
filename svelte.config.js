@@ -18,7 +18,8 @@ const config = {
 	preprocess: [
 		mdsvex({
 			layout: {
-				writing: join(__dirname, 'src/lib/components/writing/PostLayout.svelte')
+				writing: join(__dirname, 'src/lib/components/writing/PostLayout.svelte'),
+				experience: join(__dirname, 'src/lib/components/experience/ExperienceLayout.svelte')
 			}
 		})
 	],

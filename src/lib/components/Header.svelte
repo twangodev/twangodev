@@ -7,6 +7,10 @@
 	<Link href="/writing" class="text-muted">writing</Link>
 {/snippet}
 
+{#snippet experience()}
+	<Link href="/experience" class="text-muted">experience</Link>
+{/snippet}
+
 {#snippet flights()}
 	<Link href="/flights" class="text-muted">flights</Link>
 {/snippet}
@@ -15,7 +19,7 @@
 	<Row align="center" justify="between" class="font-mono text-sm tracking-wide">
 		<Logo size="sm" href="/" />
 		<Row align="center" class="gap-8">
-			<LinkGroup items={[writing, flights]} />
+			<LinkGroup items={[writing, experience, flights]} />
 			<ThemeToggle />
 		</Row>
 	</Row>

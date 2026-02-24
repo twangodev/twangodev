@@ -1,0 +1,19 @@
+---
+layout: experience
+company: iD Tech
+role: ML Instructor
+dateStart: '2025-07-01'
+dateEnd: '2025-08-01'
+logo: idtech.svg
+url: https://idtech.com
+tags:
+  - machine-learning
+  - teaching
+  - python
+published: true
+color: '#96c93c'
+commits:
+  - Teach Python, Linux CLI, CUDA programming, and embedded systems across 15 Jetson Orin Nano workstations
+  - Deliver neural network theory and CNN architectures, adapting complex math for varying skill levels
+  - Orchestrate real-time computer vision projects (YOLO/OpenCV) ensuring NVIDIA certification standards
+---

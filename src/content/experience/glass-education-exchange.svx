@@ -1,0 +1,20 @@
+---
+layout: experience
+company: Glass Education Exchange
+role: Full Stack Software Engineer
+dateStart: '2025-03-01'
+dateEnd: '2026-02-23'
+logo: geex.png
+url: https://geex.glass
+tags:
+  - full-stack
+  - infrastructure
+  - devops
+published: true
+color: '#f5a623'
+commits:
+  - Architect and build pay-walled, multi-tenant content platform with SAML SSO + ASN IP auth layers
+  - Migrate 50 orgs (12K WAUs) with minimal downtime
+  - Deploy infrastructure services on Oracle Cloud with tiered caching via Docker Compose
+  - Build multi-environment CI/CD pipelines and Grafana dashboards for real-time metrics and alerts
+---

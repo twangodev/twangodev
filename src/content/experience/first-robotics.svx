@@ -1,0 +1,18 @@
+---
+layout: experience
+company: 'FIRST Robotics 2204'
+role: Captain / SW Lead
+dateStart: '2020-09-01'
+dateEnd: '2024-05-01'
+logo: first.svg
+url: https://firstinspires.org
+tags:
+  - robotics
+  - leadership
+published: true
+color: '#ec1c24'
+commits:
+  - Lead team meetings and drive critical decision-making in a fast-paced environment
+  - Manage 30+ students across Design, Fabrication, Electrical, Software, and Business teams
+  - Raise $35K+ and contribute 1.2K+ hours to achieve competition outcomes
+---

@@ -7,10 +7,15 @@
 	const label = $derived(mode.current === 'light' ? 'Switch to dark mode' : 'Switch to light mode');
 
 	let showChallenge = $state(false);
+	const CHALLENGE_KEY = 'light-mode-challenge-completed';
 
 	function handleClick() {
 		if (mode.current === 'dark') {
-			showChallenge = true;
+			if (typeof localStorage !== 'undefined' && localStorage.getItem(CHALLENGE_KEY)) {
+				toggleMode();
+			} else {
+				showChallenge = true;
+			}
 		} else {
 			toggleMode();
 		}
@@ -29,6 +34,9 @@
 <LightModeChallenge
 	bind:open={showChallenge}
 	onconfirm={() => {
+		if (typeof localStorage !== 'undefined') {
+			localStorage.setItem(CHALLENGE_KEY, 'true');
+		}
 		toggleMode();
 		// Delay close to let mode-watcher's requestAnimationFrame-based
 		// DOM update complete before the dialog transition starts

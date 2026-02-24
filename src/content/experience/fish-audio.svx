@@ -1,0 +1,17 @@
+---
+layout: experience
+company: Fish Audio
+role: Founding Engineer
+dateStart: '2025-08-01'
+logo: fish.svg
+url: https://fish.audio
+tags:
+  - systems
+  - ai
+  - infrastructure
+published: true
+color: '#4a4a4a'
+commits:
+  - Build core AI audio infrastructure for fish.audio
+  - Focus on delivery, growth, and usage of SOTA open source TTS models
+---

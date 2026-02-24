@@ -1,0 +1,17 @@
+---
+layout: experience
+company: UC Berkeley (EECS)
+role: Academic Intern
+dateStart: '2023-06-01'
+dateEnd: '2023-08-01'
+logo: cal-seal.svg
+url: https://eecs.berkeley.edu
+tags:
+  - teaching
+  - cs61a
+published: true
+color: '#003262'
+commits:
+  - 'Assist in labs and give mini-lectures for CS61A: Structure and Interpretation of Computer Programs'
+  - Support one of Berkeley's largest undergrad offerings enrolling 1.5K+ students
+---

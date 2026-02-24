@@ -1,0 +1,17 @@
+---
+layout: experience
+company: Wisconsin Athletics
+role: AV Technician
+dateStart: '2024-08-01'
+dateEnd: '2025-12-31'
+logo: badgers.jpeg
+url: https://uwbadgers.com
+tags:
+  - audio
+  - live-events
+published: true
+color: '#c5050c'
+commits:
+  - Engineer live audio mixing for events with 97,000+ capacity at Camp Randall and Kohl Center
+  - Manage AV setups including Dante on A&H/Yamaha mixers and Roadhog lighting controllers
+---

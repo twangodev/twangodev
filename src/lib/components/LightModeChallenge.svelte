@@ -69,6 +69,7 @@
 <DialogRoot
 	{open}
 	onOpenChange={(value) => {
+		open = value;
 		if (!value) reset();
 	}}
 >
