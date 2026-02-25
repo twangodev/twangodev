@@ -1,7 +1,11 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import createGlobe from 'cobe';
-	import { projectArc } from '$lib/globe/projection';
+	import {
+		precomputeArcPoints,
+		projectPrecomputedArc,
+		type ScreenPoint
+	} from '$lib/globe/projection';
 
 	const { data } = $props();
 	const flights = $derived(data.arcs);
@@ -19,7 +23,7 @@
 		return [(n >> 16) / 255, ((n >> 8) & 0xff) / 255, (n & 0xff) / 255];
 	}
 
-	// Cached theme colors, updated each frame
+	// Cached theme colors, updated via MutationObserver on class changes
 	let themeBase: [number, number, number] = [0.137, 0.133, 0.118];
 	let themeGlow: [number, number, number] = [0.102, 0.098, 0.086];
 	let themeMarker: [number, number, number] = [0.478, 0.459, 0.408];
@@ -41,13 +45,36 @@
 	}
 
 	const RAY_LENGTH = 0.25; // fraction of arc that the ray tail covers
-	const RAY_SPEED = 0.004; // progress per frame (0→1)
+	const RAY_SPEED = 0.004; // progress per frame (0->1)
 
 	// Stagger each flight's start so they don't all animate in sync
 	let rayHeads = $derived(flights.map((_: unknown, i: number) => i / flights.length));
 
-	// Stable random hue per flight, computed once from index
-	const flightHues = $derived(flights.map((_: unknown, i: number) => (i * 137.508) % 360));
+	// Pre-compute solid HSL color string per flight (use globalAlpha for opacity)
+	const flightColors = $derived(
+		flights.map((_: unknown, i: number) => `hsl(${(i * 137.508) % 360}, 80%, 65%)`)
+	);
+
+	// Pre-compute 3D arc geometry (rotation-independent) -- recomputed only when flights change
+	const arcGeometry = $derived(
+		flights.map((arc: { from: [number, number]; to: [number, number] }) => {
+			const points3D = precomputeArcPoints(arc);
+			const buffer: (ScreenPoint | null)[] = new Array(points3D.length).fill(null);
+			return { points3D, buffer };
+		})
+	);
+
+	// Text measurement cache -- IATA codes are static, font never changes
+	const textWidthCache = new Map<string, number>();
+
+	function getTextWidth(ctx: CanvasRenderingContext2D, text: string): number {
+		let w = textWidthCache.get(text);
+		if (w === undefined) {
+			w = ctx.measureText(text).width;
+			textWidthCache.set(text, w);
+		}
+		return w;
+	}
 
 	function drawArcs(
 		ctx: CanvasRenderingContext2D,
@@ -62,6 +89,13 @@
 
 		const cssW = w / DPR;
 		const cssH = h / DPR;
+		ctx.lineWidth = 1.5;
+
+		// Pre-compute trig values once per frame
+		const cp = Math.cos(phi),
+			sp = Math.sin(phi);
+		const ct = Math.cos(theta),
+			st = Math.sin(theta);
 
 		for (let f = 0; f < flights.length; f++) {
 			// Advance ray head, loop back to 0
@@ -69,32 +103,56 @@
 			const head = rayHeads[f];
 			const tail = head - RAY_LENGTH;
 
-			const points = projectArc(flights[f], phi, theta, cssW, cssH);
-			const steps = points.length - 1;
+			const { points3D, buffer } = arcGeometry[f];
 
-			// Draw segment-by-segment so each segment gets its own opacity
+			// Early-out: skip arcs where both endpoints are behind the globe
+			const first = points3D[0];
+			const last = points3D[points3D.length - 1];
+			const depthFirst = first.wx * (-sp * ct) + first.wy * st + first.wz * (cp * ct);
+			const depthLast = last.wx * (-sp * ct) + last.wy * st + last.wz * (cp * ct);
+			if (depthFirst < -0.2 && depthLast < -0.2) continue;
+
+			projectPrecomputedArc(points3D, cp, sp, ct, st, cssW, cssH, buffer);
+			const steps = buffer.length - 1;
+
+			ctx.strokeStyle = flightColors[f];
+
+			// Batch consecutive segments with the same quantized alpha
+			let curAlpha = -1;
+			let pathOpen = false;
+
 			for (let i = 0; i < steps; i++) {
-				const a = points[i];
-				const b = points[i + 1];
-				if (!a || !b) continue;
+				const a = buffer[i];
+				const b = buffer[i + 1];
+				if (!a || !b) {
+					if (pathOpen) {
+						ctx.stroke();
+						pathOpen = false;
+						curAlpha = -1;
+					}
+					continue;
+				}
 
 				const tMid = (i + 0.5) / steps;
-
-				// Ray visibility: segment is visible if it's between tail and head
 				if (tMid < tail || tMid > head) continue;
 
-				// Brightness ramps up toward the head
 				const rayAlpha = (tMid - tail) / RAY_LENGTH;
-				// Combine with depth fade near the limb
 				const alpha = rayAlpha * (0.15 + 0.85 * Math.min(a.depth, b.depth));
+				const qAlpha = Math.round(alpha * 20) / 20;
 
-				ctx.beginPath();
+				if (qAlpha !== curAlpha) {
+					if (pathOpen) ctx.stroke();
+					ctx.globalAlpha = qAlpha;
+					ctx.beginPath();
+					curAlpha = qAlpha;
+					pathOpen = true;
+				}
+
 				ctx.moveTo(a.x, a.y);
 				ctx.lineTo(b.x, b.y);
-				ctx.strokeStyle = `hsla(${flightHues[f]}, 80%, 65%, ${alpha})`;
-				ctx.lineWidth = 1.5;
-				ctx.stroke();
 			}
+
+			if (pathOpen) ctx.stroke();
 		}
 
 		ctx.restore();
@@ -112,7 +170,7 @@
 		[0, 10, 'center']
 	];
 
-	// Sticky offset index per airport — only changes when a much better option exists
+	// Sticky offset index per airport -- only changes when a much better option exists
 	let chosenOffsets: number[] = [];
 
 	function totalOverlap(
@@ -213,6 +271,9 @@
 		// Labels fade in over this depth range (0 = limb)
 		const fadeStart = 0.15;
 
+		// Set base text color once; use globalAlpha for per-label opacity
+		ctx.fillStyle = `rgb(${themeText})`;
+
 		const placed: { x: number; y: number; w: number; h: number }[] = [];
 
 		for (let i = 0; i < airports.length; i++) {
@@ -224,7 +285,7 @@
 			const alpha = Math.min(1, Math.max(0, pt.depth / fadeStart));
 			if (alpha < 0.01) continue;
 
-			const lw = ctx.measureText(a.iata).width + padding * 2;
+			const lw = getTextWidth(ctx, a.iata) + padding * 2;
 			const lh = fontSize + padding * 2;
 
 			// Score current sticky choice
@@ -252,7 +313,7 @@
 			const rect = labelRect(pt.x, pt.y, chosenOffsets[i], lw, lh, fontSize);
 			placed.push(rect);
 
-			ctx.fillStyle = `rgba(${themeText}, ${alpha})`;
+			ctx.globalAlpha = alpha;
 			ctx.fillText(a.iata, rect.x + padding, rect.y + lh / 2);
 		}
 
@@ -272,7 +333,19 @@
 
 		const overlayCtx = overlayEl.getContext('2d')!;
 
+		// Read theme once on mount
 		readTheme();
+
+		// Re-read theme only when dark/light mode toggles (class attribute changes)
+		const themeObserver = new MutationObserver(() => readTheme());
+		themeObserver.observe(document.documentElement, {
+			attributes: true,
+			attributeFilter: ['class']
+		});
+
+		// Track overlay canvas dimensions to avoid resetting every frame
+		let overlayW = 0;
+		let overlayH = 0;
 
 		const onPointerDown = (e: PointerEvent) => {
 			pointerInteracting = e.clientX - pointerMovement;
@@ -322,8 +395,6 @@
 			glowColor: themeGlow,
 			markers,
 			onRender: (state) => {
-				readTheme();
-
 				if (pointerInteracting === null) phi += 0.0018;
 				dragPhi += (pointerMovement / 200 - dragPhi) * 0.1;
 				dragTheta += (pointerMovementY / 300 - dragTheta) * 0.1;
@@ -341,9 +412,13 @@
 				state.width = w;
 				state.height = h;
 
-				// Sync overlay canvas size
-				overlayEl.width = w;
-				overlayEl.height = h;
+				// Only reset overlay canvas dimensions when they actually change
+				if (w !== overlayW || h !== overlayH) {
+					overlayEl.width = w;
+					overlayEl.height = h;
+					overlayW = w;
+					overlayH = h;
+				}
 
 				const effectivePhi = phi + dragPhi;
 				drawArcs(overlayCtx, w, h, effectivePhi, effectiveTheta);
@@ -351,6 +426,7 @@
 			}
 		});
 		return () => {
+			themeObserver.disconnect();
 			canvasEl.removeEventListener('pointerdown', onPointerDown);
 			canvasEl.removeEventListener('pointerup', onPointerUp);
 			canvasEl.removeEventListener('pointerout', onPointerUp);

@@ -159,3 +159,92 @@ export function projectArc(
 	}
 	return points;
 }
+
+/** 3D world-space point with pre-computed inverse radius for depth. */
+export interface ArcPoint3D {
+	wx: number;
+	wy: number;
+	wz: number;
+	invRadius: number;
+}
+
+/**
+ * Pre-compute rotation-independent 3D Cartesian coordinates for an arc's
+ * sample points. Call once per arc at init time; reuse the result every frame.
+ */
+export function precomputeArcPoints(arc: Arc, steps: number = 60): ArcPoint3D[] {
+	const dist = angularDistance(arc.from, arc.to);
+	const peakAlt = 0.68 * (dist / Math.PI);
+
+	const points: ArcPoint3D[] = new Array(steps + 1);
+	for (let i = 0; i <= steps; i++) {
+		const t = i / steps;
+		const [lat, lng] = interpolateGreatCircle(arc.from, arc.to, t);
+		const altitude = peakAlt * 4 * t * (1 - t);
+		const radius = 1 + altitude;
+
+		const latRad = (lat * Math.PI) / 180;
+		const lngRad = (lng * Math.PI) / 180 - Math.PI;
+		const cosLat = Math.cos(latRad);
+
+		points[i] = {
+			wx: -cosLat * Math.cos(lngRad) * radius,
+			wy: Math.sin(latRad) * radius,
+			wz: cosLat * Math.sin(lngRad) * radius,
+			invRadius: 1 / radius
+		};
+	}
+	return points;
+}
+
+/**
+ * Project pre-computed 3D arc points to screen coordinates using the
+ * current rotation. Writes into `buffer` to avoid per-frame allocations.
+ */
+export function projectPrecomputedArc(
+	points3D: ArcPoint3D[],
+	cp: number,
+	sp: number,
+	ct: number,
+	st: number,
+	width: number,
+	height: number,
+	buffer: (ScreenPoint | null)[]
+): void {
+	const globeRadius = 0.8;
+	const size = Math.min(width, height);
+	const cx = width / 2;
+	const cy = height / 2;
+	const halfSize = globeRadius * (size / 2);
+	const invAspect = height / width;
+
+	for (let i = 0; i < points3D.length; i++) {
+		const p = points3D[i];
+
+		const vx = p.wx * cp + p.wz * sp;
+		const vy = p.wx * sp * st + p.wy * ct + p.wz * (-cp * st);
+		const vz = p.wx * (-sp * ct) + p.wy * st + p.wz * (cp * ct);
+
+		const projR2 = vx * vx + vy * vy;
+		if (projR2 <= 1) {
+			const surfaceZ = Math.sqrt(1 - projR2);
+			if (vz < surfaceZ) {
+				buffer[i] = null;
+				continue;
+			}
+		}
+
+		const screenX = cx + vx * invAspect * halfSize;
+		const screenY = cy - vy * halfSize;
+		const depth = Math.max(0, vz * p.invRadius);
+
+		const existing = buffer[i];
+		if (existing !== null && existing !== undefined) {
+			existing.x = screenX;
+			existing.y = screenY;
+			existing.depth = depth;
+		} else {
+			buffer[i] = { x: screenX, y: screenY, depth };
+		}
+	}
+}
