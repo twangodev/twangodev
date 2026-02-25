@@ -12,30 +12,8 @@
 </script>
 
 <Heading>{heading ?? 'James Ding'}</Heading>
-{#if compact}
-	<div class="hidden md:contents">
-		<Text variant="body" size="lg" class="mt-4">
-			{description ?? 'Second-year student at UW\u2013Madison studying computer science.'}
-		</Text>
-		<Divider />
-		<DetailList>
-			{#if details}
-				{#each details as detail}
-					<DetailItem label={detail.label}
-						>{detail.value}{#if detail.annotation}
-							<span class="ml-1 text-muted">{detail.annotation}</span>{/if}</DetailItem
-					>
-				{/each}
-			{:else}
-				<DetailItem label="currently">
-					founding engineer at <Link href="https://fish.audio" underline>fish audio</Link>
-				</DetailItem>
-				<DetailItem label="location">san francisco bay area / madison, wi</DetailItem>
-				<DetailItem label="interests">systems, web, open source</DetailItem>
-			{/if}
-		</DetailList>
-	</div>
-{:else}
+
+{#snippet content()}
 	<Text variant="body" size="lg" class="mt-4">
 		{description ?? 'Second-year student at UW\u2013Madison studying computer science.'}
 	</Text>
@@ -53,7 +31,15 @@
 				founding engineer at <Link href="https://fish.audio" underline>fish audio</Link>
 			</DetailItem>
 			<DetailItem label="location">san francisco bay area / madison, wi</DetailItem>
-			<DetailItem label="interests">systems, web, open source</DetailItem>
+			<DetailItem label="interests">systems, infra, open source</DetailItem>
 		{/if}
 	</DetailList>
+{/snippet}
+
+{#if compact}
+	<div class="hidden md:contents">
+		{@render content()}
+	</div>
+{:else}
+	{@render content()}
 {/if}
