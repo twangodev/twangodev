@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Heading } from '$lib/components/ui';
-	import { ExperienceTimeline } from '$lib/components/experience';
+	import { GitGraph } from '$lib/components/timeline';
 
 	const { data } = $props();
 </script>
@@ -13,5 +13,5 @@
 <div class="flex flex-col gap-6 pb-24">
 	<Heading level={2}>Experience</Heading>
 	<p class="font-mono text-xs tracking-wide text-muted">$ git log --graph --oneline --all</p>
-	<ExperienceTimeline experiences={data.experiences} />
+	<GitGraph entries={data.entries} />
 </div>

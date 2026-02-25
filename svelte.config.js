@@ -19,7 +19,8 @@ const config = {
 		mdsvex({
 			layout: {
 				writing: join(__dirname, 'src/lib/components/writing/PostLayout.svelte'),
-				experience: join(__dirname, 'src/lib/components/experience/ExperienceLayout.svelte')
+				experience: join(__dirname, 'src/lib/components/experience/ExperienceLayout.svelte'),
+				project: join(__dirname, 'src/lib/components/timeline/ProjectLayout.svelte')
 			}
 		})
 	],
