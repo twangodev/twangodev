@@ -12,6 +12,6 @@
 
 <div class="flex flex-col gap-6 pb-24">
 	<Heading level={2}>Experience</Heading>
-	<p class="font-mono text-xs tracking-wide text-muted">$ git log --graph --oneline --all</p>
+	<p class="font-mono text-xs tracking-wide text-muted">$ git log --graph --all --decorate</p>
 	<GitGraph entries={data.entries} />
 </div>

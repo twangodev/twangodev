@@ -63,9 +63,11 @@
 	{/each}
 {/snippet}
 
-{#snippet dot(lane, radius, color)}
+{#snippet dot(lane, radius, color, expand)}
 	<div
 		class="absolute rounded-full"
+		class:page-dot={!expand}
+		class:expand-dot={expand}
 		style:left="{laneX(lane) - radius}px"
 		style:top="50%"
 		style:width="{radius * 2}px"
@@ -86,13 +88,14 @@
 	{@const dateEndStr = dateEnd ? toDateStr(dateEnd) : 'Present'}
 
 	<button
-		class="group flex w-full cursor-pointer items-center text-left"
+		class="merge-row group flex w-full cursor-pointer items-center text-left"
 		onclick={() => ontoggle(entry.data.slug)}
 		aria-expanded={expanded}
+		style:--row-index={row.rowIndex}
 	>
 		<div class="relative shrink-0" style:width="{svgWidth}px" style:min-height="{ROW_HEIGHT}px">
 			{@render laneLines(row.activeLanes, row.branchLane, row.isFirst ? row.baseLane : undefined)}
-			{@render dot(row.baseLane, DOT_RADIUS, row.color)}
+			{@render dot(row.baseLane, DOT_RADIUS, row.color, false)}
 		</div>
 		<div class="flex min-w-0 flex-1 items-center gap-3 py-2">
 			{#if logo}
@@ -136,6 +139,7 @@
 					{/if}
 				{/each}
 				<path
+					class="branch-draw"
 					d={branchOutPath(row.baseLane, row.branchLane, CURVE_HEIGHT)}
 					fill="none"
 					stroke={row.color}
@@ -154,7 +158,7 @@
 		<div class="relative shrink-0" style:width="{svgWidth}px">
 			{@render laneLines(row.activeLanes, undefined, undefined)}
 		</div>
-		<div class="flex min-h-7 flex-wrap items-center gap-2 py-1 pr-4">
+		<div class="metadata-content flex min-h-7 flex-wrap items-center gap-2 py-1 pr-4">
 			{#if subtitle}
 				<span class="font-sans text-sm font-medium text-text">{subtitle}</span>
 			{/if}
@@ -169,7 +173,7 @@
 	</div>
 
 {:else if row.type === 'commit'}
-	<div class="flex">
+	<div class="commit-row flex" style:--commit-delay="{row.commitIndex * 60 + 80}ms">
 		<div class="relative shrink-0" style:width="{svgWidth}px" style:min-height="{ROW_HEIGHT}px">
 			{#if row.ongoing && row.isFirst}
 				{@render laneLines(row.activeLanes, row.branchLane, undefined)}
@@ -192,7 +196,7 @@
 			{:else}
 				{@render laneLines(row.activeLanes, undefined, undefined)}
 			{/if}
-			{@render dot(row.branchLane, COMMIT_DOT_RADIUS, row.color)}
+			{@render dot(row.branchLane, COMMIT_DOT_RADIUS, row.color, true)}
 		</div>
 		<div class="flex min-h-7 items-baseline gap-2 py-1 pr-4">
 			<span class="shrink-0 font-mono text-xs text-muted">{row.commitHash}</span>
@@ -218,12 +222,14 @@
 					{/if}
 				{/each}
 				<path
+					class="branch-draw"
 					d={forkPath(row.baseLane, row.branchLane, CURVE_HEIGHT)}
 					fill="none"
 					stroke={row.color}
 					stroke-width={LINE_WIDTH}
 				/>
 				<circle
+					class="fork-dot"
 					cx={laneX(row.baseLane)}
 					cy={CURVE_HEIGHT + DOT_OFFSET}
 					r={DOT_RADIUS}
@@ -241,7 +247,7 @@
 	</div>
 
 {:else if row.type === 'initial'}
-	<div class="flex items-center">
+	<div class="initial-row flex items-center" style:--row-index={row.rowIndex}>
 		<div class="relative shrink-0" style:width="{svgWidth}px" style:min-height="{ROW_HEIGHT}px">
 			<div
 				class="absolute top-0"
@@ -250,7 +256,7 @@
 				style:height="50%"
 				style:background="var(--color-muted)"
 			></div>
-			{@render dot(0, 3, 'var(--color-muted)')}
+			{@render dot(0, 3, 'var(--color-muted)', false)}
 		</div>
 		<div class="flex min-w-0 flex-1 items-center gap-3 py-2">
 			<span class="shrink-0 font-mono text-xs text-muted">{row.hash}</span>
@@ -258,3 +264,113 @@
 		</div>
 	</div>
 {/if}
+
+<style>
+	/* === Page Load Animations === */
+	.merge-row {
+		animation: fadeIn 400ms ease-out both;
+		animation-delay: calc(var(--row-index) * 60ms);
+	}
+
+	.initial-row {
+		animation: fadeIn 400ms ease-out both;
+		animation-delay: calc(var(--row-index) * 60ms);
+	}
+
+	.page-dot {
+		scale: 0;
+		animation: dotPopIn 300ms ease-out forwards;
+		animation-delay: calc(var(--row-index) * 60ms + 150ms);
+	}
+
+	/* === Expand Animations === */
+
+	/* SVG curve stroke draw */
+	.branch-draw {
+		stroke-dasharray: 500;
+		stroke-dashoffset: 500;
+		animation: strokeDraw 500ms ease-out forwards 50ms;
+	}
+
+	/* Metadata content fade */
+	.metadata-content {
+		opacity: 0;
+		animation: fadeIn 300ms ease-out forwards 80ms;
+	}
+
+	/* Commit row slide-in */
+	.commit-row {
+		opacity: 0;
+		transform: translateX(-4px);
+		animation: commitFadeIn 250ms ease-out forwards;
+		animation-delay: var(--commit-delay);
+	}
+
+	/* Commit dot pop-in */
+	.expand-dot {
+		scale: 0;
+		animation: dotPopIn 250ms ease-out forwards;
+		animation-delay: calc(var(--commit-delay) + 30ms);
+	}
+
+	/* Fork dot pop-in */
+	.fork-dot {
+		scale: 0;
+		animation: dotPopIn 300ms ease-out forwards 250ms;
+	}
+
+	/* === Keyframes === */
+	@keyframes fadeIn {
+		from {
+			opacity: 0;
+			transform: translateY(6px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	@keyframes strokeDraw {
+		to {
+			stroke-dashoffset: 0;
+		}
+	}
+
+	@keyframes dotPopIn {
+		to {
+			scale: 1;
+		}
+	}
+
+	@keyframes commitFadeIn {
+		to {
+			opacity: 1;
+			transform: translateX(0);
+		}
+	}
+
+	/* === Reduced Motion === */
+	@media (prefers-reduced-motion: reduce) {
+		.merge-row,
+		.initial-row,
+		.metadata-content,
+		.commit-row {
+			animation: none;
+			opacity: 1;
+			transform: none;
+		}
+
+		.page-dot,
+		.expand-dot,
+		.fork-dot {
+			animation: none;
+			scale: 1;
+		}
+
+		.branch-draw {
+			animation: none;
+			stroke-dashoffset: 0;
+		}
+	}
+</style>

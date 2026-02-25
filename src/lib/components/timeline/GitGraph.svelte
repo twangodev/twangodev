@@ -3,6 +3,9 @@
 	import { entrySlug } from '$lib/types/timeline';
 	import { computeGraphLayout, getMaxLane } from '$lib/timeline/layout';
 	import { SvelteSet } from 'svelte/reactivity';
+	import { flip } from 'svelte/animate';
+	import { cubicOut } from 'svelte/easing';
+	import { onMount } from 'svelte';
 	import GitGraphRow from './GitGraphRow.svelte';
 
 	interface Props {
@@ -15,6 +18,11 @@
 
 	const layout = $derived(computeGraphLayout(entries, expandedSlugs));
 	const maxLane = $derived(getMaxLane(layout));
+
+	let mounted = $state(false);
+	onMount(() => {
+		mounted = true;
+	});
 
 	function toggle(slug: string) {
 		if (expandedSlugs.has(slug)) {
@@ -38,11 +46,13 @@
 
 <div class="flex flex-col">
 	{#each layout as row, i (rowKey(row, i))}
-		<GitGraphRow
-			{row}
-			{maxLane}
-			ontoggle={toggle}
-			expanded={row.type === 'merge' ? expandedSlugs.has(entrySlug(row.entry)) : false}
-		/>
+		<div animate:flip={{ duration: mounted ? 300 : 0, easing: cubicOut }}>
+			<GitGraphRow
+				{row}
+				{maxLane}
+				ontoggle={toggle}
+				expanded={row.type === 'merge' ? expandedSlugs.has(entrySlug(row.entry)) : false}
+			/>
+		</div>
 	{/each}
 </div>
