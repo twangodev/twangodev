@@ -54,7 +54,7 @@
 		class="bio-layout flex flex-1 flex-col gap-8 md:grid md:items-stretch md:gap-12"
 		style:grid-template-columns={gridColumns}
 	>
-		<aside class="flex flex-col justify-center overflow-hidden">
+		<aside class="relative z-10 flex flex-col justify-center">
 			<div class="md:min-w-80">
 				<Bio
 					compact={collapsed}
