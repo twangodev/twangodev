@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { GraphRow } from '$lib/timeline/layout';
+	import type { GraphRow, LaneSnapshot } from '$lib/timeline/layout';
 	import {
 		entryLabel,
 		entrySubtitle,
@@ -54,7 +54,11 @@
 	}
 </script>
 
-{#snippet laneLines(activeLanes, skipLane, skipLaneAbove)}
+{#snippet laneLines(
+	activeLanes: LaneSnapshot,
+	skipLane: number | null | undefined,
+	skipLaneAbove: number | undefined
+)}
 	{#each [...activeLanes] as [lane, info] (lane)}
 		{#if lane !== skipLane}
 			{#if info.ongoing}
@@ -79,7 +83,7 @@
 	{/each}
 {/snippet}
 
-{#snippet dot(lane, radius, color, expand)}
+{#snippet dot(lane: number, radius: number, color: string, expand: boolean)}
 	<div
 		class="absolute rounded-full"
 		class:page-dot={!expand}
