@@ -124,14 +124,19 @@ function sameMonth(a: Date, b: Date): boolean {
 	return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth();
 }
 
-function snapshotLanes(lanes: (string | null)[], colorMap: Map<string, string>, ongoingSet: Set<string>): LaneSnapshot {
+function snapshotLanes(
+	lanes: (string | null)[],
+	colorMap: Map<string, string>,
+	ongoingSet: Set<string>
+): LaneSnapshot {
 	const snapshot: LaneSnapshot = new Map();
 	for (let i = 0; i < lanes.length; i++) {
 		const slug = lanes[i];
 		if (slug !== null) {
 			snapshot.set(i, {
 				slug,
-				color: slug === 'main' ? 'var(--color-muted)' : (colorMap.get(slug) ?? 'var(--color-muted)'),
+				color:
+					slug === 'main' ? 'var(--color-muted)' : (colorMap.get(slug) ?? 'var(--color-muted)'),
 				ongoing: ongoingSet.has(slug)
 			});
 		}
@@ -205,9 +210,7 @@ export function computeGraphLayout(
 			}
 		}
 
-		toEmit.sort(
-			(a, b) => entryDateStart(b.entry).getTime() - entryDateStart(a.entry).getTime()
-		);
+		toEmit.sort((a, b) => entryDateStart(b.entry).getTime() - entryDateStart(a.entry).getTime());
 
 		for (const fork of toEmit) {
 			rows.push({

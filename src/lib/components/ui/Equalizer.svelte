@@ -8,6 +8,12 @@
 	let { class: className }: Props = $props();
 </script>
 
+<span class="equalizer {className}" aria-hidden="true">
+	<span></span>
+	<span></span>
+	<span></span>
+</span>
+
 <style>
 	.equalizer {
 		display: flex;
@@ -56,9 +62,3 @@
 		}
 	}
 </style>
-
-<span class="equalizer {className}" aria-hidden="true">
-	<span></span>
-	<span></span>
-	<span></span>
-</span>

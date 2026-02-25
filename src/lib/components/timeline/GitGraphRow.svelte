@@ -1,7 +1,23 @@
 <script lang="ts">
 	import type { GraphRow } from '$lib/timeline/layout';
-	import { entryLabel, entrySubtitle, entryLogo, entryTags, entryDateStart, entryDateEnd } from '$lib/types/timeline';
-	import { laneX, graphWidth, ROW_HEIGHT, CURVE_HEIGHT, DOT_RADIUS, COMMIT_DOT_RADIUS, LINE_WIDTH, SPACER_HEIGHT } from '$lib/timeline/constants';
+	import {
+		entryLabel,
+		entrySubtitle,
+		entryLogo,
+		entryTags,
+		entryDateStart,
+		entryDateEnd
+	} from '$lib/types/timeline';
+	import {
+		laneX,
+		graphWidth,
+		ROW_HEIGHT,
+		CURVE_HEIGHT,
+		DOT_RADIUS,
+		COMMIT_DOT_RADIUS,
+		LINE_WIDTH,
+		SPACER_HEIGHT
+	} from '$lib/timeline/constants';
 	import { ChevronDown } from '@lucide/svelte';
 
 	interface Props {
@@ -36,7 +52,6 @@
 		const mid = endY / 2;
 		return `M ${x1} 0 C ${x1} ${mid}, ${x2} ${mid}, ${x2} ${endY}`;
 	}
-
 </script>
 
 {#snippet laneLines(activeLanes, skipLane, skipLaneAbove)}
@@ -48,7 +63,8 @@
 					style:left="{laneX(lane) - 1}px"
 					style:width="{LINE_WIDTH}px"
 					style:top={skipLaneAbove !== undefined && lane === skipLaneAbove ? '50%' : '0'}
-					style:background="repeating-linear-gradient(to bottom, {info.color} 0px, {info.color} 4px, transparent 4px, transparent 7px)"
+					style:background="repeating-linear-gradient(to bottom, {info.color} 0px, {info.color} 4px, transparent
+					4px, transparent 7px)"
 				></div>
 			{:else}
 				<div
@@ -120,11 +136,16 @@
 			/>
 		</div>
 	</button>
-
 {:else if row.type === 'branch-out'}
 	<div class="flex">
 		<div class="relative shrink-0" style:width="{svgWidth}px" style:height="{CURVE_HEIGHT}px">
-			<svg width={svgWidth} height={CURVE_HEIGHT} class="absolute inset-0 block" style:overflow="visible" aria-hidden="true">
+			<svg
+				width={svgWidth}
+				height={CURVE_HEIGHT}
+				class="absolute inset-0 block"
+				style:overflow="visible"
+				aria-hidden="true"
+			>
 				{#each [...row.activeLanes] as [lane, info] (lane)}
 					{#if lane !== row.branchLane}
 						<line
@@ -148,7 +169,6 @@
 			</svg>
 		</div>
 	</div>
-
 {:else if row.type === 'metadata'}
 	{@const entry = row.entry}
 	{@const subtitle = entrySubtitle(entry)}
@@ -171,7 +191,6 @@
 			{/each}
 		</div>
 	</div>
-
 {:else if row.type === 'commit'}
 	<div class="commit-row flex" style:--commit-delay="{row.commitIndex * 60 + 80}ms">
 		<div class="relative shrink-0" style:width="{svgWidth}px" style:min-height="{ROW_HEIGHT}px">
@@ -183,7 +202,8 @@
 					style:left="{laneX(row.branchLane) - 1}px"
 					style:width="{LINE_WIDTH}px"
 					style:height="50%"
-					style:background="repeating-linear-gradient(to bottom, {row.color} 0px, {row.color} 4px, transparent 4px, transparent 7px)"
+					style:background="repeating-linear-gradient(to bottom, {row.color} 0px, {row.color} 4px, transparent
+					4px, transparent 7px)"
 				></div>
 				<!-- solid line from dot to bottom -->
 				<div
@@ -203,11 +223,16 @@
 			<span class="text-sm leading-snug text-text/80">{row.commitMessage}</span>
 		</div>
 	</div>
-
 {:else if row.type === 'fork'}
 	<div class="flex">
 		<div class="relative shrink-0" style:width="{svgWidth}px" style:height="{CURVE_HEIGHT}px">
-			<svg width={svgWidth} height={CURVE_HEIGHT} class="absolute inset-0 block" style:overflow="visible" aria-hidden="true">
+			<svg
+				width={svgWidth}
+				height={CURVE_HEIGHT}
+				class="absolute inset-0 block"
+				style:overflow="visible"
+				aria-hidden="true"
+			>
 				{#each [...row.activeLanes] as [lane, info] (lane)}
 					{#if lane !== row.branchLane}
 						<line
@@ -238,14 +263,12 @@
 			</svg>
 		</div>
 	</div>
-
 {:else if row.type === 'spacer'}
 	<div class="flex">
 		<div class="relative shrink-0" style:width="{svgWidth}px" style:height="{SPACER_HEIGHT}px">
 			{@render laneLines(row.activeLanes, undefined, undefined)}
 		</div>
 	</div>
-
 {:else if row.type === 'initial'}
 	<div class="initial-row flex items-center" style:--row-index={row.rowIndex}>
 		<div class="relative shrink-0" style:width="{svgWidth}px" style:min-height="{ROW_HEIGHT}px">
