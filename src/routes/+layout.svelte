@@ -40,7 +40,7 @@
 	const gridColumns = $derived(isRoot ? '1fr 2fr' : collapsed ? '0fr 0fr 1fr' : '1fr 3.5rem 2fr');
 </script>
 
-<ModeWatcher defaultMode="dark" />
+<ModeWatcher defaultMode="dark" disableHeadScriptInjection />
 <svelte:head>
 	<link rel="icon" href={favicon} />
 	<link rel="alternate" type="application/rss+xml" title="twango.dev" href="/rss.xml" />
