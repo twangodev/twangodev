@@ -51,11 +51,11 @@
 >
 	<Header />
 	<div
-		class="bio-layout flex flex-1 flex-col gap-8 md:grid md:items-stretch md:gap-12"
+		class="bio-layout flex flex-1 flex-col gap-8 lg:grid lg:items-stretch lg:gap-12"
 		style:grid-template-columns={gridColumns}
 	>
-		<aside class="relative z-10 flex flex-col justify-center">
-			<div class="md:min-w-80">
+		<aside class="flex flex-col justify-center overflow-hidden">
+			<div class="lg:min-w-80">
 				<Bio
 					compact={collapsed}
 					heading={page.data.bioHeading}
@@ -66,7 +66,7 @@
 		</aside>
 		{#if !isRoot}
 			<div
-				class="hidden items-center justify-center overflow-hidden transition-opacity duration-300 select-none md:flex"
+				class="hidden items-center justify-center overflow-hidden transition-opacity duration-300 select-none lg:flex"
 				class:opacity-0={collapsed}
 			>
 				<button
@@ -79,7 +79,7 @@
 				</button>
 			</div>
 		{/if}
-		<Divider width="full" spacing="md" class="md:hidden" />
+		<Divider width="full" spacing="md" class="lg:hidden" />
 		<main class="flex flex-1 flex-col justify-center">
 			{@render children()}
 		</main>
