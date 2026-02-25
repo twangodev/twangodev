@@ -11,7 +11,7 @@ tags:
   - teaching
   - python
 published: true
-color: '#96c93c'
+color: '#94d500'
 commits:
   - Teach Python, Linux CLI, CUDA programming, and embedded systems across 15 Jetson Orin Nano workstations
   - Deliver neural network theory and CNN architectures, adapting complex math for varying skill levels

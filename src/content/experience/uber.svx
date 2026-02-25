@@ -11,7 +11,7 @@ tags:
   - devops
   - cloud
 published: true
-color: '#5e5e5e'
+color: '#000000'
 commits:
   - Deploy Dockerized backend services on Google Cloud (Compute Engine, Cloud Run) for internal tooling
   - Design and implement E2E CI/CD pipelines automating build, test, and deployment workflows
