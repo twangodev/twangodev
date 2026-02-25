@@ -24,11 +24,24 @@
 		mounted = true;
 	});
 
+	const allSlugs = $derived(entries.map(entrySlug));
+	const allExpanded = $derived(allSlugs.length > 0 && allSlugs.every((s) => expandedSlugs.has(s)));
+
 	function toggle(slug: string) {
 		if (expandedSlugs.has(slug)) {
 			expandedSlugs.delete(slug);
 		} else {
 			expandedSlugs.add(slug);
+		}
+	}
+
+	function toggleAll() {
+		if (allExpanded) {
+			expandedSlugs.clear();
+		} else {
+			for (const slug of allSlugs) {
+				expandedSlugs.add(slug);
+			}
 		}
 	}
 
@@ -45,6 +58,14 @@
 </script>
 
 <div class="flex flex-col">
+	<div class="flex justify-end pb-1">
+		<button
+			class="cursor-pointer font-mono text-xs text-muted transition-colors hover:text-accent"
+			onclick={toggleAll}
+		>
+			{allExpanded ? 'collapse all' : 'expand all'}
+		</button>
+	</div>
 	{#each layout as row, i (rowKey(row, i))}
 		<div animate:flip={{ duration: mounted ? 300 : 0, easing: cubicOut }}>
 			<GitGraphRow
