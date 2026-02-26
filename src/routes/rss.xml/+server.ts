@@ -1,10 +1,11 @@
+import { site } from '$lib/config';
 import { getAllPosts } from '$lib/writing';
 
 export const prerender = true;
 
 export const GET = () => {
 	const posts = getAllPosts();
-	const siteUrl = 'https://twango.dev';
+	const siteUrl = site.url;
 
 	const items = posts
 		.map(

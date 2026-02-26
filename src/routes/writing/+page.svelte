@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { Heading } from '$lib/components/ui';
 	import { SearchInput, TagPill, PostList } from '$lib/components/writing';
+	import SEO from '$lib/components/SEO.svelte';
+	import { breadcrumbSchema } from '$lib/schema';
 
 	const { data } = $props();
 
@@ -26,10 +28,15 @@
 	}
 </script>
 
-<svelte:head>
-	<title>Writing</title>
-	<meta name="description" content="Blog posts and writing" />
-</svelte:head>
+<SEO
+	title="Writing"
+	description="Blog posts and writing by James Ding"
+	canonical="/writing"
+	jsonLd={breadcrumbSchema([
+		{ name: 'Home', url: '/' },
+		{ name: 'Writing', url: '/writing' }
+	])}
+/>
 
 <div class="flex flex-col gap-6 pb-24">
 	<Heading level={2}>Writing</Heading>

@@ -6,6 +6,8 @@
 		projectPrecomputedArc,
 		type ScreenPoint
 	} from '$lib/globe/projection';
+	import SEO from '$lib/components/SEO.svelte';
+	import { breadcrumbSchema } from '$lib/schema';
 
 	const { data } = $props();
 	const flights = $derived(data.arcs);
@@ -456,6 +458,16 @@
 		};
 	});
 </script>
+
+<SEO
+	title="Flights"
+	description="Interactive globe visualization of flights"
+	canonical="/flights"
+	jsonLd={breadcrumbSchema([
+		{ name: 'Home', url: '/' },
+		{ name: 'Flights', url: '/flights' }
+	])}
+/>
 
 <div class="flex flex-1 items-center justify-center">
 	<div class="relative aspect-square w-full max-w-5xl">
