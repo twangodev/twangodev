@@ -32,9 +32,7 @@
 	const fullTitle = $derived(title ? `${title} | ${site.name}` : site.name);
 	const canonicalUrl = $derived(canonical ? `${site.url}${canonical}` : undefined);
 
-	const jsonLdScripts = $derived(
-		jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : []
-	);
+	const jsonLdScripts = $derived(jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : []);
 </script>
 
 <svelte:head>

@@ -1,10 +1,4 @@
-import type {
-	WithContext,
-	WebSite,
-	Person,
-	BlogPosting,
-	BreadcrumbList
-} from 'schema-dts';
+import type { WithContext, WebSite, Person, BlogPosting, BreadcrumbList } from 'schema-dts';
 import { site } from '$lib/config';
 import type { PostMetadata } from '$lib/types/writing';
 

@@ -4,9 +4,6 @@
 	import { personSchema, breadcrumbSchema } from '$lib/schema';
 </script>
 
-<SEO
-	canonical="/"
-	jsonLd={[personSchema(), breadcrumbSchema([{ name: 'Home', url: '/' }])]}
-/>
+<SEO canonical="/" jsonLd={[personSchema(), breadcrumbSchema([{ name: 'Home', url: '/' }])]} />
 
 <NowPlaying />
