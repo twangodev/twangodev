@@ -47,8 +47,8 @@
 	const RAY_LENGTH = 0.25; // fraction of arc that the ray tail covers
 	const RAY_SPEED = 0.004; // progress per frame (0->1)
 
-	// Stagger each flight's start so they don't all animate in sync
-	let rayHeads = $derived(flights.map((_: unknown, i: number) => i / flights.length));
+	// Random start position per flight so they don't animate in lockstep
+	let rayHeads = $derived(flights.map(() => Math.random() * (1 + RAY_LENGTH)));
 
 	// Pre-compute solid HSL color string per flight (use globalAlpha for opacity)
 	const flightColors = $derived(
@@ -63,6 +63,24 @@
 			return { points3D, buffer };
 		})
 	);
+
+	// Pre-compute airport unit direction vectors (rotation-independent)
+	const airportDirs = $derived(
+		airports.map((a: { location: [number, number] }) => {
+			const latRad = (a.location[0] * Math.PI) / 180;
+			const lngRad = (a.location[1] * Math.PI) / 180 - Math.PI;
+			const cosLat = Math.cos(latRad);
+			return {
+				dx: -cosLat * Math.cos(lngRad),
+				dy: Math.sin(latRad),
+				dz: cosLat * Math.sin(lngRad)
+			};
+		})
+	);
+
+	// Pre-allocated placement buffer for label collision detection
+	const placedBuf: { x: number; y: number; w: number; h: number }[] = [];
+	let placedCount = 0;
 
 	// Text measurement cache -- IATA codes are static, font never changes
 	const textWidthCache = new Map<string, number>();
@@ -80,8 +98,10 @@
 		ctx: CanvasRenderingContext2D,
 		w: number,
 		h: number,
-		phi: number,
-		theta: number
+		cp: number,
+		sp: number,
+		ct: number,
+		st: number
 	) {
 		ctx.clearRect(0, 0, w, h);
 		ctx.save();
@@ -90,12 +110,6 @@
 		const cssW = w / DPR;
 		const cssH = h / DPR;
 		ctx.lineWidth = 1.5;
-
-		// Pre-compute trig values once per frame
-		const cp = Math.cos(phi),
-			sp = Math.sin(phi);
-		const ct = Math.cos(theta),
-			st = Math.sin(theta);
 
 		for (let f = 0; f < flights.length; f++) {
 			// Advance ray head, loop back to 0
@@ -178,10 +192,12 @@
 		ly: number,
 		lw: number,
 		lh: number,
-		rects: { x: number; y: number; w: number; h: number }[]
+		rects: { x: number; y: number; w: number; h: number }[],
+		count: number
 	) {
 		let sum = 0;
-		for (const r of rects) {
+		for (let i = 0; i < count; i++) {
+			const r = rects[i];
 			const ox = Math.max(0, Math.min(lx + lw, r.x + r.w) - Math.max(lx, r.x));
 			const oy = Math.max(0, Math.min(ly + lh, r.y + r.h) - Math.max(ly, r.y));
 			sum += ox * oy;
@@ -205,34 +221,21 @@
 		return { x: lx, y: ly, w: lw, h: lh };
 	}
 
-	// Project airport to screen without hard occlusion cutoff.
+	// Project airport to screen using pre-computed unit direction and trig values.
 	// Returns null only for fully behind the globe; otherwise returns depth
 	// that can go slightly negative (for smooth fade at limb).
 	function projectAirport(
-		lat: number,
-		lng: number,
-		phi: number,
-		theta: number,
+		dx: number,
+		dy: number,
+		dz: number,
+		cp: number,
+		sp: number,
+		ct: number,
+		st: number,
 		cssW: number,
 		cssH: number
 	) {
-		const latRad = (lat * Math.PI) / 180;
-		const lngRad = (lng * Math.PI) / 180 - Math.PI;
-
-		const cosLat = Math.cos(latRad);
-		const dx = -cosLat * Math.cos(lngRad);
-		const dy = Math.sin(latRad);
-		const dz = cosLat * Math.sin(lngRad);
-
-		const cp = Math.cos(phi),
-			sp = Math.sin(phi);
-		const ct = Math.cos(theta),
-			st = Math.sin(theta);
-
-		// Depth: how far in front of the globe center (1 = facing camera, 0 = limb, <0 = behind)
 		const depth = dx * (-sp * ct) + dy * st + dz * (cp * ct);
-
-		// Skip anything well behind the globe
 		if (depth < -0.1) return null;
 
 		const vx = dx * cp + dz * sp;
@@ -251,8 +254,10 @@
 		ctx: CanvasRenderingContext2D,
 		w: number,
 		h: number,
-		phi: number,
-		theta: number
+		cp: number,
+		sp: number,
+		ct: number,
+		st: number
 	) {
 		const cssW = w / DPR;
 		const cssH = h / DPR;
@@ -274,11 +279,12 @@
 		// Set base text color once; use globalAlpha for per-label opacity
 		ctx.fillStyle = `rgb(${themeText})`;
 
-		const placed: { x: number; y: number; w: number; h: number }[] = [];
+		placedCount = 0;
 
 		for (let i = 0; i < airports.length; i++) {
 			const a = airports[i];
-			const pt = projectAirport(a.location[0], a.location[1], phi, theta, cssW, cssH);
+			const dir = airportDirs[i];
+			const pt = projectAirport(dir.dx, dir.dy, dir.dz, cp, sp, ct, st, cssW, cssH);
 			if (!pt) continue;
 
 			// Smooth opacity: ramp from 0 at the limb to full at fadeStart
@@ -290,7 +296,7 @@
 
 			// Score current sticky choice
 			const curRect = labelRect(pt.x, pt.y, chosenOffsets[i], lw, lh, fontSize);
-			const curOverlap = totalOverlap(curRect.x, curRect.y, lw, lh, placed);
+			const curOverlap = totalOverlap(curRect.x, curRect.y, lw, lh, placedBuf, placedCount);
 
 			if (curOverlap > 0) {
 				let bestIdx = chosenOffsets[i];
@@ -298,7 +304,7 @@
 				for (let j = 0; j < OFFSETS.length; j++) {
 					if (j === chosenOffsets[i]) continue;
 					const r = labelRect(pt.x, pt.y, j, lw, lh, fontSize);
-					const score = totalOverlap(r.x, r.y, lw, lh, placed);
+					const score = totalOverlap(r.x, r.y, lw, lh, placedBuf, placedCount);
 					if (score < bestScore) {
 						bestScore = score;
 						bestIdx = j;
@@ -311,7 +317,17 @@
 			}
 
 			const rect = labelRect(pt.x, pt.y, chosenOffsets[i], lw, lh, fontSize);
-			placed.push(rect);
+			// Reuse existing buffer entry or grow
+			if (placedCount < placedBuf.length) {
+				const r = placedBuf[placedCount];
+				r.x = rect.x;
+				r.y = rect.y;
+				r.w = rect.w;
+				r.h = rect.h;
+			} else {
+				placedBuf.push({ x: rect.x, y: rect.y, w: rect.w, h: rect.h });
+			}
+			placedCount++;
 
 			ctx.globalAlpha = alpha;
 			ctx.fillText(a.iata, rect.x + padding, rect.y + lh / 2);
@@ -421,8 +437,12 @@
 				}
 
 				const effectivePhi = phi + dragPhi;
-				drawArcs(overlayCtx, w, h, effectivePhi, effectiveTheta);
-				drawLabels(overlayCtx, w, h, effectivePhi, effectiveTheta);
+				const cp = Math.cos(effectivePhi),
+					sp = Math.sin(effectivePhi);
+				const ct = Math.cos(effectiveTheta),
+					st = Math.sin(effectiveTheta);
+				drawArcs(overlayCtx, w, h, cp, sp, ct, st);
+				drawLabels(overlayCtx, w, h, cp, sp, ct, st);
 			}
 		});
 		return () => {
