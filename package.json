@@ -44,6 +44,7 @@
 		"bits-ui": "^2.16.2",
 		"cobe": "^0.6.5",
 		"extract-colors": "^4.2.1",
-		"mode-watcher": "^1.1.0"
+		"mode-watcher": "^1.1.0",
+		"openpgp": "^6.3.0"
 	}
 }
