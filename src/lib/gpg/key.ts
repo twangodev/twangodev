@@ -22,6 +22,20 @@ const ALGORITHM_NAMES: Record<string, string> = {
 	aedsa: 'AEDSA'
 };
 
+const FLAG_LABELS: [number, string][] = [
+	[openpgp.enums.keyFlags.certifyKeys, 'Certify'],
+	[openpgp.enums.keyFlags.signData, 'Sign'],
+	[openpgp.enums.keyFlags.encryptCommunication, 'Encrypt'],
+	[openpgp.enums.keyFlags.encryptStorage, 'Encrypt'],
+	[openpgp.enums.keyFlags.authentication, 'Authenticate']
+];
+
+function parseKeyFlags(flags: number[]): string[] {
+	if (!flags.length) return [];
+	const f = flags[0];
+	return [...new Set(FLAG_LABELS.filter(([bit]) => f & bit).map(([, label]) => label))];
+}
+
 function formatAlgorithm(info: openpgp.AlgorithmInfo): string {
 	const name = ALGORITHM_NAMES[info.algorithm] ?? info.algorithm;
 	const bits = 'bits' in info ? ` ${info.bits}` : '';
@@ -43,7 +57,8 @@ async function extractKeyInfo(key: openpgp.PublicKey): Promise<KeyInfo> {
 	const subkeys: SubkeyInfo[] = key.subkeys.map((sub) => ({
 		keyId: sub.getKeyID().toHex().toUpperCase(),
 		algorithm: formatAlgorithm(sub.keyPacket.getAlgorithmInfo()),
-		created: sub.keyPacket.created
+		created: sub.keyPacket.created,
+		usage: parseKeyFlags([...(sub.bindingSignatures[0]?.keyFlags ?? [])])
 	}));
 
 	return { fingerprint, keyId, algorithm, created, expires, userId, armored, subkeys };

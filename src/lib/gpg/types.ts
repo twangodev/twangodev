@@ -2,6 +2,7 @@ export interface SubkeyInfo {
 	keyId: string;
 	algorithm: string;
 	created: Date;
+	usage: string[];
 }
 
 export interface KeyInfo {

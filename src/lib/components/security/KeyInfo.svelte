@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Download } from '@lucide/svelte';
-	import { DetailList, DetailItem, Divider } from '$lib/components/ui';
+	import { DetailList, DetailItem } from '$lib/components/ui';
 	import { scramble } from '$lib/actions/scramble';
 	import type { KeyInfo } from '$lib/gpg/types';
 
@@ -92,6 +92,9 @@
 								<span>{sub.keyId}</span>
 								<span>{sub.algorithm}</span>
 								<span>{formatDate(sub.created)}</span>
+								{#if sub.usage.length > 0}
+									<span>{sub.usage.join(', ')}</span>
+								{/if}
 							</div>
 						{/each}
 					</div>
