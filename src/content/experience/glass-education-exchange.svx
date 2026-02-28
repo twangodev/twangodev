@@ -11,7 +11,6 @@ tags:
   - infrastructure
   - devops
 published: true
-color: '#f5a623'
 commits:
   - Architect and build pay-walled, multi-tenant content platform with SAML SSO + ASN IP auth layers
   - Migrate 50 orgs (12K WAUs) with minimal downtime

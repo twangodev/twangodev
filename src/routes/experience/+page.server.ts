@@ -1,8 +1,9 @@
 import { getAllExperiences } from '$lib/experience';
 import { getAllProjects } from '$lib/projects';
+import { extractColorsForEntries } from '$lib/server/extract-color';
 import type { TimelineEntry } from '$lib/types/timeline';
 
-export const load = () => {
+export const load = async () => {
 	const experiences: TimelineEntry[] = getAllExperiences().map((data) => ({
 		kind: 'experience',
 		data
@@ -11,7 +12,8 @@ export const load = () => {
 		kind: 'project',
 		data
 	}));
-	return {
-		entries: [...experiences, ...projects]
-	};
+
+	const entries = await extractColorsForEntries([...experiences, ...projects]);
+
+	return { entries };
 };

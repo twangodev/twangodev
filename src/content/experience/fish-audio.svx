@@ -10,7 +10,6 @@ tags:
   - ai
   - infrastructure
 published: true
-color: '#9b90e8'
 commits:
   - Build core AI audio infrastructure for fish.audio
   - Focus on delivery, growth, and usage of SOTA open source TTS models

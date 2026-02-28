@@ -10,7 +10,6 @@ tags:
   - robotics
   - leadership
 published: true
-color: '#9e1b32'
 commits:
   - Lead team meetings and drive critical decision-making in a fast-paced environment
   - Manage 30+ students across Design, Fabrication, Electrical, Software, and Business teams

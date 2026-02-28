@@ -10,7 +10,6 @@ tags:
   - teaching
   - java
 published: true
-color: '#c5050c'
 commits:
   - Hold weekly office hours helping students with Java OOP, data structures, and Big-O analysis
   - Debug student code and clarify inheritance, polymorphism, generics, and exception handling
