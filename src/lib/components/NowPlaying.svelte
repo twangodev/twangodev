@@ -184,7 +184,7 @@
 </script>
 
 {#if track}
-	<div class="relative flex flex-1 items-center justify-center">
+	<div class="relative flex flex-1 items-center justify-center" data-nosnippet>
 		<div
 			class="glow-container pointer-events-none absolute inset-0 flex items-center justify-center"
 		>
