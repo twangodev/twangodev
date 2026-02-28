@@ -9,6 +9,7 @@ export const site = {
 		github: 'https://github.com/twangodev',
 		linkedin: 'https://linkedin.com/in/jamesding365',
 		x: 'https://x.com/twangodev',
+		lastfm: 'twangodev',
 		email: 'james@twango.dev'
 	},
 	locale: 'en_US',

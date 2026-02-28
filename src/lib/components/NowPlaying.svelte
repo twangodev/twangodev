@@ -4,10 +4,12 @@
 	import { Text, Link, Equalizer } from '$lib/components/ui';
 	import { scramble } from '$lib/actions/scramble';
 	import { Dot } from '@lucide/svelte';
+	import { site } from '$lib/config';
 
 	interface Track {
 		name: string;
 		artist: string;
+		album: string;
 		url: string;
 		image: {
 			small: string;
@@ -151,7 +153,7 @@
 
 	async function fetchNowPlaying() {
 		try {
-			const res = await fetch('https://listening.twango.dev/playing/twangodev');
+			const res = await fetch(`https://listening.twango.dev/playing/${site.author.lastfm}`);
 			const data = await res.json();
 			const next = data.status === 'playing' && data.track ? data.track : null;
 			if (next?.name !== track?.name || next?.artist !== track?.artist) {
@@ -224,7 +226,7 @@
 				class="text-[10px] tracking-widest uppercase opacity-50">listening now</Text
 			>
 			<Link
-				href={track.url}
+				href={`https://www.last.fm/user/${site.author.lastfm}`}
 				icon={false}
 				class="inline-flex items-center gap-1 font-mono text-xs tracking-wider text-muted"
 			>
@@ -233,6 +235,11 @@
 				<Dot size={16} strokeWidth={3} class="shrink-0" />
 				<span use:scramble={{ text: track.artist }}></span>
 			</Link>
+			{#if track.album}
+				<Link href={track.url} icon={false} class="font-mono text-[10px] tracking-wider text-muted opacity-50">
+					<span use:scramble={{ text: track.album }}></span>
+				</Link>
+			{/if}
 		</div>
 	</div>
 {/if}
