@@ -128,7 +128,14 @@
 	async function extractPalette(imageUrl: string) {
 		try {
 			const palette = await Vibrant.from(imageUrl).getPalette();
-			const swatchKeys = ['Vibrant', 'DarkVibrant', 'LightVibrant', 'Muted', 'DarkMuted', 'LightMuted'] as const;
+			const swatchKeys = [
+				'Vibrant',
+				'DarkVibrant',
+				'LightVibrant',
+				'Muted',
+				'DarkMuted',
+				'LightMuted'
+			] as const;
 			const extracted = swatchKeys
 				.map((key) => palette[key]?.hex)
 				.filter((hex): hex is string => !!hex);
