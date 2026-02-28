@@ -43,8 +43,8 @@
 		"@lucide/svelte": "^0.575.0",
 		"bits-ui": "^2.16.2",
 		"cobe": "^0.6.5",
-		"extract-colors": "^4.2.1",
 		"mode-watcher": "^1.1.0",
+		"node-vibrant": "^4.0.4",
 		"openpgp": "^6.3.0"
 	}
 }

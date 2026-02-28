@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { extractColors } from 'extract-colors';
+	import { Vibrant } from 'node-vibrant/browser';
 	import { Text, Link, Equalizer } from '$lib/components/ui';
 	import { scramble } from '$lib/actions/scramble';
 	import { Dot } from '@lucide/svelte';
@@ -21,11 +21,11 @@
 		// anchor blob — stays center, largest
 		{
 			x: 50,
-			y: 48,
+			y: 50,
 			size: 240,
 			duration: 24,
 			delay: -8,
-			drift: [8, -6, -10, 8, 6, -8, -5, 10],
+			drift: [12, -8, -14, 10, 8, -12, -6, 14],
 			morphDuration: 30,
 			morphDelay: 0,
 			shapes: [
@@ -35,14 +35,14 @@
 				'45% 55% 60% 40% / 55% 45% 40% 60%'
 			]
 		},
-		// tight orbit blobs
+		// tight orbit — upper-left
 		{
-			x: 49,
-			y: 47,
+			x: 38,
+			y: 36,
 			size: 200,
 			duration: 20,
 			delay: 0,
-			drift: [15, -12, -18, 10, 12, -15, -10, 18],
+			drift: [20, -15, -25, 18, 15, -20, -12, 22],
 			morphDuration: 26,
 			morphDelay: -7,
 			shapes: [
@@ -52,13 +52,14 @@
 				'70% 30% 40% 60% / 50% 50% 35% 65%'
 			]
 		},
+		// tight orbit — lower-right
 		{
-			x: 51,
-			y: 49,
+			x: 62,
+			y: 62,
 			size: 180,
 			duration: 25,
 			delay: -5,
-			drift: [-12, 18, 20, -14, -16, 12, 14, -20],
+			drift: [-18, 22, 25, -20, -22, 16, 20, -24],
 			morphDuration: 34,
 			morphDelay: -12,
 			shapes: [
@@ -68,14 +69,14 @@
 				'40% 60% 65% 35% / 55% 45% 35% 65%'
 			]
 		},
-		// breakaway blobs
+		// breakaway — drifts upper-right
 		{
-			x: 50,
-			y: 47,
+			x: 65,
+			y: 30,
 			size: 160,
 			duration: 18,
 			delay: -10,
-			drift: [200, -150, -120, 180, -180, 130, 150, -200],
+			drift: [140, 60, -100, 180, 80, -160, -120, 100],
 			morphDuration: 22,
 			morphDelay: -4,
 			shapes: [
@@ -85,13 +86,14 @@
 				'55% 45% 45% 55% / 35% 65% 60% 40%'
 			]
 		},
+		// breakaway — drifts lower-left
 		{
-			x: 50,
-			y: 49,
+			x: 32,
+			y: 68,
 			size: 150,
 			duration: 22,
 			delay: -3,
-			drift: [-180, 200, 150, -130, 120, -180, -200, 160],
+			drift: [-160, -80, 120, -140, -90, 180, 100, -120],
 			morphDuration: 28,
 			morphDelay: -9,
 			shapes: [
@@ -99,6 +101,23 @@
 				'45% 55% 35% 65% / 55% 45% 40% 60%',
 				'50% 50% 55% 45% / 40% 60% 50% 50%',
 				'35% 65% 45% 55% / 60% 40% 55% 45%'
+			]
+		},
+		// breakaway — drifts upward
+		{
+			x: 45,
+			y: 25,
+			size: 140,
+			duration: 20,
+			delay: -6,
+			drift: [-60, -180, 80, 140, -120, -100, 160, 60],
+			morphDuration: 26,
+			morphDelay: -14,
+			shapes: [
+				'45% 55% 35% 65% / 50% 40% 60% 50%',
+				'55% 45% 60% 40% / 40% 60% 45% 55%',
+				'40% 60% 50% 50% / 55% 45% 50% 50%',
+				'60% 40% 45% 55% / 45% 55% 55% 45%'
 			]
 		}
 	];
@@ -108,12 +127,12 @@
 
 	async function extractPalette(imageUrl: string) {
 		try {
-			const extracted = await extractColors(imageUrl, {
-				pixels: 10000,
-				distance: 0.2
-			});
-			const sorted = extracted.sort((a, b) => b.area - a.area).slice(0, blobLayout.length);
-			colors = sorted.map((c) => c.hex);
+			const palette = await Vibrant.from(imageUrl).getPalette();
+			const swatchKeys = ['Vibrant', 'DarkVibrant', 'LightVibrant', 'Muted', 'DarkMuted', 'LightMuted'] as const;
+			const extracted = swatchKeys
+				.map((key) => palette[key]?.hex)
+				.filter((hex): hex is string => !!hex);
+			colors = extracted;
 			// pad if we got fewer colors than blobs
 			while (colors.length < blobLayout.length) {
 				colors.push(colors[colors.length - 1]);
