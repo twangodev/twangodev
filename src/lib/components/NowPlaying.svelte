@@ -236,7 +236,11 @@
 				<span use:scramble={{ text: track.artist }}></span>
 			</Link>
 			{#if track.album}
-				<Link href={track.url} icon={false} class="font-mono text-[10px] tracking-wider text-muted opacity-50">
+				<Link
+					href={track.url}
+					icon={false}
+					class="font-mono text-[10px] tracking-wider text-muted opacity-50"
+				>
 					<span use:scramble={{ text: track.album }}></span>
 				</Link>
 			{/if}
@@ -304,9 +308,13 @@
 
 	@keyframes glow-in {
 		to {
-			opacity: 0.12;
+			opacity: var(--glow-opacity, 0.5);
 			scale: 1;
 		}
+	}
+
+	:global(.dark) .glow-container {
+		--glow-opacity: 0.12;
 	}
 
 	@keyframes breathe {
@@ -333,7 +341,7 @@
 
 		.glow-container {
 			animation: none;
-			opacity: 0.12;
+			opacity: var(--glow-opacity, 0.5);
 			scale: 1;
 		}
 
