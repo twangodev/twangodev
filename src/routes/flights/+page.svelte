@@ -469,8 +469,8 @@
 	])}
 />
 
-<div class="flex flex-1 items-center justify-center">
-	<div class="relative aspect-square w-full max-w-5xl">
+<div class="flex min-h-0 flex-1 items-center justify-center">
+	<div class="relative aspect-square max-h-full w-full max-w-5xl">
 		<canvas bind:this={canvasEl} style="cursor: grab" class="absolute inset-0 h-full w-full"
 		></canvas>
 		<canvas bind:this={overlayEl} class="pointer-events-none absolute inset-0 h-full w-full"
