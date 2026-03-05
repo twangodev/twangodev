@@ -244,9 +244,8 @@
 		const vy = dx * sp * st + dy * ct + dz * (-cp * st);
 
 		const globeRadius = 0.8;
-		const size = Math.min(cssW, cssH);
-		const aspect = cssW / cssH;
-		const x = cssW / 2 + (vx / aspect) * globeRadius * (size / 2);
+		const size = cssH;
+		const x = cssW / 2 + vx * globeRadius * (size / 2);
 		const y = cssH / 2 - vy * globeRadius * (size / 2);
 
 		return { x, y, depth };
@@ -469,8 +468,8 @@
 	])}
 />
 
-<div class="flex min-h-0 flex-1 items-center justify-center">
-	<div class="relative aspect-square max-h-full w-full max-w-5xl">
+<div class="flex min-h-0 flex-1 items-center justify-center overflow-hidden">
+	<div class="relative aspect-square max-h-[calc(100svh_-_16rem)] w-full max-w-5xl">
 		<canvas bind:this={canvasEl} style="cursor: grab" class="absolute inset-0 h-full w-full"
 		></canvas>
 		<canvas bind:this={overlayEl} class="pointer-events-none absolute inset-0 h-full w-full"

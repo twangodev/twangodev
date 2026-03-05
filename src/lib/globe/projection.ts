@@ -61,14 +61,13 @@ export function latLngToScreen(
 
 	// Cobe's globe radius in NDC is 0.8
 	const globeRadius = 0.8;
-	const size = Math.min(width, height);
+	const size = height;
 	const cx = width / 2;
 	const cy = height / 2;
 
-	// Aspect ratio: cobe does a.x *= width/height in the shader
-	// In view-space, vx is in aspect-corrected coords, so undo it
-	const aspect = width / height;
-	const screenX = cx + (vx / aspect) * globeRadius * scale * (size / 2);
+	// Cobe scales the globe to canvas height (a.x *= aspect in the shader
+	// cancels with the width→pixel conversion, leaving height as the reference)
+	const screenX = cx + vx * globeRadius * scale * (size / 2);
 	// Y is flipped (WebGL → canvas 2D)
 	const screenY = cy - vy * globeRadius * scale * (size / 2);
 
@@ -212,11 +211,10 @@ export function projectPrecomputedArc(
 	buffer: (ScreenPoint | null)[]
 ): void {
 	const globeRadius = 0.8;
-	const size = Math.min(width, height);
+	const size = height;
 	const cx = width / 2;
 	const cy = height / 2;
 	const halfSize = globeRadius * (size / 2);
-	const invAspect = height / width;
 
 	for (let i = 0; i < points3D.length; i++) {
 		const p = points3D[i];
@@ -234,7 +232,7 @@ export function projectPrecomputedArc(
 			}
 		}
 
-		const screenX = cx + vx * invAspect * halfSize;
+		const screenX = cx + vx * halfSize;
 		const screenY = cy - vy * halfSize;
 		const depth = Math.max(0, vz * p.invRadius);
 

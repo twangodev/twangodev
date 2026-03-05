@@ -49,11 +49,11 @@
 </svelte:head>
 
 <div
-	class="flex h-svh flex-col gap-10 overflow-y-auto bg-bg px-6 py-6 text-text antialiased sm:px-10 md:gap-12 md:px-16"
+	class="flex min-h-svh flex-col gap-10 bg-bg px-6 py-6 text-text antialiased sm:px-10 md:gap-12 md:px-16"
 >
 	<Header />
 	<div
-		class="bio-layout flex min-h-0 flex-1 flex-col gap-8 lg:grid lg:grid-rows-[minmax(0,1fr)] lg:items-stretch lg:gap-12"
+		class="bio-layout flex flex-1 flex-col gap-8 lg:grid lg:grid-rows-[1fr] lg:items-stretch lg:gap-12"
 		style:grid-template-columns={gridColumns}
 	>
 		<aside class="flex flex-col justify-center overflow-hidden">
@@ -82,7 +82,7 @@
 			</div>
 		{/if}
 		<Divider width="full" spacing="md" class="lg:hidden" />
-		<main class="flex min-h-0 flex-1 flex-col justify-center">
+		<main class="flex flex-1 flex-col justify-center">
 			{@render children()}
 		</main>
 	</div>
