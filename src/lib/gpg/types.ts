@@ -11,7 +11,7 @@ export interface KeyInfo {
 	algorithm: string;
 	created: Date;
 	expires: string;
-	userId: string;
+	userIds: string[];
 	armored: string;
 	subkeys: SubkeyInfo[];
 	owned: boolean;

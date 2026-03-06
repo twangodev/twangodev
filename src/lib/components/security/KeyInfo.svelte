@@ -3,6 +3,7 @@
 	import { fade } from 'svelte/transition';
 	import { DetailList, DetailItem } from '$lib/components/ui';
 	import { scramble } from '$lib/actions/scramble';
+	import { site } from '$lib/config';
 	import type { KeyInfo } from '$lib/gpg/types';
 
 	interface Props {
@@ -10,6 +11,16 @@
 	}
 
 	let { keys }: Props = $props();
+
+	const siteDomain = new URL(site.url).hostname;
+
+	function sortUserIds(userIds: string[]): string[] {
+		return [...userIds].sort((a, b) => {
+			const aScore = a.includes(`@${siteDomain}`) ? 0 : 1;
+			const bScore = b.includes(`@${siteDomain}`) ? 0 : 1;
+			return aScore - bScore;
+		});
+	}
 
 	let ownedKeys = $derived(keys.filter((k) => k.owned));
 	let activeTrustedKeys = $derived(
@@ -19,6 +30,7 @@
 		keys.filter((k) => !k.owned && k.expires !== 'Never' && new Date(k.expires) <= new Date())
 	);
 	let showExpired = $state(false);
+	let expandedUids: Record<number, boolean> = $state({});
 
 	let hovered: Record<number, boolean> = $state({});
 
@@ -48,26 +60,53 @@
 <div class="flex flex-col gap-6">
 	<div class="grid gap-6 lg:grid-cols-2">
 		{#each ownedKeys as key, i}
+			{@const sorted = sortUserIds(key.userIds)}
 			<div class="flex flex-col gap-3">
-				<div class="flex items-center gap-2">
-					<!-- svelte-ignore a11y_no_static_element_interactions -->
-					<span
-						class="font-mono text-sm text-text"
-						use:scramble={{
-							text: hovered[i] ? key.userId : key.userId.replace(/[a-zA-Z0-9]/g, '*'),
-							speed: 15,
-							scramble: 1
-						}}
-						onmouseenter={() => (hovered[i] = true)}
-						onmouseleave={() => (hovered[i] = false)}
-					></span>
-					<button
-						onclick={() => downloadKey(key.armored, key.keyId)}
-						class="text-muted transition-colors hover:text-accent"
-						title="Download key"
-					>
-						<Download size={12} />
-					</button>
+				<!-- svelte-ignore a11y_no_static_element_interactions -->
+				<div
+					class="flex flex-col gap-1"
+					onmouseenter={() => (hovered[i] = true)}
+					onmouseleave={() => (hovered[i] = false)}
+				>
+					<div class="flex items-center gap-2">
+						<span
+							class="font-mono text-sm text-text"
+							use:scramble={{
+								text: hovered[i] ? sorted[0] : sorted[0].replace(/[a-zA-Z0-9]/g, '*'),
+								speed: 15,
+								scramble: 1
+							}}
+						></span>
+						<button
+							onclick={() => downloadKey(key.armored, key.keyId)}
+							class="text-muted transition-colors hover:text-accent"
+							title="Download key"
+						>
+							<Download size={12} />
+						</button>
+						{#if sorted.length > 1}
+							<button
+								onclick={() => (expandedUids[i] = !expandedUids[i])}
+								class="font-mono text-xs text-muted transition-colors hover:text-accent"
+							>
+								+{sorted.length - 1}
+							</button>
+						{/if}
+					</div>
+					{#if expandedUids[i]}
+						{#each sorted.slice(1) as uid}
+							<div class="flex items-center gap-2">
+								<span
+									class="font-mono text-sm text-text"
+									use:scramble={{
+										text: hovered[i] ? uid : uid.replace(/[a-zA-Z0-9]/g, '*'),
+										speed: 15,
+										scramble: 1
+									}}
+								></span>
+							</div>
+						{/each}
+					{/if}
 				</div>
 				<DetailList>
 					<DetailItem label="fingerprint">
@@ -114,7 +153,7 @@
 			<span class="font-mono text-xs text-muted">Trusted Keys</span>
 			{#each activeTrustedKeys as key}
 				<p class="font-mono text-xs text-muted">
-					<span class="text-text">{key.userId}</span> · {key.keyId} · {key.algorithm} · {key.expires ===
+					<span class="text-text">{key.userIds[0]}</span> · {key.keyId} · {key.algorithm} · {key.expires ===
 					'Never'
 						? 'No expiry'
 						: `Expires ${formatDate(new Date(key.expires))}`}
@@ -123,7 +162,7 @@
 			{#if showExpired}
 				{#each expiredTrustedKeys as key}
 					<p class="font-mono text-xs text-muted opacity-50">
-						{key.userId} · {key.keyId} · {key.algorithm} · Expired {formatDate(
+						{key.userIds[0]} · {key.keyId} · {key.algorithm} · Expired {formatDate(
 							new Date(key.expires)
 						)}
 					</p>

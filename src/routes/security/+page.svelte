@@ -20,7 +20,7 @@
 <div class="flex flex-col gap-6 pb-24">
 	<Heading level={2}>Security</Heading>
 
-	<ShellCommand command="curl https://twango.dev/keys.gpg | gpg --import" />
+	<ShellCommand command="gpg --locate-keys james@twango.dev" />
 
 	<section class="flex flex-col gap-4">
 		<Heading level={3}>GPG Public Keys</Heading>

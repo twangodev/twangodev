@@ -65,7 +65,7 @@ async function extractKeyInfo(key: openpgp.PublicKey, owned: boolean): Promise<K
 	const keyId = key.getKeyID().toHex().toUpperCase();
 	const algorithm = formatAlgorithm(primaryKey.getAlgorithmInfo());
 	const created = primaryKey.created;
-	const userId = key.users[0]?.userID?.userID ?? '';
+	const userIds = key.users.map((u) => u.userID?.userID).filter((id): id is string => !!id);
 	const armored = key.armor();
 
 	const expiration = await key.getExpirationTime();
@@ -78,7 +78,7 @@ async function extractKeyInfo(key: openpgp.PublicKey, owned: boolean): Promise<K
 		usage: parseKeyFlags([...(sub.bindingSignatures[0]?.keyFlags ?? [])])
 	}));
 
-	return { fingerprint, keyId, algorithm, created, expires, userId, armored, subkeys, owned };
+	return { fingerprint, keyId, algorithm, created, expires, userIds, armored, subkeys, owned };
 }
 
 export async function getAllKeyInfo(
