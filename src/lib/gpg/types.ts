@@ -14,4 +14,5 @@ export interface KeyInfo {
 	userId: string;
 	armored: string;
 	subkeys: SubkeyInfo[];
+	owned: boolean;
 }

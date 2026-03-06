@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { Download } from '@lucide/svelte';
+	import { Download, Dot, Eye, EyeClosed } from '@lucide/svelte';
+	import { fade } from 'svelte/transition';
 	import { DetailList, DetailItem } from '$lib/components/ui';
 	import { scramble } from '$lib/actions/scramble';
 	import type { KeyInfo } from '$lib/gpg/types';
@@ -9,6 +10,16 @@
 	}
 
 	let { keys }: Props = $props();
+
+	let ownedKeys = $derived(keys.filter((k) => k.owned));
+	let activeTrustedKeys = $derived(
+		keys.filter((k) => !k.owned && (k.expires === 'Never' || new Date(k.expires) > new Date()))
+	);
+	let expiredTrustedKeys = $derived(
+		keys.filter((k) => !k.owned && k.expires !== 'Never' && new Date(k.expires) <= new Date())
+	);
+	let showExpired = $state(false);
+
 	let hovered: Record<number, boolean> = $state({});
 
 	function formatFingerprint(fp: string): string {
@@ -32,16 +43,11 @@
 		a.click();
 		URL.revokeObjectURL(url);
 	}
-
-	function downloadAll() {
-		const combined = keys.map((k) => k.armored).join('\n');
-		downloadKey(combined, 'all-keys');
-	}
 </script>
 
 <div class="flex flex-col gap-6">
 	<div class="grid gap-6 lg:grid-cols-2">
-		{#each keys as key, i}
+		{#each ownedKeys as key, i}
 			<div class="flex flex-col gap-3">
 				<div class="flex items-center gap-2">
 					<!-- svelte-ignore a11y_no_static_element_interactions -->
@@ -102,11 +108,62 @@
 			</div>
 		{/each}
 	</div>
-	<button
-		onclick={downloadAll}
-		class="inline-flex items-center gap-1.5 font-mono text-xs text-muted transition-colors hover:text-accent"
-	>
-		<Download size={12} />
-		Download all keys
-	</button>
+
+	{#if activeTrustedKeys.length > 0 || expiredTrustedKeys.length > 0}
+		<div class="flex flex-col gap-2">
+			<span class="font-mono text-xs text-muted">Trusted Keys</span>
+			{#each activeTrustedKeys as key}
+				<p class="font-mono text-xs text-muted">
+					<span class="text-text">{key.userId}</span> · {key.keyId} · {key.algorithm} · {key.expires ===
+					'Never'
+						? 'No expiry'
+						: `Expires ${formatDate(new Date(key.expires))}`}
+				</p>
+			{/each}
+			{#if showExpired}
+				{#each expiredTrustedKeys as key}
+					<p class="font-mono text-xs text-muted opacity-50">
+						{key.userId} · {key.keyId} · {key.algorithm} · Expired {formatDate(
+							new Date(key.expires)
+						)}
+					</p>
+				{/each}
+			{/if}
+		</div>
+	{/if}
+
+	<div class="flex items-center gap-4">
+		<a
+			href="/keys.gpg"
+			download="keys.gpg"
+			class="inline-flex items-center gap-1.5 font-mono text-xs text-muted transition-colors hover:text-accent"
+		>
+			<Download size={12} />
+			Download all keys
+		</a>
+		{#if expiredTrustedKeys.length > 0}
+			<Dot size={12} class="text-muted" />
+			<button
+				onclick={() => (showExpired = !showExpired)}
+				class="inline-flex items-center gap-1.5 font-mono text-xs text-muted transition-colors hover:text-accent"
+			>
+				<span class="relative inline-flex" style="width: 12px; height: 12px;">
+					{#key showExpired}
+						<span
+							class="absolute inset-0 inline-flex items-center justify-center"
+							transition:fade={{ duration: 150 }}
+						>
+							{#if showExpired}
+								<Eye size={12} />
+							{:else}
+								<EyeClosed size={12} />
+							{/if}
+						</span>
+					{/key}
+				</span>
+				{showExpired ? 'Hide' : 'Show'}
+				{expiredTrustedKeys.length} expired {expiredTrustedKeys.length === 1 ? 'key' : 'keys'}
+			</button>
+		{/if}
+	</div>
 </div>

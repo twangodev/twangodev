@@ -17,3 +17,4 @@ export { default as DialogContent } from './DialogContent.svelte';
 export { default as DialogTitle } from './DialogTitle.svelte';
 export { default as DialogClose } from './DialogClose.svelte';
 export { default as Equalizer } from './Equalizer.svelte';
+export { default as ShellCommand } from './ShellCommand.svelte';

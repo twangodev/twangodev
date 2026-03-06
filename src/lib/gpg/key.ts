@@ -1,12 +1,29 @@
 import * as openpgp from 'openpgp';
 import type { KeyInfo, SubkeyInfo } from './types';
 
-const GPG_KEY_URL = 'https://github.com/twangodev.gpg';
+interface KeySource {
+	url: string;
+	owned: boolean;
+}
 
-export async function fetchArmoredKey(): Promise<string> {
-	const response = await fetch(GPG_KEY_URL);
-	if (!response.ok) throw new Error(`Failed to fetch GPG key: ${response.statusText}`);
-	return await response.text();
+const GPG_KEY_SOURCES: KeySource[] = [
+	{ url: 'https://github.com/twangodev.gpg', owned: true },
+	{ url: 'https://github.com/web-flow.gpg', owned: false }
+];
+
+export async function fetchArmoredKeys(): Promise<{ armored: string; owned: boolean }[]> {
+	return Promise.all(
+		GPG_KEY_SOURCES.map(async ({ url, owned }) => {
+			const response = await fetch(url);
+			if (!response.ok)
+				throw new Error(`Failed to fetch GPG key from ${url}: ${response.statusText}`);
+			return { armored: await response.text(), owned };
+		})
+	);
+}
+
+export function combineArmoredKeys(sources: { armored: string }[]): string {
+	return sources.map((s) => s.armored).join('\n');
 }
 
 const ALGORITHM_NAMES: Record<string, string> = {
@@ -42,7 +59,7 @@ function formatAlgorithm(info: openpgp.AlgorithmInfo): string {
 	return `${name}${bits}`;
 }
 
-async function extractKeyInfo(key: openpgp.PublicKey): Promise<KeyInfo> {
+async function extractKeyInfo(key: openpgp.PublicKey, owned: boolean): Promise<KeyInfo> {
 	const primaryKey = key.keyPacket;
 	const fingerprint = key.getFingerprint().toUpperCase();
 	const keyId = key.getKeyID().toHex().toUpperCase();
@@ -61,10 +78,17 @@ async function extractKeyInfo(key: openpgp.PublicKey): Promise<KeyInfo> {
 		usage: parseKeyFlags([...(sub.bindingSignatures[0]?.keyFlags ?? [])])
 	}));
 
-	return { fingerprint, keyId, algorithm, created, expires, userId, armored, subkeys };
+	return { fingerprint, keyId, algorithm, created, expires, userId, armored, subkeys, owned };
 }
 
-export async function getAllKeyInfo(armoredKeys: string): Promise<KeyInfo[]> {
-	const keys = await openpgp.readKeys({ armoredKeys });
-	return Promise.all(keys.map(extractKeyInfo));
+export async function getAllKeyInfo(
+	sources: { armored: string; owned: boolean }[]
+): Promise<KeyInfo[]> {
+	const results = await Promise.all(
+		sources.map(async ({ armored, owned }) => {
+			const keys = await openpgp.readKeys({ armoredKeys: armored });
+			return Promise.all(keys.map((key) => extractKeyInfo(key, owned)));
+		})
+	);
+	return results.flat();
 }

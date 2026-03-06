@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Heading } from '$lib/components/ui';
+	import { Heading, ShellCommand } from '$lib/components/ui';
 	import { GitGraph } from '$lib/components/timeline';
 	import SEO from '$lib/components/SEO.svelte';
 	import { breadcrumbSchema } from '$lib/schema';
@@ -19,6 +19,6 @@
 
 <div class="flex flex-col gap-6 pb-24">
 	<Heading level={2}>Experience</Heading>
-	<p class="font-mono text-xs tracking-wide text-muted">$ git log --graph --all --decorate</p>
+	<ShellCommand command="git log --graph --all --decorate" />
 	<GitGraph entries={data.entries} />
 </div>
