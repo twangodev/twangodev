@@ -10,6 +10,7 @@ on:
 jobs:
   metrics:
     runs-on: ubuntu-latest
+    continue-on-error: true
     steps:
       - name: GitHub Metrics
         uses: lowlighter/metrics@65836723097537a54cd8eb90f61839426b4266b6 # v3.34
@@ -83,6 +84,7 @@ jobs:
         uses: actions/checkout@v6
       - name: Download Metrics
         uses: actions/download-artifact@v4
+        continue-on-error: true
         with:
           name: metrics
           path: static/metrics/
