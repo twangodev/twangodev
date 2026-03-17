@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { Heading, Text, Divider, DetailList, DetailItem, Link } from '$lib/components/ui';
 
+	declare const __CURRENT_LOCATION__: string;
+
 	interface Props {
 		compact?: boolean;
 		heading?: string;
@@ -30,7 +32,7 @@
 			<DetailItem label="currently">
 				founding engineer at <Link href="https://fish.audio" underline>fish audio</Link>
 			</DetailItem>
-			<DetailItem label="location">san francisco bay area / madison, wi</DetailItem>
+			<DetailItem label="currently in">{__CURRENT_LOCATION__}</DetailItem>
 			<DetailItem label="interests">systems, infra, open source</DetailItem>
 		{/if}
 	</DetailList>

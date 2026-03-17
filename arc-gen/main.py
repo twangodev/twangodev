@@ -44,12 +44,23 @@ def parse_iata(html: str) -> str:
     return soup.get_text(strip=True)
 
 
-def parse_route(row: list) -> tuple[str, str]:
-    """Parse a flight row and return (from_iata, to_iata)."""
-    return parse_iata(row[2]), parse_iata(row[3])
+def parse_date(html: str) -> str:
+    """Extract date (YYYY-MM-DD) from HTML field."""
+    if not html or not html.strip():
+        return ""
+    soup = BeautifulSoup(html, "html.parser")
+    span = soup.find("span", class_="inner-date")
+    if span:
+        return span.get_text(strip=True)
+    return ""
 
 
-def fetch_all_routes(username: str) -> list[tuple[str, str]]:
+def parse_route(row: list) -> tuple[str, str, str]:
+    """Parse a flight row and return (date, from_iata, to_iata)."""
+    return parse_date(row[0]), parse_iata(row[2]), parse_iata(row[3])
+
+
+def fetch_all_routes(username: str) -> list[tuple[str, str, str]]:
     """Fetch all routes using pagination."""
     routes = []
     start_row = 1
@@ -76,28 +87,31 @@ def fetch_all_routes(username: str) -> list[tuple[str, str]]:
     return routes
 
 
-def routes_to_arcs(routes: list[tuple[str, str]]) -> list[dict]:
+def routes_to_arcs(routes: list[tuple[str, str, str]]) -> list[dict]:
     """Convert routes to arc data with coordinates."""
     arcs = []
-    for from_iata, to_iata in routes:
+    for date, from_iata, to_iata in routes:
         from_airport = AIRPORTS_DB.get(from_iata)
         to_airport = AIRPORTS_DB.get(to_iata)
 
         if from_airport and to_airport:
-            arcs.append({
+            arc = {
                 "startLat": from_airport["lat"],
                 "startLng": from_airport["lon"],
                 "endLat": to_airport["lat"],
                 "endLng": to_airport["lon"],
-            })
+            }
+            if date:
+                arc["date"] = date
+            arcs.append(arc)
     return arcs
 
 
-def routes_to_airports(routes: list[tuple[str, str]]) -> list[dict]:
+def routes_to_airports(routes: list[tuple[str, str, str]]) -> list[dict]:
     """Extract unique airports with visit counts from routes."""
     # Count visits to each airport
     airport_counts = Counter()
-    for from_iata, to_iata in routes:
+    for _date, from_iata, to_iata in routes:
         airport_counts[from_iata] += 1
         airport_counts[to_iata] += 1
 
@@ -111,6 +125,7 @@ def routes_to_airports(routes: list[tuple[str, str]]) -> list[dict]:
                 "iata": iata,
                 "icao": airport.get("icao", ""),
                 "city": airport.get("city", ""),
+                "subd": airport.get("subd", ""),
                 "name": airport.get("name", ""),
                 "country": airport.get("country", ""),
                 "count": count,
