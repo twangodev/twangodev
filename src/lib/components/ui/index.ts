@@ -18,3 +18,4 @@ export { default as DialogTitle } from './DialogTitle.svelte';
 export { default as DialogClose } from './DialogClose.svelte';
 export { default as Equalizer } from './Equalizer.svelte';
 export { default as ShellCommand } from './ShellCommand.svelte';
+export { default as Tooltip } from './Tooltip.svelte';

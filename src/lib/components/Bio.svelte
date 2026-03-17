@@ -1,7 +1,17 @@
 <script lang="ts">
-	import { Heading, Text, Divider, DetailList, DetailItem, Link } from '$lib/components/ui';
+	import {
+		Heading,
+		Text,
+		Divider,
+		DetailList,
+		DetailItem,
+		Link,
+		Tooltip
+	} from '$lib/components/ui';
+	import { Info } from '@lucide/svelte';
 
 	declare const __CURRENT_LOCATION__: string;
+	declare const __LOCATION_INFO__: string;
 
 	interface Props {
 		compact?: boolean;
@@ -32,7 +42,11 @@
 			<DetailItem label="currently">
 				founding engineer at <Link href="https://fish.audio" underline>fish audio</Link>
 			</DetailItem>
-			<DetailItem label="currently in">{__CURRENT_LOCATION__}</DetailItem>
+			<DetailItem label="currently in"
+				>{__CURRENT_LOCATION__}{#if __LOCATION_INFO__}<Tooltip text={__LOCATION_INFO__}
+						><Info size={12} class="ml-1.5 inline translate-y-[0.5px] text-muted" /></Tooltip
+					>{/if}</DetailItem
+			>
 			<DetailItem label="interests">systems, infra, open source</DetailItem>
 		{/if}
 	</DetailList>
