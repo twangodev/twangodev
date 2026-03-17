@@ -6,6 +6,7 @@
 <script lang="ts">
 	import { Row, Stack, Logo, Text, Link, LinkGroup, StatusBadge } from './ui';
 	import { scramble } from '$lib/actions/scramble';
+	import { format } from 'timeago.js';
 
 	const buildDate = new Date(__BUILD_TIME__);
 	const formattedStr = buildDate.toLocaleDateString('en-US', {
@@ -13,10 +14,12 @@
 		day: 'numeric',
 		year: 'numeric'
 	});
+	const relativeStr = format(buildDate);
 	const isoStr = __BUILD_TIME__.replace(/\.\d{3}Z$/, 'Z');
 	const commitHash = __COMMIT_HASH__;
 
-	const maxLen = Math.max(isoStr.length, formattedStr.length);
+	const hoveredStr = `${formattedStr} (${relativeStr})`;
+	const maxLen = Math.max(isoStr.length, hoveredStr.length);
 	let buildHovered = $state(false);
 </script>
 
@@ -37,7 +40,7 @@
 			onmouseleave={() => (buildHovered = false)}
 		>
 			{#if commitHash}{commitHash} @&nbsp;{/if}<span
-				use:scramble={{ text: buildHovered ? formattedStr : isoStr }}
+				use:scramble={{ text: buildHovered ? hoveredStr : isoStr }}
 				style="display: inline-block; min-width: {maxLen}ch"
 			></span>
 		</span>
