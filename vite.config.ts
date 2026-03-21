@@ -81,5 +81,10 @@ export default defineConfig({
 		__CURRENT_LOCATION__: JSON.stringify(flightLocation.location),
 		__LOCATION_INFO__: JSON.stringify(flightLocation.info)
 	},
-	plugins: [tailwindcss(), sveltekit(), devtoolsJson()]
+	plugins: [tailwindcss(), sveltekit(), devtoolsJson()],
+	server: {
+		fs: {
+			allow: ['packages']
+		}
+	}
 });
