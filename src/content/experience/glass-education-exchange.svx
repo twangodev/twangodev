@@ -3,7 +3,7 @@ layout: experience
 company: Glass Education Exchange
 role: Full Stack Software Engineer
 dateStart: '2025-03-01'
-dateEnd: '2026-02-23'
+dateEnd: '2025-09-15'
 logo: geex.png
 url: https://geex.glass
 tags:
