@@ -63,6 +63,7 @@
 					heading={page.data.bioHeading}
 					description={page.data.bioDescription}
 					details={page.data.bioDetails}
+					handwriting={page.data.bioHandwriting}
 				/>
 			</div>
 		</aside>

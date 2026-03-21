@@ -8,6 +8,7 @@
 		Link,
 		Tooltip
 	} from '$lib/components/ui';
+	import Handwriting from '$lib/components/ui/Handwriting.svelte';
 	import { Info } from '@lucide/svelte';
 
 	declare const __CURRENT_LOCATION__: string;
@@ -18,12 +19,18 @@
 		heading?: string;
 		description?: string;
 		details?: { label: string; value: string; annotation?: string }[];
+		handwriting?: string[];
 	}
 
-	let { compact = false, heading, description, details }: Props = $props();
+	let { compact = false, heading, description, details, handwriting }: Props = $props();
 </script>
 
-<Heading>{heading ?? 'James Ding'}</Heading>
+<Heading>
+	{heading ?? 'James Ding'}
+	{#if handwriting}
+		<Handwriting phrases={handwriting} class="ml-2 text-lg font-extralight text-muted sm:text-xl" />
+	{/if}
+</Heading>
 
 {#snippet content()}
 	<Text variant="body" size="lg" class="mt-4">
