@@ -399,8 +399,8 @@
 
 		const globe = createGlobe(canvasEl, {
 			devicePixelRatio: DPR,
-			width: canvasEl.offsetWidth * DPR,
-			height: canvasEl.offsetHeight * DPR,
+			width: canvasEl.offsetWidth,
+			height: canvasEl.offsetHeight,
 			phi: 0,
 			theta: THETA,
 			dark: themeDark,
@@ -411,42 +411,56 @@
 			markerColor: themeMarker,
 			glowColor: themeGlow,
 			markers,
-			onRender: (state) => {
-				if (pointerInteracting === null) phi += 0.0018;
-				dragPhi += (pointerMovement / 200 - dragPhi) * 0.1;
-				dragTheta += (pointerMovementY / 300 - dragTheta) * 0.1;
-				const effectiveTheta = Math.max(-0.5, Math.min(1.2, THETA + dragTheta));
-
-				state.phi = phi + dragPhi;
-				state.theta = effectiveTheta;
-				state.dark = themeDark;
-				state.baseColor = themeBase;
-				state.glowColor = themeGlow;
-				state.markerColor = themeMarker;
-
-				const w = canvasEl.offsetWidth * DPR;
-				const h = canvasEl.offsetHeight * DPR;
-				state.width = w;
-				state.height = h;
-
-				// Only reset overlay canvas dimensions when they actually change
-				if (w !== overlayW || h !== overlayH) {
-					overlayEl.width = w;
-					overlayEl.height = h;
-					overlayW = w;
-					overlayH = h;
-				}
-
-				const effectivePhi = phi + dragPhi;
-				const cp = Math.cos(effectivePhi),
-					sp = Math.sin(effectivePhi);
-				const ct = Math.cos(effectiveTheta),
-					st = Math.sin(effectiveTheta);
-				drawArcs(overlayCtx, w, h, cp, sp, ct, st);
-				drawLabels(overlayCtx, w, h, cp, sp, ct, st);
-			}
+			markerElevation: 0
 		});
+
+		let animationId: number;
+
+		function animate() {
+			if (pointerInteracting === null) phi += 0.0018;
+			dragPhi += (pointerMovement / 200 - dragPhi) * 0.1;
+			dragTheta += (pointerMovementY / 300 - dragTheta) * 0.1;
+			const effectiveTheta = Math.max(-0.5, Math.min(1.2, THETA + dragTheta));
+
+			const cssW = canvasEl.offsetWidth;
+			const cssH = canvasEl.offsetHeight;
+			const w = cssW * DPR;
+			const h = cssH * DPR;
+
+			globe.update({
+				phi: phi + dragPhi,
+				theta: effectiveTheta,
+				width: cssW,
+				height: cssH,
+				dark: themeDark,
+				baseColor: themeBase,
+				glowColor: themeGlow,
+				markerColor: themeMarker
+			});
+
+			// Only reset overlay canvas dimensions when they actually change
+			if (w !== overlayW || h !== overlayH) {
+				overlayEl.width = w;
+				overlayEl.height = h;
+				overlayW = w;
+				overlayH = h;
+			}
+
+			const effectivePhi = phi + dragPhi;
+			const cp = Math.cos(effectivePhi),
+				sp = Math.sin(effectivePhi);
+			const ct = Math.cos(effectiveTheta),
+				st = Math.sin(effectiveTheta);
+			drawArcs(overlayCtx, w, h, cp, sp, ct, st);
+			drawLabels(overlayCtx, w, h, cp, sp, ct, st);
+
+			animationId = requestAnimationFrame(animate);
+		}
+
+		animationId = requestAnimationFrame(animate);
+
 		return () => {
+			cancelAnimationFrame(animationId);
 			themeObserver.disconnect();
 			canvasEl.removeEventListener('pointerdown', onPointerDown);
 			canvasEl.removeEventListener('pointerup', onPointerUp);
