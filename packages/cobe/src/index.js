@@ -29,6 +29,13 @@ function latLonTo3D([lat, lon]) {
   return [-cosLat * cos(lonRad), sin(latRad), cosLat * sin(lonRad)]
 }
 
+function angularDistance(from, to) {
+  const [fx, fy, fz] = latLonTo3D(from)
+  const [tx, ty, tz] = latLonTo3D(to)
+  const dot = fx * tx + fy * ty + fz * tz
+  return Math.acos(Math.min(1, Math.max(-1, dot)))
+}
+
 
 /**
  * Create COBE globe
@@ -111,6 +118,8 @@ export default (canvas, opts) => {
   // Instance buffers
   const markerInstanceBuffer = gl.createBuffer()
   const arcInstanceBuffer = gl.createBuffer()
+  const arcAnimBuffer = gl.createBuffer()
+  let arcAnimData = new Float32Array(0)
 
   // Globe uniforms
   const globeUniforms = getUniformLocations(gl, globeProgram, [
@@ -166,6 +175,8 @@ export default (canvas, opts) => {
     ARC_aArcWidth,
     ARC_aArcColor,
     ARC_aHasColor,
+    ARC_aProgress,
+    ARC_aTrailLength,
   ])
 
   // Globe attribute
@@ -234,8 +245,9 @@ export default (canvas, opts) => {
    */
   // Track valid arc count (arcs with resolved endpoints)
   let validArcCount = 0
+  let prevArcCount = 0
 
-  function updateArcs(newArcs) {
+  function updateArcGeometry(newArcs) {
     arcs = newArcs
     validArcCount = arcs.length
 
@@ -243,11 +255,13 @@ export default (canvas, opts) => {
     const arcData = new Float32Array(arcs.length * 12)
 
     arcs.forEach((arc, i) => {
+      const dist = angularDistance(arc.from, arc.to)
+      const height = 1.0 * (dist / PI)
       arcData.set(
         [
           ...latLonTo3D(arc.from),
           ...latLonTo3D(arc.to),
-          arcHeight + markerElevation,
+          height + markerElevation,
           arcWidth * 0.005,
           ...(arc.color || [0, 0, 0]),
           arc.color ? 1 : 0,
@@ -258,6 +272,32 @@ export default (canvas, opts) => {
 
     gl.bindBuffer(gl.ARRAY_BUFFER, arcInstanceBuffer)
     gl.bufferData(gl.ARRAY_BUFFER, arcData, gl.DYNAMIC_DRAW)
+
+    // Resize animation buffer if arc count changed
+    if (arcs.length !== prevArcCount) {
+      arcAnimData = new Float32Array(arcs.length * 2)
+      gl.bindBuffer(gl.ARRAY_BUFFER, arcAnimBuffer)
+      gl.bufferData(gl.ARRAY_BUFFER, arcAnimData.byteLength, gl.DYNAMIC_DRAW)
+      prevArcCount = arcs.length
+    }
+  }
+
+  function updateArcAnimation(newArcs) {
+    for (let i = 0; i < newArcs.length; i++) {
+      arcAnimData[i * 2] = newArcs[i].progress ?? 0
+      arcAnimData[i * 2 + 1] = newArcs[i].trailLength ?? 0
+    }
+    gl.bindBuffer(gl.ARRAY_BUFFER, arcAnimBuffer)
+    gl.bufferSubData(gl.ARRAY_BUFFER, 0, arcAnimData)
+  }
+
+  function updateArcs(newArcs) {
+    if (newArcs.length !== prevArcCount) {
+      updateArcGeometry(newArcs)
+    }
+    arcs = newArcs
+    validArcCount = arcs.length
+    updateArcAnimation(newArcs)
   }
 
   /**
@@ -490,6 +530,12 @@ export default (canvas, opts) => {
       setupInstancedAttribute(arcAttribs[ARC_aArcColor], 3, arcStride, 32, 1)
       setupInstancedAttribute(arcAttribs[ARC_aHasColor], 1, arcStride, 44, 1)
 
+      // Bind animation buffer (progress, trailLength)
+      gl.bindBuffer(gl.ARRAY_BUFFER, arcAnimBuffer)
+      const animStride = 2 * 4 // 2 floats * 4 bytes
+      setupInstancedAttribute(arcAttribs[ARC_aProgress], 1, animStride, 0, 1)
+      setupInstancedAttribute(arcAttribs[ARC_aTrailLength], 1, animStride, 4, 1)
+
       // Set uniforms
       gl.uniform1f(arcUniforms[ARC_phi], phi)
       gl.uniform1f(arcUniforms[ARC_theta], theta)
@@ -613,6 +659,7 @@ export default (canvas, opts) => {
       gl.deleteBuffer(arcSegmentBuffer)
       gl.deleteBuffer(markerInstanceBuffer)
       gl.deleteBuffer(arcInstanceBuffer)
+      gl.deleteBuffer(arcAnimBuffer)
       gl.deleteProgram(globeProgram)
       if (markerProgram) gl.deleteProgram(markerProgram)
       if (arcProgram) gl.deleteProgram(arcProgram)
