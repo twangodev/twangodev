@@ -25,7 +25,7 @@ export const load = async ({ fetch }) => {
 	const maxCount = Math.max(...data.airports.map((a) => a.count));
 	const markers = data.airports.map((a) => ({
 		location: [a.lat, a.lng] as [number, number],
-		size: 0.015 + 0.035 * (a.count / maxCount),
+		size: 0.008 + 0.02 * (a.count / maxCount),
 		id: a.iata.toLowerCase()
 	}));
 
@@ -36,12 +36,16 @@ export const load = async ({ fetch }) => {
 				lng: number;
 				iata: string;
 				city: string;
+				subd?: string;
+				country: string;
 				name: string;
 				count: number;
 			}) => ({
 				location: [a.lat, a.lng] as [number, number],
 				iata: a.iata,
 				city: a.city,
+				subd: a.subd,
+				country: a.country,
 				name: a.name,
 				count: a.count
 			})

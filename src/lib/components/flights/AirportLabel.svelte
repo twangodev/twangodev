@@ -2,7 +2,7 @@
 	interface Props {
 		id: string;
 		iata: string;
-		city: string;
+		location: string;
 		name: string;
 		count: number;
 		z: number;
@@ -10,12 +10,12 @@
 		onhover?: (hovered: boolean) => void;
 	}
 
-	const { id, iata, city, name, count, z, importance, onhover }: Props = $props();
+	const { id, iata, location, name, count, z, importance, onhover }: Props = $props();
 </script>
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div
-	class="group pointer-events-auto absolute mb-2 w-min rounded-sm bg-surface/80 px-1 py-0.5 font-mono text-text shadow-sm transition-[opacity,padding,border-radius,background-color] duration-200 hover:z-[9999]! hover:w-max hover:max-w-64 hover:rounded-lg hover:bg-surface hover:px-4 hover:py-3 hover:opacity-100! hover:shadow-lg"
+	class="group pointer-events-auto absolute mb-2 w-min rounded-sm bg-surface/80 px-1 py-0.5 font-mono text-text shadow-sm transition-[opacity,padding,border-radius,background-color] duration-200 hover:z-[9999]! hover:w-max hover:rounded-lg hover:bg-surface hover:px-4 hover:py-3 hover:opacity-100! hover:shadow-lg"
 	style:position-anchor="--cobe-{id}"
 	style:bottom="anchor(top)"
 	style:left="anchor(center)"
@@ -40,7 +40,7 @@
 			<div
 				class="mt-1.5 flex items-center gap-1.5 border-t border-muted/20 pt-1.5 text-xs text-muted/60"
 			>
-				<span>{city}</span>
+				<span>{location}</span>
 				<span class="size-0.5 shrink-0 rounded-full bg-muted/40"></span>
 				<span>{count} {count === 1 ? 'visit' : 'visits'}</span>
 			</div>

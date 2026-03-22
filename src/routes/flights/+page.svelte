@@ -11,18 +11,31 @@
 	const airports = $derived(data.airports);
 	const maxAirportCount = $derived(airports.length > 0 ? airports[0].count : 1);
 	const airportLabels = $derived(
-		airports.map((a: { iata: string; city: string; name: string; count: number }, i: number) => {
-			const importance = 0.25 + 0.55 * (a.count / maxAirportCount);
-			return {
-				id: a.iata.toLowerCase(),
-				iata: a.iata,
-				city: a.city,
-				name: a.name,
-				count: a.count,
-				z: airports.length - i,
-				importance
-			};
-		})
+		airports.map(
+			(
+				a: {
+					iata: string;
+					city: string;
+					subd?: string;
+					country: string;
+					name: string;
+					count: number;
+				},
+				i: number
+			) => {
+				const importance = 0.25 + 0.55 * (a.count / maxAirportCount);
+				const location = [a.city, a.subd, a.country].filter(Boolean).join(', ');
+				return {
+					id: a.iata.toLowerCase(),
+					iata: a.iata,
+					location,
+					name: a.name,
+					count: a.count,
+					z: airports.length - i,
+					importance
+				};
+			}
+		)
 	);
 
 	let canvasEl: HTMLCanvasElement;
@@ -60,7 +73,7 @@
 		themeBase = hexToRgb(s.getPropertyValue('--color-surface').trim());
 		themeGlow = hexToRgb(s.getPropertyValue('--color-bg').trim());
 		const muted = hexToRgb(s.getPropertyValue('--color-muted').trim());
-		themeMarker = [muted[0] * 0.4, muted[1] * 0.4, muted[2] * 0.4];
+		themeMarker = [muted[0] * 0.2, muted[1] * 0.2, muted[2] * 0.2];
 	}
 
 	const RAY_LENGTH = 0.25;
@@ -176,15 +189,13 @@
 				baseColor: themeBase,
 				glowColor: themeGlow,
 				markerColor: themeMarker,
-				arcs: flights.map(
-					(arc: { from: [number, number]; to: [number, number] }, i: number) => ({
-						from: arc.from,
-						to: arc.to,
-						color: arcColors[i],
-						progress: rayHeads[i],
-						trailLength: RAY_LENGTH
-					})
-				)
+				arcs: flights.map((arc: { from: [number, number]; to: [number, number] }, i: number) => ({
+					from: arc.from,
+					to: arc.to,
+					color: arcColors[i],
+					progress: rayHeads[i],
+					trailLength: RAY_LENGTH
+				}))
 			});
 
 			animationId = requestAnimationFrame(animate);
