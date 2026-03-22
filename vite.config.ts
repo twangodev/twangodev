@@ -1,10 +1,19 @@
 import devtoolsJson from 'vite-plugin-devtools-json';
 import tailwindcss from '@tailwindcss/vite';
 import { sveltekit } from '@sveltejs/kit/vite';
-import { defineConfig } from 'vite';
+import { defineConfig, type Plugin } from 'vite';
 import { execSync } from 'child_process';
 import { readFileSync } from 'fs';
 import { format } from 'timeago.js';
+
+function buildWorkspaces(): Plugin {
+	return {
+		name: 'build-workspaces',
+		buildStart() {
+			execSync('bun run --filter "cobe" build', { stdio: 'inherit' });
+		}
+	};
+}
 
 function getCommitHash(): string {
 	try {
@@ -81,7 +90,7 @@ export default defineConfig({
 		__CURRENT_LOCATION__: JSON.stringify(flightLocation.location),
 		__LOCATION_INFO__: JSON.stringify(flightLocation.info)
 	},
-	plugins: [tailwindcss(), sveltekit(), devtoolsJson()],
+	plugins: [buildWorkspaces(), tailwindcss(), sveltekit(), devtoolsJson()],
 	server: {
 		fs: {
 			allow: ['packages']
