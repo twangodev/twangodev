@@ -3,6 +3,9 @@
 	"private": true,
 	"version": "0.0.1",
 	"type": "module",
+	"workspaces": [
+		"packages/*"
+	],
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build",
@@ -24,7 +27,7 @@
 		"@tailwindcss/vite": "^4.1.18",
 		"@types/node": "^24",
 		"bits-ui": "^2.16.2",
-		"cobe": "^0.6.5",
+		"cobe": "workspace:*",
 		"eslint": "^9.39.2",
 		"eslint-config-prettier": "^10.1.8",
 		"eslint-plugin-svelte": "^3.14.0",
