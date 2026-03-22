@@ -10,6 +10,8 @@ export interface Arc {
   to: [number, number]
   color?: [number, number, number]
   id?: string
+  progress?: number
+  trailLength?: number
 }
 
 export interface COBEOptions {

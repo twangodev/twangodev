@@ -7,6 +7,9 @@ varying vec3 vArcColor;
 varying float vHasColor;
 varying float vDepth;
 varying float vRadialDist;
+varying float vT;
+varying float vProgress;
+varying float vTrailLength;
 
 // Vertex shader
 export void vertex();
@@ -19,6 +22,8 @@ attribute float aArcHeight;
 attribute float aArcWidth;
 attribute vec3 aArcColor;
 attribute float aHasColor;
+attribute float aProgress;
+attribute float aTrailLength;
 
 // Uniforms
 uniform float phi;
@@ -93,6 +98,9 @@ void vertex() {
   vHasColor = aHasColor;
   vDepth = rotatedPoint.z;
   vRadialDist = length(rotatedPoint.xy);
+  vT = t;
+  vProgress = aProgress;
+  vTrailLength = aTrailLength;
 }
 
 // Fragment shader
@@ -105,5 +113,21 @@ void fragment() {
   if (vDepth < 0.0 && vRadialDist < GLOBE_R) discard;
 
   vec3 col = vHasColor > 0.5 ? vArcColor : arcColor;
-  gl_FragColor = vec4(col, 1.0);
+
+  float alpha = 1.0;
+
+  if (vTrailLength > 0.001) {
+    // Animated ray mode
+    float tail = vProgress - vTrailLength;
+    if (vT < tail || vT > vProgress) discard;
+
+    // Linear fade: 0 at tail, 1 at head
+    float rayAlpha = (vT - tail) / vTrailLength;
+
+    // Depth-based fade: soft at limb
+    float depthFactor = clamp(vDepth / GLOBE_R, 0.0, 1.0);
+    alpha = rayAlpha * (0.15 + 0.85 * depthFactor);
+  }
+
+  gl_FragColor = vec4(col, alpha);
 }
