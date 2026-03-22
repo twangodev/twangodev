@@ -53,7 +53,7 @@ export function createAnchorManager(wrapper) {
       updateAnchor(markerAnchors, key, `--cobe-${key}`, pos)
 
       if (pos.visible) {
-        visibilityVars['--cobe-visible-' + key] = 'N'
+        visibilityVars['--cobe-visible-' + key] = '1'
       } else {
         delete visibilityVars['--cobe-visible-' + key]
       }
@@ -82,7 +82,7 @@ export function createAnchorManager(wrapper) {
       updateAnchor(arcAnchors, key, `--cobe-arc-${key}`, pos)
 
       if (pos.visible) {
-        visibilityVars['--cobe-visible-arc-' + key] = 'N'
+        visibilityVars['--cobe-visible-arc-' + key] = '1'
       } else {
         delete visibilityVars['--cobe-visible-arc-' + key]
       }

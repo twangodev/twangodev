@@ -7,15 +7,32 @@
 		type ScreenPoint
 	} from '$lib/globe/projection';
 	import SEO from '$lib/components/SEO.svelte';
+	import AirportLabel from '$lib/components/flights/AirportLabel.svelte';
 	import { breadcrumbSchema } from '$lib/schema';
 
 	const { data } = $props();
 	const flights = $derived(data.arcs);
 	const markers = $derived(data.markers);
 	const airports = $derived(data.airports);
+	const maxAirportCount = $derived(airports.length > 0 ? airports[0].count : 1);
+	const airportLabels = $derived(
+		airports.map((a: { iata: string; city: string; name: string; count: number }, i: number) => {
+			const importance = 0.25 + 0.55 * (a.count / maxAirportCount);
+			return {
+				id: a.iata.toLowerCase(),
+				iata: a.iata,
+				city: a.city,
+				name: a.name,
+				count: a.count,
+				z: airports.length - i,
+				importance
+			};
+		})
+	);
 
 	let canvasEl: HTMLCanvasElement;
 	let overlayEl: HTMLCanvasElement;
+	let labelHovered = $state(false);
 
 	const THETA = 0.3;
 	const DPR = 2;
@@ -29,7 +46,6 @@
 	let themeBase: [number, number, number] = [0.137, 0.133, 0.118];
 	let themeGlow: [number, number, number] = [0.102, 0.098, 0.086];
 	let themeMarker: [number, number, number] = [0.478, 0.459, 0.408];
-	let themeText = '232, 229, 223';
 	let themeDark = 1;
 
 	function readTheme() {
@@ -40,10 +56,6 @@
 		themeGlow = hexToRgb(s.getPropertyValue('--color-bg').trim());
 		const muted = hexToRgb(s.getPropertyValue('--color-muted').trim());
 		themeMarker = [muted[0] * 0.4, muted[1] * 0.4, muted[2] * 0.4];
-
-		const text = s.getPropertyValue('--color-text').trim();
-		const [tr, tg, tb] = hexToRgb(text);
-		themeText = `${Math.round(tr * 255)}, ${Math.round(tg * 255)}, ${Math.round(tb * 255)}`;
 	}
 
 	const RAY_LENGTH = 0.25; // fraction of arc that the ray tail covers
@@ -65,36 +77,6 @@
 			return { points3D, buffer };
 		})
 	);
-
-	// Pre-compute airport unit direction vectors (rotation-independent)
-	const airportDirs = $derived(
-		airports.map((a: { location: [number, number] }) => {
-			const latRad = (a.location[0] * Math.PI) / 180;
-			const lngRad = (a.location[1] * Math.PI) / 180 - Math.PI;
-			const cosLat = Math.cos(latRad);
-			return {
-				dx: -cosLat * Math.cos(lngRad),
-				dy: Math.sin(latRad),
-				dz: cosLat * Math.sin(lngRad)
-			};
-		})
-	);
-
-	// Pre-allocated placement buffer for label collision detection
-	const placedBuf: { x: number; y: number; w: number; h: number }[] = [];
-	let placedCount = 0;
-
-	// Text measurement cache -- IATA codes are static, font never changes
-	const textWidthCache = new Map<string, number>();
-
-	function getTextWidth(ctx: CanvasRenderingContext2D, text: string): number {
-		let w = textWidthCache.get(text);
-		if (w === undefined) {
-			w = ctx.measureText(text).width;
-			textWidthCache.set(text, w);
-		}
-		return w;
-	}
 
 	function drawArcs(
 		ctx: CanvasRenderingContext2D,
@@ -169,169 +151,6 @@
 			}
 
 			if (pathOpen) ctx.stroke();
-		}
-
-		ctx.restore();
-	}
-
-	// Candidate offsets: [dx, dy, textAlign]
-	const OFFSETS: [number, number, CanvasTextAlign][] = [
-		[6, 0, 'left'],
-		[6, -10, 'left'],
-		[6, 10, 'left'],
-		[-6, 0, 'right'],
-		[-6, -10, 'right'],
-		[-6, 10, 'right'],
-		[0, -10, 'center'],
-		[0, 10, 'center']
-	];
-
-	// Sticky offset index per airport -- only changes when a much better option exists
-	let chosenOffsets: number[] = [];
-
-	function totalOverlap(
-		lx: number,
-		ly: number,
-		lw: number,
-		lh: number,
-		rects: { x: number; y: number; w: number; h: number }[],
-		count: number
-	) {
-		let sum = 0;
-		for (let i = 0; i < count; i++) {
-			const r = rects[i];
-			const ox = Math.max(0, Math.min(lx + lw, r.x + r.w) - Math.max(lx, r.x));
-			const oy = Math.max(0, Math.min(ly + lh, r.y + r.h) - Math.max(ly, r.y));
-			sum += ox * oy;
-		}
-		return sum;
-	}
-
-	function labelRect(
-		px: number,
-		py: number,
-		offsetIdx: number,
-		lw: number,
-		lh: number,
-		fontSize: number
-	) {
-		const [dx, dy, align] = OFFSETS[offsetIdx];
-		let lx = px + dx;
-		if (align === 'right') lx -= lw;
-		else if (align === 'center') lx -= lw / 2;
-		const ly = py + dy - fontSize / 2;
-		return { x: lx, y: ly, w: lw, h: lh };
-	}
-
-	// Project airport to screen using pre-computed unit direction and trig values.
-	// Returns null only for fully behind the globe; otherwise returns depth
-	// that can go slightly negative (for smooth fade at limb).
-	function projectAirport(
-		dx: number,
-		dy: number,
-		dz: number,
-		cp: number,
-		sp: number,
-		ct: number,
-		st: number,
-		cssW: number,
-		cssH: number
-	) {
-		const depth = dx * (-sp * ct) + dy * st + dz * (cp * ct);
-		if (depth < -0.1) return null;
-
-		const vx = dx * cp + dz * sp;
-		const vy = dx * sp * st + dy * ct + dz * (-cp * st);
-
-		const globeRadius = 0.8;
-		const size = cssH;
-		const x = cssW / 2 + vx * globeRadius * (size / 2);
-		const y = cssH / 2 - vy * globeRadius * (size / 2);
-
-		return { x, y, depth };
-	}
-
-	function drawLabels(
-		ctx: CanvasRenderingContext2D,
-		w: number,
-		h: number,
-		cp: number,
-		sp: number,
-		ct: number,
-		st: number
-	) {
-		const cssW = w / DPR;
-		const cssH = h / DPR;
-
-		if (chosenOffsets.length !== airports.length) {
-			chosenOffsets = new Array(airports.length).fill(0);
-		}
-
-		ctx.save();
-		ctx.scale(DPR, DPR);
-
-		const fontSize = 9;
-		ctx.font = `${fontSize}px monospace`;
-		ctx.textBaseline = 'middle';
-		const padding = 2;
-		// Labels fade in over this depth range (0 = limb)
-		const fadeStart = 0.15;
-
-		// Set base text color once; use globalAlpha for per-label opacity
-		ctx.fillStyle = `rgb(${themeText})`;
-
-		placedCount = 0;
-
-		for (let i = 0; i < airports.length; i++) {
-			const a = airports[i];
-			const dir = airportDirs[i];
-			const pt = projectAirport(dir.dx, dir.dy, dir.dz, cp, sp, ct, st, cssW, cssH);
-			if (!pt) continue;
-
-			// Smooth opacity: ramp from 0 at the limb to full at fadeStart
-			const alpha = Math.min(1, Math.max(0, pt.depth / fadeStart));
-			if (alpha < 0.01) continue;
-
-			const lw = getTextWidth(ctx, a.iata) + padding * 2;
-			const lh = fontSize + padding * 2;
-
-			// Score current sticky choice
-			const curRect = labelRect(pt.x, pt.y, chosenOffsets[i], lw, lh, fontSize);
-			const curOverlap = totalOverlap(curRect.x, curRect.y, lw, lh, placedBuf, placedCount);
-
-			if (curOverlap > 0) {
-				let bestIdx = chosenOffsets[i];
-				let bestScore = curOverlap;
-				for (let j = 0; j < OFFSETS.length; j++) {
-					if (j === chosenOffsets[i]) continue;
-					const r = labelRect(pt.x, pt.y, j, lw, lh, fontSize);
-					const score = totalOverlap(r.x, r.y, lw, lh, placedBuf, placedCount);
-					if (score < bestScore) {
-						bestScore = score;
-						bestIdx = j;
-						if (score === 0) break;
-					}
-				}
-				if (bestScore < curOverlap * 0.5) {
-					chosenOffsets[i] = bestIdx;
-				}
-			}
-
-			const rect = labelRect(pt.x, pt.y, chosenOffsets[i], lw, lh, fontSize);
-			// Reuse existing buffer entry or grow
-			if (placedCount < placedBuf.length) {
-				const r = placedBuf[placedCount];
-				r.x = rect.x;
-				r.y = rect.y;
-				r.w = rect.w;
-				r.h = rect.h;
-			} else {
-				placedBuf.push({ x: rect.x, y: rect.y, w: rect.w, h: rect.h });
-			}
-			placedCount++;
-
-			ctx.globalAlpha = alpha;
-			ctx.fillText(a.iata, rect.x + padding, rect.y + lh / 2);
 		}
 
 		ctx.restore();
@@ -417,7 +236,7 @@
 		let animationId: number;
 
 		function animate() {
-			if (pointerInteracting === null) phi += 0.0018;
+			if (pointerInteracting === null && !labelHovered) phi += 0.0018;
 			dragPhi += (pointerMovement / 200 - dragPhi) * 0.1;
 			dragTheta += (pointerMovementY / 300 - dragTheta) * 0.1;
 			const effectiveTheta = Math.max(-0.5, Math.min(1.2, THETA + dragTheta));
@@ -452,7 +271,6 @@
 			const ct = Math.cos(effectiveTheta),
 				st = Math.sin(effectiveTheta);
 			drawArcs(overlayCtx, w, h, cp, sp, ct, st);
-			drawLabels(overlayCtx, w, h, cp, sp, ct, st);
 
 			animationId = requestAnimationFrame(animate);
 		}
@@ -483,10 +301,13 @@
 />
 
 <div class="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden">
-	<div class="relative aspect-square max-h-[calc(100svh_-_16rem)] w-full max-w-5xl">
+	<div class="relative aspect-square max-h-[calc(100svh-16rem)] w-full max-w-5xl">
 		<canvas bind:this={canvasEl} style="cursor: grab" class="absolute inset-0 h-full w-full"
 		></canvas>
 		<canvas bind:this={overlayEl} class="pointer-events-none absolute inset-0 h-full w-full"
 		></canvas>
+		{#each airportLabels as label (label.id)}
+			<AirportLabel {...label} onhover={(h) => (labelHovered = h)} />
+		{/each}
 	</div>
 </div>
