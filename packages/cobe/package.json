@@ -14,7 +14,7 @@
     "chrome:debug": "open -na \"Google Chrome\" --args --new-window --disable-frame-rate-limit --user-data-dir=\"/tmp/chrome_dev_session\" --disable-web-security http://localhost:3000/playground"
   },
   "devDependencies": {
-    "esbuild": "^0.13.14",
+    "esbuild": "^0.27.4",
     "glslx": "^0.3.0",
     "next": "^12.2.4",
     "react": "^18.2.0",
