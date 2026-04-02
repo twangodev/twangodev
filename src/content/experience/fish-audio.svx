@@ -3,6 +3,7 @@ layout: experience
 company: Fish Audio
 role: Founding Engineer
 dateStart: '2025-08-01'
+dateEnd: '2026-03-16'
 logo: fish.svg
 url: https://fish.audio
 tags:
