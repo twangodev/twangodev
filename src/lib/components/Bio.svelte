@@ -46,9 +46,7 @@
 				>
 			{/each}
 		{:else}
-			<DetailItem label="currently">
-				founding engineer at <Link href="https://fish.audio" underline>fish audio</Link>
-			</DetailItem>
+			<DetailItem label="currently">open sourcing & training</DetailItem>
 			<DetailItem label="currently in"
 				>{__CURRENT_LOCATION__}{#if __LOCATION_INFO__}<Tooltip text={__LOCATION_INFO__}
 						><Info size={12} class="ml-1.5 inline translate-y-[0.5px] text-muted" /></Tooltip
