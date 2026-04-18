@@ -11,6 +11,8 @@ jobs:
   metrics:
     runs-on: ubuntu-latest
     continue-on-error: true
+    concurrency:
+      group: ${{ github.workflow }}-metrics-${{ github.ref }}
     steps:
       - name: GitHub Metrics
         uses: lowlighter/metrics@65836723097537a54cd8eb90f61839426b4266b6 # v3.34
@@ -89,6 +91,8 @@ jobs:
   build:
     needs: [metrics, arc-gen]
     runs-on: ubuntu-latest
+    concurrency:
+      group: ${{ github.workflow }}-build-${{ github.ref }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
