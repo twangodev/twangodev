@@ -134,3 +134,5 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5
+      - name: Bust camo cache
+        uses: twangodev/camo-buster@v1.0.0
