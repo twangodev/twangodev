@@ -7,12 +7,15 @@
 		description: string;
 		date: string;
 		updated?: string;
+		published?: boolean;
 		tags: string[];
 		category: string;
 		children: Snippet;
 	}
 
-	let { title, date, updated, tags, children }: Props = $props();
+	let { title, date, updated, published = true, tags, children }: Props = $props();
+
+	const displayTags = $derived(published ? tags : ['unpublished', ...tags]);
 
 	const dateStr = $derived(
 		new Date(date).toLocaleDateString('en-US', {
@@ -42,9 +45,9 @@
 				<span>&middot; Updated {updatedStr}</span>
 			{/if}
 		</div>
-		{#if tags.length > 0}
+		{#if displayTags.length > 0}
 			<div class="flex flex-wrap gap-1.5">
-				{#each tags as tag (tag)}
+				{#each displayTags as tag (tag)}
 					<TagPill {tag} />
 				{/each}
 			</div>

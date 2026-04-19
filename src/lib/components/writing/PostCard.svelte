@@ -15,6 +15,8 @@
 			day: 'numeric'
 		})
 	);
+
+	const displayTags = $derived(post.published ? post.tags : ['unpublished', ...post.tags]);
 </script>
 
 <article class="flex flex-col gap-2">
@@ -29,9 +31,9 @@
 	{#if post.description}
 		<p class="text-sm leading-relaxed text-text/80">{post.description}</p>
 	{/if}
-	{#if post.tags.length > 0}
+	{#if displayTags.length > 0}
 		<div class="flex flex-wrap gap-1.5">
-			{#each post.tags as tag (tag)}
+			{#each displayTags as tag (tag)}
 				<TagPill {tag} />
 			{/each}
 		</div>
