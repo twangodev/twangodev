@@ -28,7 +28,7 @@
 	]}
 />
 
-<div class="flex max-w-none flex-col gap-6 pb-24">
+<div class="mx-auto flex w-full max-w-2xl flex-col gap-6 pb-24">
 	<Component />
 
 	{#if data.metadata.series && data.seriesPosts.length > 1}
