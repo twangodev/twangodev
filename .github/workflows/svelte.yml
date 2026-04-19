@@ -22,6 +22,7 @@ jobs:
           filename: github-metrics.svg
           output_action: none
           base: header, activity, community, repositories, metadata
+          base_hireable: yes
           commits_authoring: .user.login, 48845764+twangodev@users.noreply.github.com, james@fish.audio
           repositories_affiliations: owner, collaborator, organization_member
           repositories: 1000
