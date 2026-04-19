@@ -1,0 +1,91 @@
+---
+title: How Good is Gemma 4 at ASR Tasks? Benchmarking Against the Open ASR Leaderboard
+description: Benchmarking Gemma 4 E2B and E4B across all eight Open ASR Leaderboard short-form datasets. WER, RTFx, where a general-purpose multimodal LLM holds up, and where it doesn't.
+date: '2026-04-18'
+published: false
+tags:
+  - asr
+  - gemma
+  - benchmarks
+  - multimodal
+category: engineering
+---
+
+<script>
+	import WerHeatmap from '$lib/components/writing/WerHeatmap.svelte';
+	import WerRtfxScatter from '$lib/components/writing/WerRtfxScatter.svelte';
+	import ErrorCompositionChart from '$lib/components/writing/ErrorCompositionChart.svelte';
+	import DurationHallucinationChart from '$lib/components/writing/DurationHallucinationChart.svelte';
+	import StatCard from '$lib/components/writing/StatCard.svelte';
+	import EvalDataTable from '$lib/components/writing/EvalDataTable.svelte';
+</script>
+
+Gemma 4 does audio. I ran both variants, E2B (2B) and E4B (4B), against all eight Open ASR Leaderboard short-form datasets. Performance is **decent on clean speech** and **unreliable on harder inputs**, so it's useful as a general-purpose capability and for understanding. **Don't swap it in for a dedicated ASR model.**
+
+<div class="not-prose my-10 grid grid-cols-2 gap-5 sm:grid-cols-4">
+	<StatCard value="4.17%" label="Best WER" sublabel="E4B · LS Clean" emphasis tilt="left" />
+	<StatCard value="9.81%" label="E4B mean WER" sublabel="7 datasets, ex-AMI" tilt="right" />
+	<StatCard value="2,203%" label="E2B on clips <1s" sublabel="n=6,232 · 1,766% ins rate" tilt="left" />
+	<StatCard value="40.6×" label="E2B RTFx" sublabel="LS Clean · vLLM, unbatched" tilt="right" />
+</div>
+
+## Setup
+
+- Harness: [gemma4-audio](https://github.com/twangodev/gemma4-audio), `jiwer` for WER/CER/MER/WIL.
+- Backend: **vLLM**, bf16. `batch_size=16` in the config, but the audio path is currently broken for batching, so everything runs one sample at a time. RTFx numbers are a floor.
+- Hardware: **RTX 6000 Pro Blackwell, 96 GB**.
+- Prompt:
+
+```
+Transcribe the following speech segment in its original language.
+* Only output the transcription, with no newlines.
+* When transcribing numbers, write the digits, i.e. write 1.7
+  and not one point seven, and write 3 instead of three.
+```
+
+## WER across the suite
+
+<WerHeatmap />
+
+E4B stays within 2–3 WER points of the leaders on clean read speech. The gap widens on noisy spontaneous audio. On LS Clean specifically, **E4B (4.17%) beats Whisper base.en (4.25%)**. A 4B generalist holding its own against a 74M CTC model isn't bad.
+
+E2B on AMI: 202% WER. The model wrote about twice as many words as the reference. E4B lands at 41%. Still bad, but at least legible.
+
+## Speed vs accuracy
+
+<WerRtfxScatter />
+
+Competitor RTFx is batched. Ours is single-stream. Apples to oranges. Once vLLM batching lands, the Gemma dots shift right. Probably not all the way to Parakeet's 3,386×.
+
+## Error composition
+
+<ErrorCompositionChart />
+
+Insertions climb on noisy data. LS Clean: 0.49% insertion rate. AMI: 20% (E4B), **180% (E2B)**. That's the LM prior making things up when the audio is hard to decode.
+
+CER/WER tells the same story from another angle. Clean ASR runs around 0.43 on clean data, and E2B matches that on LS Clean. On AMI, E2B's ratio jumps to **1.14**. CER exceeds WER because each hallucinated insertion is a long run of characters. The failure mode is generation, not misrecognition.
+
+## Where Gemma 4 actually breaks
+
+<DurationHallucinationChart />
+
+Bucket every sample by audio duration and you get a U-shape. Anything over 3s is fine. Under that it falls apart. Sub-1s is a cliff.
+
+- **Sub-1s, E2B**: 2,203% mean WER, 1,766% insertion rate, **8.7% are literal refusals** ("I'm sorry, I cannot…").
+- **Sub-1s, E4B**: 220% / 164% / 0.9%. Better by an order of magnitude. Still broken.
+
+When the audio is too short to constrain the token distribution, the instruction-tuned prior takes over. More parameters help. Neither variant is speech-first.
+
+AMI-wide refusal rate for E2B: **3.98%** (503 samples). A five-line regex would catch almost all of them.
+
+### The worst single sample
+
+1.3-second LibriSpeech clip. Reference: `a story`. E2B produced:
+
+> I'm sorry, but you haven't provided any audio or text for me to transcribe. Please provide the audio or text you would like me to transcribe.
+
+WER of 14.0. 26 insertions. A CTC model physically can't do this; *I'm sorry* isn't in its vocabulary. E4B got the same clip right.
+
+## Raw data
+
+<EvalDataTable />

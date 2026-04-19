@@ -1,0 +1,48 @@
+{
+  "config": {
+    "model": "google/gemma-4-E4B-it",
+    "dataset": "librispeech",
+    "split": "test.other",
+    "backend": "vllm",
+    "quantization": null,
+    "limit": null,
+    "seed": 42,
+    "output_dir": "eval_results",
+    "output_json": null,
+    "output_csv": null,
+    "quiet": false,
+    "streaming": false,
+    "prompt": "Transcribe the following speech segment in its original language.\n* Only output the transcription, with no newlines.\n* When transcribing numbers, write the digits, i.e. write 1.7 and not one point seven, and write 3 instead of three.",
+    "max_output_tokens": null,
+    "chunk_duration_s": null,
+    "batch_size": 16
+  },
+  "corpus_metrics": {
+    "wer": 0.09938733832539143,
+    "cer": 0.048863506735797056,
+    "mer": 0.09844355790301736,
+    "wil": 0.16542923007704557,
+    "substitution_rate": 0.07289539369185387,
+    "insertion_rate": 0.009587020648967551,
+    "deletion_rate": 0.01690492398457,
+    "latency": {
+      "mean": 0.23041470337847034,
+      "p50": 0.20011604903265834,
+      "p95": 0.47742673279717557
+    },
+    "rtfx": {
+      "mean": 27.620839304254993,
+      "p50": 27.021908468906656,
+      "p95": 37.10010079937717
+    },
+    "audio_duration": {
+      "mean": 6.542895585233072,
+      "min": 1.25,
+      "max": 34.51,
+      "p50": 5.15,
+      "total": 19229.570125
+    },
+    "num_samples": 2939,
+    "bleu": null
+  }
+}

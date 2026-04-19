@@ -1,0 +1,48 @@
+{
+  "config": {
+    "model": "google/gemma-4-E4B-it",
+    "dataset": "earnings22",
+    "split": "test",
+    "backend": "vllm",
+    "quantization": null,
+    "limit": null,
+    "seed": 42,
+    "output_dir": "eval_results",
+    "output_json": null,
+    "output_csv": null,
+    "quiet": false,
+    "streaming": false,
+    "prompt": "Transcribe the following speech segment in its original language.\n* Only output the transcription, with no newlines.\n* When transcribing numbers, write the digits, i.e. write 1.7 and not one point seven, and write 3 instead of three.",
+    "max_output_tokens": null,
+    "chunk_duration_s": null,
+    "batch_size": 16
+  },
+  "corpus_metrics": {
+    "wer": 0.18697723879833944,
+    "cer": 0.12172044819426339,
+    "mer": 0.1784766143515265,
+    "wil": 0.25868767175011187,
+    "substitution_rate": 0.09092210474651834,
+    "insertion_rate": 0.04762878586474161,
+    "deletion_rate": 0.04842634818707949,
+    "latency": {
+      "mean": 0.22995347669594457,
+      "p50": 0.21480685798451304,
+      "p95": 0.45896755810827017
+    },
+    "rtfx": {
+      "mean": 28.51903904484726,
+      "p50": 28.162309918273824,
+      "p95": 46.444160605919386
+    },
+    "audio_duration": {
+      "mean": 7.12854683509668,
+      "min": 0.2200625,
+      "max": 36.36,
+      "p50": 6.14,
+      "total": 19539.346875
+    },
+    "num_samples": 2741,
+    "bleu": null
+  }
+}
