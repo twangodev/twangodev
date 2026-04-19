@@ -18,7 +18,7 @@ export function getAllPosts(): PostMetadata[] {
 			...mod.metadata,
 			slug: slugFromPath(path)
 		}))
-		.filter((post) => post.published)
+		.filter((post) => import.meta.env.DEV || post.published)
 		.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 }
 
@@ -28,7 +28,7 @@ export function getPostBySlug(
 	const entry = Object.entries(modules).find(([path]) => slugFromPath(path) === slug);
 	if (!entry) return undefined;
 	const [path, mod] = entry;
-	if (!mod.metadata.published) return undefined;
+	if (!import.meta.env.DEV && !mod.metadata.published) return undefined;
 	return {
 		metadata: { ...mod.metadata, slug: slugFromPath(path) },
 		component: mod.default
