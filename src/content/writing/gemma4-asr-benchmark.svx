@@ -1,13 +1,11 @@
 ---
 title: How Good is Gemma 4 at ASR Tasks? Benchmarking Against the Open ASR Leaderboard
 description: Benchmarking Gemma 4 E2B and E4B across all eight Open ASR Leaderboard short-form datasets. WER, RTFx, where a general-purpose multimodal LLM holds up, and where it doesn't.
-date: '2026-04-18'
-published: false
+date: '2026-04-19'
+published: true
 tags:
-  - asr
-  - gemma
-  - benchmarks
-  - multimodal
+  - ml
+  - benchmark
 category: engineering
 ---
 
