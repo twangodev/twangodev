@@ -56,7 +56,7 @@
 		class="bio-layout flex flex-1 flex-col gap-8 lg:grid lg:grid-rows-[1fr] lg:items-stretch lg:gap-12"
 		style:grid-template-columns={gridColumns}
 	>
-		<aside class="flex flex-col justify-center overflow-hidden">
+		<aside class="flex flex-col justify-center overflow-hidden lg:sticky lg:top-1/2 lg:-translate-y-1/2 lg:self-start">
 			<div class="lg:min-w-80">
 				<Bio
 					compact={collapsed}
@@ -69,7 +69,7 @@
 		</aside>
 		{#if !isRoot}
 			<div
-				class="hidden items-center justify-center overflow-hidden transition-opacity duration-300 select-none lg:flex"
+				class="hidden items-center justify-center overflow-hidden transition-opacity duration-300 select-none lg:sticky lg:top-1/2 lg:flex lg:-translate-y-1/2 lg:self-start"
 				class:opacity-0={collapsed}
 			>
 				<button
