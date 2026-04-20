@@ -16,7 +16,7 @@
 		"clsx": "^2.1.1",
 		"cobe": "workspace:*",
 		"d3-scale": "^4.0.2",
-		"eslint": "^9.39.2",
+		"eslint": "^10.2.1",
 		"eslint-config-prettier": "^10.1.8",
 		"eslint-plugin-svelte": "^3.14.0",
 		"feed": "^5.2.1",
