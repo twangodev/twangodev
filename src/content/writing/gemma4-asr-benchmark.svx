@@ -7,6 +7,9 @@ tags:
   - ml
   - benchmark
 category: engineering
+series:
+  name: gemma4
+  order: 1
 ---
 
 <script>

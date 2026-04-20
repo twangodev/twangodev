@@ -82,26 +82,6 @@
 						</td>
 					</tr>
 				{/each}
-				<tr class="border-t border-subtle">
-					<td class="px-3 py-2 text-text">Open ASR Leaderboard</td>
-					<td colspan="2" class="px-3 py-2">
-						<a
-							class={linkClass}
-							href="/data/open_asr_en_shortform.csv"
-							target="_blank"
-							rel="noopener">csv</a
-						>
-						<span class="text-muted">· Apr 2026</span>
-					</td>
-					<td class="px-3 py-2">
-						<a
-							class={linkClass}
-							href="https://github.com/huggingface/open_asr_leaderboard"
-							target="_blank"
-							rel="noopener">per repo</a
-						>
-					</td>
-				</tr>
 			</tbody>
 		</table>
 	</div>
