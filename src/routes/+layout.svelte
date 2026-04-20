@@ -44,7 +44,6 @@
 <ModeWatcher defaultMode="dark" disableHeadScriptInjection />
 <svelte:head>
 	<link rel="icon" href={favicon} />
-	<link rel="alternate" type="application/rss+xml" title="twango.dev" href="/rss.xml" />
 	{@html `<script type="application/ld+json">${JSON.stringify(websiteSchema())}</script>`}
 </svelte:head>
 

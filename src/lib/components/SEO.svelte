@@ -45,6 +45,25 @@
 		<link rel="canonical" href={canonicalUrl} />
 	{/if}
 
+	<link
+		rel="alternate"
+		type="application/rss+xml"
+		title="{site.name} RSS"
+		href="{site.url}/rss.xml"
+	/>
+	<link
+		rel="alternate"
+		type="application/atom+xml"
+		title="{site.name} Atom"
+		href="{site.url}/atom.xml"
+	/>
+	<link
+		rel="alternate"
+		type="application/feed+json"
+		title="{site.name} JSON Feed"
+		href="{site.url}/feed.json"
+	/>
+
 	<!-- Open Graph -->
 	<meta property="og:title" content={fullTitle} />
 	<meta property="og:description" content={description} />
