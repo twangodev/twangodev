@@ -21,6 +21,7 @@ jobs:
           user: ${{ github.repository_owner }}
           filename: github-metrics.svg
           output_action: none
+          debug: yes
           base: header, activity, community, repositories, metadata
           base_hireable: yes
           commits_authoring: .user.login, 48845764+twangodev@users.noreply.github.com, james@fish.audio
