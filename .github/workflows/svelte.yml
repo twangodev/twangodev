@@ -13,31 +13,40 @@ jobs:
     continue-on-error: true
     concurrency:
       group: ${{ github.workflow }}-metrics-${{ github.ref }}
+    env:
+      METRICS_IMAGE: ghcr.io/lowlighter/metrics:v3.34
+      METRICS_RENDERS: /metrics_renders
+      METRICS_MAX_ATTEMPTS: 3
     steps:
-      - name: GitHub Metrics
-        uses: lowlighter/metrics@65836723097537a54cd8eb90f61839426b4266b6 # v3.34
+      - name: Checkout scripts
+        uses: actions/checkout@v6
         with:
-          token: ${{ secrets.METRICS_TOKEN || secrets.GITHUB_TOKEN }}
-          user: ${{ github.repository_owner }}
-          filename: github-metrics.svg
-          output_action: none
-          base: header, activity, community, repositories, metadata
-          base_hireable: yes
-          commits_authoring: .user.login, 48845764+twangodev@users.noreply.github.com, james@fish.audio
-          repositories_affiliations: owner, collaborator, organization_member
-          repositories: 1000
-          repositories_batch: 50
-          base_indepth: yes
-          plugin_languages: yes
-          plugin_languages_ignored: markdown
-          plugin_languages_limit: 0
-          plugin_languages_sections: most-used
-          plugin_languages_details: percentage
-          plugin_languages_other: no
-          plugin_people: yes
-          plugin_people_types: followers, following
-          plugin_people_limit: 24
-          plugin_people_size: 28
+          sparse-checkout: .github/scripts
+
+      - name: GitHub Metrics (with retry)
+        env:
+          INPUT_TOKEN: ${{ secrets.METRICS_TOKEN || secrets.GITHUB_TOKEN }}
+          INPUT_USER: ${{ github.repository_owner }}
+          INPUT_FILENAME: github-metrics.svg
+          INPUT_OUTPUT_ACTION: none
+          INPUT_BASE: header, activity, community, repositories, metadata
+          INPUT_BASE_HIREABLE: "yes"
+          INPUT_COMMITS_AUTHORING: .user.login, 48845764+twangodev@users.noreply.github.com, james@fish.audio
+          INPUT_REPOSITORIES_AFFILIATIONS: owner, collaborator, organization_member
+          INPUT_REPOSITORIES: "1000"
+          INPUT_REPOSITORIES_BATCH: "50"
+          INPUT_BASE_INDEPTH: "yes"
+          INPUT_PLUGIN_LANGUAGES: "yes"
+          INPUT_PLUGIN_LANGUAGES_IGNORED: markdown
+          INPUT_PLUGIN_LANGUAGES_LIMIT: "0"
+          INPUT_PLUGIN_LANGUAGES_SECTIONS: most-used
+          INPUT_PLUGIN_LANGUAGES_DETAILS: percentage
+          INPUT_PLUGIN_LANGUAGES_OTHER: "no"
+          INPUT_PLUGIN_PEOPLE: "yes"
+          INPUT_PLUGIN_PEOPLE_TYPES: followers, following
+          INPUT_PLUGIN_PEOPLE_LIMIT: "24"
+          INPUT_PLUGIN_PEOPLE_SIZE: "28"
+        run: npx -y tsx .github/scripts/generate-metrics.ts
 
       - name: WakaTime & Last.fm Metrics
         uses: lowlighter/metrics@65836723097537a54cd8eb90f61839426b4266b6 # v3.34
