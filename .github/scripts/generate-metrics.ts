@@ -5,6 +5,7 @@ import { mkdirSync, readFileSync } from "node:fs"
 const IMAGE = process.env.METRICS_IMAGE ?? "ghcr.io/lowlighter/metrics:v3.34"
 const RENDERS = process.env.METRICS_RENDERS ?? "/metrics_renders"
 const MAX_ATTEMPTS = Number(process.env.METRICS_MAX_ATTEMPTS ?? "3")
+const ACTION_REF = process.env.METRICS_ACTION_REF ?? "v3.34"
 const SVG = `${RENDERS}/github-metrics.svg`
 
 const run = (cmd: string, args: string[]) =>
@@ -17,8 +18,19 @@ try {
 }
 run("docker", ["pull", IMAGE])
 
-// lowlighter/metrics expects URI-encoded INPUT_* values, plus the GHA runtime
-// env vars it filters on. Replicates the .env construction in its action.yml.
+// lowlighter/metrics's boolean parser returns `defaulted` as-is when the input
+// is an empty string, and `default: no` in its metadata.yml is loaded as the
+// *string* "no" by js-yaml 4 (truthy). The official action sidesteps this by
+// passing the literal sentinel "<default-value>" for unspecified inputs, which
+// routes through a separate code path that re-runs the regex. We mirror that
+// by defaulting every action input we don't set.
+const actionYml = await fetch(
+	`https://raw.githubusercontent.com/lowlighter/metrics/${ACTION_REF}/action.yml`,
+).then((r) => r.text())
+const inputKeys = [...actionYml.matchAll(/^  ([a-z_]+):\s*$/gm)].map(
+	([, k]) => k,
+)
+
 const dockerArgs = [
 	"run",
 	"--init",
@@ -28,12 +40,19 @@ const dockerArgs = [
 	"--volume",
 	`${RENDERS}:/renders`,
 ]
+const passed = new Set<string>()
 for (const [key, value] of Object.entries(process.env)) {
 	if (value === undefined) continue
-	if (key.startsWith("INPUT_"))
+	if (key.startsWith("INPUT_")) {
 		dockerArgs.push("--env", `${key}=${encodeURIComponent(value)}`)
-	else if (/^(GITHUB|ACTIONS|CI|TZ)/.test(key))
+		passed.add(key)
+	} else if (/^(GITHUB|ACTIONS|CI|TZ)/.test(key))
 		dockerArgs.push("--env", `${key}=${value}`)
+}
+for (const key of inputKeys) {
+	const envKey = `INPUT_${key.toUpperCase()}`
+	if (!passed.has(envKey))
+		dockerArgs.push("--env", `${envKey}=${encodeURIComponent("<default-value>")}`)
 }
 dockerArgs.push(IMAGE)
 
