@@ -3,29 +3,28 @@ from collections import Counter
 from os import environ
 
 import airportsdata
-import requests
 from bs4 import BeautifulSoup
+from curl_cffi import requests
 from dotenv import load_dotenv
-from fake_useragent import UserAgent
 
 load_dotenv()
 
 FLIGHT_LIST_API = "https://my.flightradar24.com/public-scripts/flight-list/{username}/{start_row}//"
 BATCH_SIZE = 50
 
-ua = UserAgent()
 AIRPORTS_DB = airportsdata.load("IATA")
 
 
-def get_headers() -> dict:
+def get_headers(username: str) -> dict:
     return {
-        "User-Agent": ua.random,
         "Accept": "application/json, text/html, */*",
+        "Accept-Language": "en-US,en;q=0.9",
+        "Referer": f"https://my.flightradar24.com/{username}",
     }
 
 
-def fetch_json(url: str, timeout: float = 10.0) -> dict:
-    resp = requests.get(url, headers=get_headers(), timeout=timeout)
+def fetch_json(url: str, username: str, timeout: float = 10.0) -> dict:
+    resp = requests.get(url, headers=get_headers(username), impersonate="chrome", timeout=timeout)
     resp.raise_for_status()
     return resp.json()
 
@@ -67,7 +66,7 @@ def fetch_all_routes(username: str) -> list[tuple[str, str, str]]:
 
     while True:
         url = FLIGHT_LIST_API.format(username=username, start_row=start_row)
-        data = fetch_json(url)
+        data = fetch_json(url, username)
 
         if not data:
             break
