@@ -23,6 +23,7 @@ export type FlightStatus =
 	| null;
 
 const HORIZON_MS = 24 * 60 * 60 * 1000;
+const MAX_LAYOVER_MS = 24 * 60 * 60 * 1000;
 const TICK_MS = 1_000;
 
 class FlightTracker {
@@ -79,7 +80,12 @@ class FlightTracker {
 			if (!Number.isFinite(arrMs) || arrMs > this.now) continue;
 			if (!landed || arrMs > landed.arrMs) landed = { arc: a, arrMs };
 		}
-		if (landed && landed.arc.toIata && landed.arc.toIata === next.arc.fromIata) {
+		if (
+			landed &&
+			landed.arc.toIata &&
+			landed.arc.toIata === next.arc.fromIata &&
+			next.depMs - landed.arrMs <= MAX_LAYOVER_MS
+		) {
 			return {
 				kind: 'layover',
 				landedArc: landed.arc,
