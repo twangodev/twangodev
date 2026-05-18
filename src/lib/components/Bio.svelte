@@ -10,6 +10,7 @@
 	} from '$lib/components/ui';
 	import Handwriting from '$lib/components/ui/Handwriting.svelte';
 	import { Info } from '@lucide/svelte';
+	import { flight } from '$lib/flight.svelte';
 
 	declare const __CURRENT_LOCATION__: string;
 	declare const __LOCATION_INFO__: string;
@@ -23,6 +24,10 @@
 	}
 
 	let { compact = false, heading, description, details, handwriting }: Props = $props();
+
+	const inFlight = $derived(flight.status?.kind === 'flying');
+	const location = $derived(inFlight ? 'the cloud' : __CURRENT_LOCATION__);
+	const locationInfo = $derived(inFlight ? 'high availability achieved' : __LOCATION_INFO__);
 </script>
 
 <Heading>
@@ -48,7 +53,7 @@
 		{:else}
 			<DetailItem label="currently">open sourcing & training</DetailItem>
 			<DetailItem label="currently in"
-				>{__CURRENT_LOCATION__}{#if __LOCATION_INFO__}<Tooltip text={__LOCATION_INFO__}
+				>{location}{#if locationInfo}<Tooltip text={locationInfo}
 						><Info size={12} class="ml-1.5 inline translate-y-[0.5px] text-muted" /></Tooltip
 					>{/if}</DetailItem
 			>

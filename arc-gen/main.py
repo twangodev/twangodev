@@ -63,14 +63,15 @@ def parse_time(value) -> str:
     return value.strip()
 
 
-def parse_route(row: list) -> tuple[str, str, str, str, str]:
-    """Parse a flight row and return (date, from_iata, to_iata, dep_time, arr_time)."""
+def parse_route(row: list) -> tuple[str, str, str, str, str, str]:
+    """Parse a flight row and return (date, from_iata, to_iata, dep_time, arr_time, flight_number)."""
     return (
         parse_date(row[0]),
         parse_iata(row[2]),
         parse_iata(row[3]),
         parse_time(row[5]) if len(row) > 5 else "",
         parse_time(row[6]) if len(row) > 6 else "",
+        parse_time(row[1]) if len(row) > 1 else "",
     )
 
 
@@ -143,7 +144,7 @@ def fetch_all_routes(username: str) -> list[tuple[str, str, str]]:
 def routes_to_arcs(routes: list[tuple[str, str, str]]) -> list[dict]:
     """Convert routes to arc data with coordinates."""
     arcs = []
-    for date, from_iata, to_iata, dep_time, arr_time in routes:
+    for date, from_iata, to_iata, dep_time, arr_time, flight_number in routes:
         from_airport = AIRPORTS_DB.get(from_iata)
         to_airport = AIRPORTS_DB.get(to_iata)
 
@@ -153,9 +154,13 @@ def routes_to_arcs(routes: list[tuple[str, str, str]]) -> list[dict]:
                 "startLng": from_airport["lon"],
                 "endLat": to_airport["lat"],
                 "endLng": to_airport["lon"],
+                "fromIata": from_iata,
+                "toIata": to_iata,
             }
             if date:
                 arc["date"] = date
+            if flight_number:
+                arc["flightNumber"] = flight_number
             dep_utc, arr_utc = compute_utc_times(
                 date, dep_time, arr_time, from_airport.get("tz"), to_airport.get("tz")
             )

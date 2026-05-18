@@ -1,11 +1,14 @@
 <script lang="ts">
 	import './layout.css';
 	import { ModeWatcher } from 'mode-watcher';
+	import { onMount } from 'svelte';
 	import { page } from '$app/state';
 	import { afterNavigate, onNavigate } from '$app/navigation';
+	import { flight } from '$lib/flight.svelte';
 	import favicon from '$lib/assets/favicon.svg';
 	import { websiteSchema } from '$lib/schema';
 	import Header from '$lib/components/Header.svelte';
+	import FlightBanner from '$lib/components/FlightBanner.svelte';
 	import Footer from '$lib/components/Footer.svelte';
 	import Bio from '$lib/components/Bio.svelte';
 	import BioToggle from '$lib/components/BioToggle.svelte';
@@ -14,6 +17,8 @@
 	let { children } = $props();
 
 	let userOverride = $state<boolean | null>(null);
+
+	onMount(() => flight.start());
 
 	const pageWantsExpanded = $derived(page.data.bioExpanded ?? page.url.pathname === '/');
 	const collapsed = $derived(userOverride !== null ? userOverride : !pageWantsExpanded);
@@ -47,49 +52,52 @@
 	{@html `<script type="application/ld+json">${JSON.stringify(websiteSchema())}</script>`}
 </svelte:head>
 
-<div
-	class="flex min-h-svh flex-col gap-10 bg-bg px-6 py-6 text-text antialiased sm:px-10 md:gap-12 md:px-16"
->
-	<Header />
+<div class="flex min-h-svh flex-col bg-bg">
+	<FlightBanner />
 	<div
-		class="bio-layout flex flex-1 flex-col gap-8 lg:grid lg:grid-rows-[1fr] lg:items-stretch lg:gap-12"
-		style:grid-template-columns={gridColumns}
+		class="flex flex-1 flex-col gap-10 px-6 py-6 text-text antialiased sm:px-10 md:gap-12 md:px-16"
 	>
-		<aside
-			class="flex flex-col justify-center overflow-hidden lg:sticky lg:top-1/2 lg:-translate-y-1/2 lg:self-start"
+		<Header />
+		<div
+			class="bio-layout flex flex-1 flex-col gap-8 lg:grid lg:grid-rows-[1fr] lg:items-stretch lg:gap-12"
+			style:grid-template-columns={gridColumns}
 		>
-			<div class="lg:min-w-80">
-				<Bio
-					compact={collapsed}
-					heading={page.data.bioHeading}
-					description={page.data.bioDescription}
-					details={page.data.bioDetails}
-					handwriting={page.data.bioHandwriting}
-				/>
-			</div>
-		</aside>
-		{#if !isRoot}
-			<div
-				class="hidden items-center justify-center overflow-hidden transition-opacity duration-300 select-none lg:sticky lg:top-1/2 lg:flex lg:-translate-y-1/2 lg:self-start"
-				class:opacity-0={collapsed}
+			<aside
+				class="flex flex-col justify-center overflow-hidden lg:sticky lg:top-1/2 lg:-translate-y-1/2 lg:self-start"
 			>
-				<button
-					onclick={toggle}
-					aria-label="Collapse bio"
-					class="cursor-pointer font-mono text-6xl text-subtle transition-colors hover:text-accent"
-					tabindex={collapsed ? -1 : 0}
+				<div class="lg:min-w-80">
+					<Bio
+						compact={collapsed}
+						heading={page.data.bioHeading}
+						description={page.data.bioDescription}
+						details={page.data.bioDetails}
+						handwriting={page.data.bioHandwriting}
+					/>
+				</div>
+			</aside>
+			{#if !isRoot}
+				<div
+					class="hidden items-center justify-center overflow-hidden transition-opacity duration-300 select-none lg:sticky lg:top-1/2 lg:flex lg:-translate-y-1/2 lg:self-start"
+					class:opacity-0={collapsed}
 				>
-					/
-				</button>
-			</div>
+					<button
+						onclick={toggle}
+						aria-label="Collapse bio"
+						class="cursor-pointer font-mono text-6xl text-subtle transition-colors hover:text-accent"
+						tabindex={collapsed ? -1 : 0}
+					>
+						/
+					</button>
+				</div>
+			{/if}
+			<Divider width="full" spacing="md" class="lg:hidden" />
+			<main class="flex flex-1 flex-col justify-center">
+				{@render children()}
+			</main>
+		</div>
+		{#if !isRoot && !page.error}
+			<BioToggle {collapsed} ontoggle={toggle} />
 		{/if}
-		<Divider width="full" spacing="md" class="lg:hidden" />
-		<main class="flex flex-1 flex-col justify-center">
-			{@render children()}
-		</main>
+		<Footer />
 	</div>
-	{#if !isRoot && !page.error}
-		<BioToggle {collapsed} ontoggle={toggle} />
-	{/if}
-	<Footer />
 </div>

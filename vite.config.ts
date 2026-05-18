@@ -31,10 +31,12 @@ interface FlightLocation {
 function getFlightLocation(): FlightLocation {
 	try {
 		const data = JSON.parse(readFileSync('static/globe-arcs.json', 'utf-8'));
-		const now = new Date().toISOString().slice(0, 10);
+		const now = Date.now();
 
 		type Arc = {
 			date?: string;
+			depUtc?: string;
+			arrUtc?: string;
 			startLat: number;
 			startLng: number;
 			endLat: number;
@@ -42,15 +44,15 @@ function getFlightLocation(): FlightLocation {
 		};
 		type Airport = { lat: number; lng: number; iata: string; city: string; subd?: string };
 
-		const dated = data.arcs.filter((a: Arc) => a.date);
-		const past = dated
-			.filter((a: Arc) => a.date! <= now)
-			.sort((a: Arc, b: Arc) => b.date!.localeCompare(a.date!));
-		const future = dated
-			.filter((a: Arc) => a.date! > now)
-			.sort((a: Arc, b: Arc) => a.date!.localeCompare(b.date!));
+		const timed = data.arcs.filter((a: Arc) => a.depUtc && a.arrUtc);
+		const landed = timed
+			.filter((a: Arc) => Date.parse(a.arrUtc!) <= now)
+			.sort((a: Arc, b: Arc) => Date.parse(b.arrUtc!) - Date.parse(a.arrUtc!));
+		const upcoming = timed
+			.filter((a: Arc) => Date.parse(a.depUtc!) > now)
+			.sort((a: Arc, b: Arc) => Date.parse(a.depUtc!) - Date.parse(b.depUtc!));
 
-		const latest: Arc | undefined = past[0];
+		const latest: Arc | undefined = landed[0];
 		if (!latest) return { location: 'unknown', info: '' };
 
 		const findAirport = (lat: number, lng: number): Airport | undefined =>
@@ -64,14 +66,13 @@ function getFlightLocation(): FlightLocation {
 		const location = subd ? `${city}, ${subd}` : city;
 
 		const parts: string[] = [];
-		const now_ = new Date();
-		parts.push(`flew into ${dest.iata} ${format(latest.date!, now_)}`);
+		parts.push(`flew into ${dest.iata} ${format(latest.arrUtc!)}`);
 
-		const next: Arc | undefined = future[0];
+		const next: Arc | undefined = upcoming[0];
 		if (next) {
 			const nextDest = findAirport(next.endLat, next.endLng);
 			if (nextDest) {
-				parts.push(`next flight to ${nextDest.iata} ${format(next.date!, now_)}`);
+				parts.push(`next flight to ${nextDest.iata} ${format(next.depUtc!)}`);
 			}
 		}
 
