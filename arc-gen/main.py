@@ -1,6 +1,8 @@
 import json
 from collections import Counter
+from datetime import datetime, timedelta, timezone
 from os import environ
+from zoneinfo import ZoneInfo
 
 import airportsdata
 from bs4 import BeautifulSoup
@@ -54,9 +56,61 @@ def parse_date(html: str) -> str:
     return ""
 
 
-def parse_route(row: list) -> tuple[str, str, str]:
-    """Parse a flight row and return (date, from_iata, to_iata)."""
-    return parse_date(row[0]), parse_iata(row[2]), parse_iata(row[3])
+def parse_time(value) -> str:
+    """Extract HH:MM time string from a row field."""
+    if not isinstance(value, str):
+        return ""
+    return value.strip()
+
+
+def parse_route(row: list) -> tuple[str, str, str, str, str]:
+    """Parse a flight row and return (date, from_iata, to_iata, dep_time, arr_time)."""
+    return (
+        parse_date(row[0]),
+        parse_iata(row[2]),
+        parse_iata(row[3]),
+        parse_time(row[5]) if len(row) > 5 else "",
+        parse_time(row[6]) if len(row) > 6 else "",
+    )
+
+
+def to_utc_iso(dt: datetime) -> str:
+    return dt.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def compute_utc_times(
+    date: str,
+    dep_time: str,
+    arr_time: str,
+    from_tz: str | None,
+    to_tz: str | None,
+) -> tuple[str | None, str | None]:
+    """Convert local dep/arr times to UTC ISO strings.
+
+    Arrival date is inferred by picking the candidate (dep_date ± 1 day) that
+    yields a positive duration under 24 hours.
+    """
+    if not (date and from_tz):
+        return None, None
+
+    dep_utc = None
+    if dep_time:
+        dep_local = datetime.strptime(f"{date} {dep_time}", "%Y-%m-%d %H:%M")
+        dep_utc = dep_local.replace(tzinfo=ZoneInfo(from_tz)).astimezone(timezone.utc)
+
+    arr_utc = None
+    if arr_time and to_tz and dep_utc is not None:
+        base = datetime.strptime(f"{date} {arr_time}", "%Y-%m-%d %H:%M")
+        best = None
+        for delta in (-1, 0, 1):
+            candidate = (base + timedelta(days=delta)).replace(tzinfo=ZoneInfo(to_tz)).astimezone(timezone.utc)
+            duration = (candidate - dep_utc).total_seconds()
+            if 0 < duration <= 24 * 3600 and (best is None or duration < best[0]):
+                best = (duration, candidate)
+        if best is not None:
+            arr_utc = best[1]
+
+    return (to_utc_iso(dep_utc) if dep_utc else None, to_utc_iso(arr_utc) if arr_utc else None)
 
 
 def fetch_all_routes(username: str) -> list[tuple[str, str, str]]:
@@ -89,7 +143,7 @@ def fetch_all_routes(username: str) -> list[tuple[str, str, str]]:
 def routes_to_arcs(routes: list[tuple[str, str, str]]) -> list[dict]:
     """Convert routes to arc data with coordinates."""
     arcs = []
-    for date, from_iata, to_iata in routes:
+    for date, from_iata, to_iata, dep_time, arr_time in routes:
         from_airport = AIRPORTS_DB.get(from_iata)
         to_airport = AIRPORTS_DB.get(to_iata)
 
@@ -102,6 +156,13 @@ def routes_to_arcs(routes: list[tuple[str, str, str]]) -> list[dict]:
             }
             if date:
                 arc["date"] = date
+            dep_utc, arr_utc = compute_utc_times(
+                date, dep_time, arr_time, from_airport.get("tz"), to_airport.get("tz")
+            )
+            if dep_utc:
+                arc["depUtc"] = dep_utc
+            if arr_utc:
+                arc["arrUtc"] = arr_utc
             arcs.append(arc)
     return arcs
 
@@ -110,7 +171,7 @@ def routes_to_airports(routes: list[tuple[str, str, str]]) -> list[dict]:
     """Extract unique airports with visit counts from routes."""
     # Count visits to each airport
     airport_counts = Counter()
-    for _date, from_iata, to_iata in routes:
+    for _date, from_iata, to_iata, *_rest in routes:
         airport_counts[from_iata] += 1
         airport_counts[to_iata] += 1
 
