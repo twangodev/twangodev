@@ -41,6 +41,14 @@
 				<span>complete · arrives</span>
 				<span class="text-text">{formatLocalTime(status.arc.arrUtc!)}</span>
 				<span>({formatRelative(status.arc.arrUtc!, flight.now)})</span>
+			{:else if status.kind === 'layover'}
+				<span>on layover at</span>
+				<span class="text-accent">{status.landedArc.toIata}</span>
+				<span>· next flight to</span>
+				<span class="text-accent">{status.nextArc.toIata}</span>
+				<span>· departs</span>
+				<span class="text-text">{formatLocalTime(status.nextArc.depUtc!)}</span>
+				<span>({formatRelative(status.nextArc.depUtc!, flight.now)})</span>
 			{:else}
 				<span>upcoming</span>
 				<span class="text-accent">{status.arc.fromIata}</span>
@@ -51,8 +59,10 @@
 				<span>({formatRelative(status.arc.depUtc!, flight.now)})</span>
 			{/if}
 		</div>
-		{#if status.arc.flightNumber}
-			<span class="shrink-0 tracking-widest text-muted italic">{status.arc.flightNumber}</span>
+		{#if status.kind === 'layover' ? status.nextArc.flightNumber : status.arc.flightNumber}
+			<span class="shrink-0 tracking-widest text-muted italic"
+				>{status.kind === 'layover' ? status.nextArc.flightNumber : status.arc.flightNumber}</span
+			>
 		{/if}
 	</div>
 {/if}
