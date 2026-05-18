@@ -103,7 +103,7 @@ export const load = async ({ fetch }) => {
 		bioExpanded: true,
 		bioHeading: 'Logbook',
 		bioDescription: "collected statistics about (most) of the flights i've taken.",
-		bioHandwriting: ['i enjoy flying', 'i clearly like planes'],
+		bioHandwriting: ['weeeee', 'zoom zoom', 'whooosh'],
 		bioDetails,
 		arcs,
 		markers,

@@ -30,7 +30,7 @@
 	const locationInfo = $derived(inFlight ? 'high availability achieved' : __LOCATION_INFO__);
 </script>
 
-<Heading>
+<Heading class={handwriting ? 'group' : undefined}>
 	{heading ?? 'James Ding'}
 	{#if handwriting}
 		<Handwriting phrases={handwriting} class="ml-2 text-lg font-extralight text-muted sm:text-xl" />
