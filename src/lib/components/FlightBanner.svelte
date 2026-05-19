@@ -19,7 +19,7 @@
 	}
 </script>
 
-{#if status}
+{#if status && status.kind !== 'at'}
 	<div
 		class="flex items-center justify-between gap-4 border-b border-border bg-surface px-6 py-1 font-mono text-xs text-muted sm:px-10 md:px-16"
 		role="status"

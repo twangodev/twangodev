@@ -12,9 +12,6 @@
 	import { Info } from '@lucide/svelte';
 	import { flight } from '$lib/flight.svelte';
 
-	declare const __CURRENT_LOCATION__: string;
-	declare const __LOCATION_INFO__: string;
-
 	interface Props {
 		compact?: boolean;
 		heading?: string;
@@ -25,9 +22,8 @@
 
 	let { compact = false, heading, description, details, handwriting }: Props = $props();
 
-	const inFlight = $derived(flight.status?.kind === 'flying');
-	const location = $derived(inFlight ? 'the cloud' : __CURRENT_LOCATION__);
-	const locationInfo = $derived(inFlight ? 'high availability achieved' : __LOCATION_INFO__);
+	const location = $derived(flight.location);
+	const locationInfo = $derived(flight.locationInfo);
 </script>
 
 <Heading class={handwriting ? 'group' : undefined}>

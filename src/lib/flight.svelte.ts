@@ -1,14 +1,14 @@
-export type Arc = {
-	fromIata?: string;
-	toIata?: string;
-	depUtc?: string;
-	arrUtc?: string;
-	flightNumber?: string;
-	startLat: number;
-	startLng: number;
-	endLat: number;
-	endLng: number;
-};
+import {
+	type Airport,
+	type Arc,
+	findAirport,
+	findLatestLanded,
+	findNextUpcoming,
+	formatCityLabel,
+	formatLocationInfo
+} from './flight-location';
+
+export type { Airport, Arc };
 
 export type FlightStatus =
 	| { kind: 'flying'; arc: Arc; depMs: number; arrMs: number; pct: number }
@@ -20,7 +20,17 @@ export type FlightStatus =
 			nextDepMs: number;
 	  }
 	| { kind: 'upcoming'; arc: Arc; depMs: number; arrMs: number }
+	| {
+			kind: 'at';
+			landedArc: Arc;
+			landedArrMs: number;
+			nextArc?: Arc;
+			nextDepMs?: number;
+	  }
 	| null;
+
+declare const __CURRENT_LOCATION__: string;
+declare const __LOCATION_INFO__: string;
 
 const HORIZON_MS = 24 * 60 * 60 * 1000;
 const MAX_LAYOVER_MS = 24 * 60 * 60 * 1000;
@@ -28,6 +38,7 @@ const TICK_MS = 1_000;
 
 class FlightTracker {
 	arcs = $state<Arc[]>([]);
+	airports = $state<Airport[]>([]);
 	now = $state(Date.now());
 
 	#started = false;
@@ -48,54 +59,87 @@ class FlightTracker {
 			const res = await fetch('/globe-arcs.json');
 			const data = await res.json();
 			this.arcs = data.arcs ?? [];
+			this.airports = data.airports ?? [];
 		} catch {
 			// best-effort; consumers render fallback state
 		}
 	}
 
 	get status(): FlightStatus {
-		let next: { arc: Arc; depMs: number; arrMs: number } | null = null;
-		for (const a of this.arcs) {
-			if (!a.depUtc || !a.arrUtc) continue;
-			const depMs = Date.parse(a.depUtc);
-			const arrMs = Date.parse(a.arrUtc);
-			if (!Number.isFinite(depMs) || !Number.isFinite(arrMs)) continue;
-			if (this.now > arrMs) continue;
-			if (!next || depMs < next.depMs) next = { arc: a, depMs, arrMs };
-		}
-		if (!next) return null;
+		if (this.arcs.length === 0) return null;
 
-		if (this.now >= next.depMs && this.now <= next.arrMs) {
-			const { arc, depMs, arrMs } = next;
-			const pct = Math.min(100, Math.max(0, ((this.now - depMs) / (arrMs - depMs)) * 100));
-			return { kind: 'flying', arc, depMs, arrMs, pct };
+		const next = findNextUpcoming(this.arcs, this.now);
+		const landed = findLatestLanded(this.arcs, this.now);
+
+		if (next && this.now >= next.depMs && this.now <= next.arrMs) {
+			const pct = Math.min(
+				100,
+				Math.max(0, ((this.now - next.depMs) / (next.arrMs - next.depMs)) * 100)
+			);
+			return { kind: 'flying', arc: next.arc, depMs: next.depMs, arrMs: next.arrMs, pct };
 		}
 
-		if (next.depMs - this.now > HORIZON_MS) return null;
-
-		let landed: { arc: Arc; arrMs: number } | null = null;
-		for (const a of this.arcs) {
-			if (!a.arrUtc) continue;
-			const arrMs = Date.parse(a.arrUtc);
-			if (!Number.isFinite(arrMs) || arrMs > this.now) continue;
-			if (!landed || arrMs > landed.arrMs) landed = { arc: a, arrMs };
+		if (next && next.depMs - this.now <= HORIZON_MS) {
+			if (
+				landed &&
+				landed.arc.toIata &&
+				landed.arc.toIata === next.arc.fromIata &&
+				next.depMs - landed.arrMs <= MAX_LAYOVER_MS
+			) {
+				return {
+					kind: 'layover',
+					landedArc: landed.arc,
+					nextArc: next.arc,
+					landedArrMs: landed.arrMs,
+					nextDepMs: next.depMs
+				};
+			}
+			return { kind: 'upcoming', arc: next.arc, depMs: next.depMs, arrMs: next.arrMs };
 		}
-		if (
-			landed &&
-			landed.arc.toIata &&
-			landed.arc.toIata === next.arc.fromIata &&
-			next.depMs - landed.arrMs <= MAX_LAYOVER_MS
-		) {
+
+		if (landed) {
 			return {
-				kind: 'layover',
+				kind: 'at',
 				landedArc: landed.arc,
-				nextArc: next.arc,
 				landedArrMs: landed.arrMs,
-				nextDepMs: next.depMs
+				nextArc: next?.arc,
+				nextDepMs: next?.depMs
 			};
 		}
+		return null;
+	}
 
-		return { kind: 'upcoming', arc: next.arc, depMs: next.depMs, arrMs: next.arrMs };
+	get location(): string {
+		const s = this.status;
+		if (!s) return __CURRENT_LOCATION__;
+		if (s.kind === 'flying') return 'the cloud';
+
+		const iata =
+			s.kind === 'upcoming'
+				? findLatestLanded(this.arcs, this.now)?.arc.toIata
+				: s.landedArc.toIata;
+		return formatCityLabel(findAirport(this.airports, iata)) ?? 'unknown';
+	}
+
+	get locationInfo(): string {
+		const s = this.status;
+		if (!s) return __LOCATION_INFO__;
+		if (s.kind === 'flying') return 'high availability achieved';
+
+		let landed: { arc: Arc; arrMs: number } | undefined;
+		let next: { arc: Arc; depMs: number } | undefined;
+		if (s.kind === 'layover') {
+			landed = { arc: s.landedArc, arrMs: s.landedArrMs };
+			next = { arc: s.nextArc, depMs: s.nextDepMs };
+		} else if (s.kind === 'at') {
+			landed = { arc: s.landedArc, arrMs: s.landedArrMs };
+			next =
+				s.nextArc && s.nextDepMs !== undefined ? { arc: s.nextArc, depMs: s.nextDepMs } : undefined;
+		} else {
+			landed = findLatestLanded(this.arcs, this.now);
+			next = { arc: s.arc, depMs: s.depMs };
+		}
+		return formatLocationInfo(landed, next);
 	}
 }
 
