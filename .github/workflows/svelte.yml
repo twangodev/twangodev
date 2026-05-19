@@ -29,22 +29,22 @@ jobs:
           INPUT_FILENAME: github-metrics.svg
           INPUT_OUTPUT_ACTION: none
           INPUT_BASE: header, activity, community, repositories, metadata
-          INPUT_BASE_HIREABLE: "yes"
+          INPUT_BASE_HIREABLE: 'yes'
           INPUT_COMMITS_AUTHORING: .user.login, 48845764+twangodev@users.noreply.github.com, james@fish.audio
           INPUT_REPOSITORIES_AFFILIATIONS: owner, collaborator, organization_member
-          INPUT_REPOSITORIES: "1000"
-          INPUT_REPOSITORIES_BATCH: "50"
-          INPUT_BASE_INDEPTH: "yes"
-          INPUT_PLUGIN_LANGUAGES: "yes"
+          INPUT_REPOSITORIES: '1000'
+          INPUT_REPOSITORIES_BATCH: '50'
+          INPUT_BASE_INDEPTH: 'yes'
+          INPUT_PLUGIN_LANGUAGES: 'yes'
           INPUT_PLUGIN_LANGUAGES_IGNORED: markdown
-          INPUT_PLUGIN_LANGUAGES_LIMIT: "0"
+          INPUT_PLUGIN_LANGUAGES_LIMIT: '0'
           INPUT_PLUGIN_LANGUAGES_SECTIONS: most-used
           INPUT_PLUGIN_LANGUAGES_DETAILS: percentage
-          INPUT_PLUGIN_LANGUAGES_OTHER: "no"
-          INPUT_PLUGIN_PEOPLE: "yes"
+          INPUT_PLUGIN_LANGUAGES_OTHER: 'no'
+          INPUT_PLUGIN_PEOPLE: 'yes'
           INPUT_PLUGIN_PEOPLE_TYPES: followers, following
-          INPUT_PLUGIN_PEOPLE_LIMIT: "24"
-          INPUT_PLUGIN_PEOPLE_SIZE: "28"
+          INPUT_PLUGIN_PEOPLE_LIMIT: '24'
+          INPUT_PLUGIN_PEOPLE_SIZE: '28'
         run: npx -y tsx .github/scripts/generate-metrics.ts
 
       - name: WakaTime & Last.fm Metrics
