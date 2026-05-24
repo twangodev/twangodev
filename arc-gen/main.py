@@ -12,6 +12,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 FLIGHT_LIST_API = "https://my.flightradar24.com/public-scripts/flight-list/{username}/{start_row}//"
+PROFILE_FLIGHTS_URL = "https://my.flightradar24.com/{username}/flights"
 BATCH_SIZE = 50
 
 AIRPORTS_DB = airportsdata.load("IATA")
@@ -25,10 +26,18 @@ def get_headers(username: str) -> dict:
     }
 
 
-def fetch_json(url: str, username: str, timeout: float = 10.0) -> dict:
+def fetch(url: str, username: str, timeout: float = 10.0):
     resp = requests.get(url, headers=get_headers(username), impersonate="chrome", timeout=timeout)
     resp.raise_for_status()
-    return resp.json()
+    return resp
+
+
+def fetch_json(url: str, username: str, timeout: float = 10.0) -> dict:
+    return fetch(url, username, timeout).json()
+
+
+def fetch_text(url: str, username: str, timeout: float = 10.0) -> str:
+    return fetch(url, username, timeout).text
 
 
 def parse_iata(html: str) -> str:
@@ -63,16 +72,25 @@ def parse_time(value) -> str:
     return value.strip()
 
 
-def parse_route(row: list) -> tuple[str, str, str, str, str, str]:
-    """Parse a flight row and return (date, from_iata, to_iata, dep_time, arr_time, flight_number)."""
+def parse_route(
+    date_html, flight_raw, from_html, to_html, dep_raw, arr_raw
+) -> tuple[str, str, str, str, str, str]:
+    """Parse already-extracted flight fields into a normalized route tuple
+    (date, from_iata, to_iata, dep_time, arr_time, flight_number)."""
     return (
-        parse_date(row[0]),
-        parse_iata(row[2]),
-        parse_iata(row[3]),
-        parse_time(row[5]) if len(row) > 5 else "",
-        parse_time(row[6]) if len(row) > 6 else "",
-        parse_time(row[1]) if len(row) > 1 else "",
+        parse_date(date_html),
+        parse_iata(from_html),
+        parse_iata(to_html),
+        parse_time(dep_raw),
+        parse_time(arr_raw),
+        parse_time(flight_raw),
     )
+
+
+def parse_api_route(row: list) -> tuple[str, str, str, str, str, str]:
+    """Map a load-more API row (positional JSON array) onto parse_route."""
+    field = lambda i: row[i] if len(row) > i else None
+    return parse_route(field(0), field(1), field(2), field(3), field(5), field(6))
 
 
 def to_utc_iso(dt: datetime) -> str:
@@ -114,31 +132,61 @@ def compute_utc_times(
     return (to_utc_iso(dep_utc) if dep_utc else None, to_utc_iso(arr_utc) if arr_utc else None)
 
 
+def parse_html_rows(html: str) -> dict[int, tuple]:
+    """Parse the server-rendered flight table into {row_number: route}.
+
+    The flights page (``/<user>/flights``) renders the most recent batch of
+    flights inline, keyed by a 0-indexed ``data-row-number``. Row 0 is the
+    newest flight and only ever appears here, never in the load-more API.
+    """
+    soup = BeautifulSoup(html, "html.parser")
+    rows: dict[int, tuple] = {}
+    for tr in soup.select("table.flight-list-original tbody tr[data-row-number]"):
+        try:
+            row_number = int(tr["data-row-number"])
+        except (KeyError, ValueError):
+            continue
+        cells = tr.find_all("td")
+        if len(cells) < 8:
+            continue
+        rows[row_number] = parse_route(
+            date_html=cells[0].decode_contents(),
+            flight_raw=cells[1].get_text(strip=True),
+            from_html=cells[3].decode_contents(),
+            to_html=cells[4].decode_contents(),
+            dep_raw=cells[6].get_text(strip=True),
+            arr_raw=cells[7].get_text(strip=True),
+        )
+    return rows
+
+
 def fetch_all_routes(username: str) -> list[tuple[str, str, str]]:
-    """Fetch all routes using pagination."""
-    routes = []
-    start_row = 1
+    """Fetch all routes, newest first.
+
+    FlightRadar24's ``start_row`` parameter is the last-seen row number and is
+    *exclusive* (``start_row=N`` returns rows ``N+1`` onward), and rows 0 and 1
+    are only ever server-rendered on the flights page. So seed from that page,
+    then page the API forward using the highest row number seen so far.
+    """
+    rows = parse_html_rows(fetch_text(PROFILE_FLIGHTS_URL.format(username=username), username))
+    last_row = max(rows) if rows else 0
 
     while True:
-        url = FLIGHT_LIST_API.format(username=username, start_row=start_row)
+        url = FLIGHT_LIST_API.format(username=username, start_row=last_row)
         data = fetch_json(url, username)
-
         if not data:
             break
 
-        for key in sorted(data.keys(), key=int):
-            route = parse_route(data[key])
-            routes.append(route)
+        keys = [int(k) for k in data.keys()]
+        for key in data:
+            rows[int(key)] = parse_api_route(data[key])
 
-        fetched_keys = [int(k) for k in data.keys()]
-        max_key = max(fetched_keys)
-
-        if len(data) < BATCH_SIZE:
+        max_key = max(keys)
+        if len(data) < BATCH_SIZE or max_key <= last_row:
             break
+        last_row = max_key
 
-        start_row = max_key + 1
-
-    return routes
+    return [rows[k] for k in sorted(rows)]
 
 
 def routes_to_arcs(routes: list[tuple[str, str, str]]) -> list[dict]:
