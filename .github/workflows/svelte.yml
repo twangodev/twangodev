@@ -58,13 +58,17 @@ jobs:
           plugin_steam_recent_games_limit: 1
           plugin_steam_achievements_limit: 0
 
+      - name: Collect Metrics
+        run: |
+          mkdir -p metrics-out
+          cp github-metrics.svg metrics-out/
+          cp /metrics_renders/github-metrics-sidebar.svg metrics-out/
+
       - name: Upload Metrics
         uses: actions/upload-artifact@v7
         with:
           name: metrics
-          path: |
-            github-metrics.svg
-            /metrics_renders/github-metrics-sidebar.svg
+          path: metrics-out/
 
   arc-gen:
     runs-on: ubuntu-latest
