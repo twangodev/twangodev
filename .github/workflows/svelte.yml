@@ -14,7 +14,7 @@ jobs:
       group: ${{ github.workflow }}-metrics-${{ github.ref }}
     steps:
       - name: GitHub Metrics
-        uses: twangodev/gmetrics@v1.1.0
+        uses: twangodev/gmetrics@v1.2.0
         with:
           token: ${{ secrets.METRICS_TOKEN }}
           user: ${{ github.repository_owner }}
