@@ -102,8 +102,9 @@
 			attributeFilter: ['class']
 		});
 
-		// Random start positions per flight
+		// Random start positions and per-flight speeds so rays drift out of sync
 		const rayHeads = flights.map(() => Math.random() * (1 + RAY_LENGTH));
+		const raySpeeds = flights.map(() => RAY_SPEED * (0.6 + Math.random() * 0.8));
 
 		const onPointerDown = (e: PointerEvent) => {
 			pointerInteracting = e.clientX - pointerMovement;
@@ -177,7 +178,7 @@
 
 			// Advance ray heads
 			for (let i = 0; i < rayHeads.length; i++) {
-				rayHeads[i] = (rayHeads[i] + RAY_SPEED) % (1 + RAY_LENGTH);
+				rayHeads[i] = (rayHeads[i] + raySpeeds[i]) % (1 + RAY_LENGTH);
 			}
 
 			globe.update({
