@@ -75,18 +75,11 @@ jobs:
   arc-gen:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v6
       - name: Install uv
         uses: astral-sh/setup-uv@v8.1.0
-      - name: Install Dependencies
-        run: uv sync
-        working-directory: ./arc-gen
-      - name: Run Python Script
-        run: uv run main.py
-        working-directory: ./arc-gen
+      - name: Generate arc data
+        run: uvx mfr24 export "$FLIGHT_RADAR_USERNAME" -o globe-arcs.json
         env:
-          OUTPUT: ../globe-arcs.json
           FLIGHT_RADAR_USERNAME: ${{ vars.FLIGHT_RADAR_USERNAME }}
       - name: Upload Arc Data
         uses: actions/upload-artifact@v7

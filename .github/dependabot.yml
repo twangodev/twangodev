@@ -16,17 +16,6 @@ updates:
         update-types: ['minor', 'patch']
     open-pull-requests-limit: 5
 
-  - package-ecosystem: 'uv'
-    directory: '/arc-gen/'
-    schedule:
-      interval: 'weekly'
-      day: 'monday'
-    groups:
-      python-deps:
-        patterns: ['*']
-        update-types: ['minor', 'patch']
-    open-pull-requests-limit: 3
-
   - package-ecosystem: 'github-actions'
     directory: '/'
     schedule:
