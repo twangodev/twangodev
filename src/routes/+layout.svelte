@@ -63,7 +63,7 @@
 			style:grid-template-columns={gridColumns}
 		>
 			<aside
-				class="flex flex-col justify-center overflow-hidden lg:sticky lg:top-1/2 lg:-translate-y-1/2 lg:self-start"
+				class="flex flex-col justify-center overflow-hidden lg:sticky lg:top-0 lg:max-h-svh"
 			>
 				<div class="lg:min-w-80">
 					<Bio
@@ -77,7 +77,7 @@
 			</aside>
 			{#if !isRoot}
 				<div
-					class="hidden items-center justify-center overflow-hidden transition-opacity duration-300 select-none lg:sticky lg:top-1/2 lg:flex lg:-translate-y-1/2 lg:self-start"
+					class="hidden items-center justify-center overflow-hidden transition-opacity duration-300 select-none lg:sticky lg:top-0 lg:flex lg:max-h-svh"
 					class:opacity-0={collapsed}
 				>
 					<button
