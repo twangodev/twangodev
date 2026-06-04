@@ -10,30 +10,30 @@
     "output_dir": "eval_results",
     "output_json": null,
     "output_csv": null,
-    "quiet": false,
+    "quiet": true,
     "streaming": false,
-    "prompt": "Transcribe the following speech segment in its original language.\n* Only output the transcription, with no newlines.\n* When transcribing numbers, write the digits, i.e. write 1.7 and not one point seven, and write 3 instead of three.",
+    "prompt": "Transcribe the following speech segment in its original language.",
     "max_output_tokens": null,
     "chunk_duration_s": null,
     "batch_size": 16
   },
   "corpus_metrics": {
-    "wer": 0.26587455776191743,
-    "cer": 0.19735227442150294,
-    "mer": 0.24058995521669935,
-    "wil": 0.33000553714922354,
-    "substitution_rate": 0.10687335119327594,
-    "insertion_rate": 0.10509417370498374,
-    "deletion_rate": 0.05390703286365774,
+    "wer": 0.154420335794188,
+    "cer": 0.09794979031511987,
+    "mer": 0.14882630033309024,
+    "wil": 0.2194727318452142,
+    "substitution_rate": 0.0785496635923025,
+    "insertion_rate": 0.037587680729667276,
+    "deletion_rate": 0.038282991472218246,
     "latency": {
-      "mean": 0.16449594176211285,
-      "p50": 0.15660569304600358,
-      "p95": 0.29986753105185926
+      "mean": 0.024980556870378662,
+      "p50": 0.024004756000067573,
+      "p95": 0.03269451112646493
     },
     "rtfx": {
-      "mean": 40.181416652197875,
-      "p50": 39.519089383079496,
-      "p95": 67.1217588379809
+      "mean": 288.51487072975,
+      "p50": 248.22937715406624,
+      "p95": 689.6898982318326
     },
     "audio_duration": {
       "mean": 7.12854683509668,
@@ -43,6 +43,8 @@
       "total": 19539.346875
     },
     "num_samples": 2741,
-    "bleu": null
-  }
+    "bleu": null,
+    "throughput_rtfx": 234.3697385791376
+  },
+  "sample_results": []
 }

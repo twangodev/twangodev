@@ -38,7 +38,7 @@
 		}
 	];
 
-	function urls(model: 'E2B' | 'E4B', slug: string) {
+	function urls(model: 'E2B' | 'E4B' | '12B', slug: string) {
 		const base = `/data/gemma4-audio/eval_results/google_gemma-4-${model}-it__${slug}`;
 		return { csv: `${base}/results.csv`, json: `${base}/results.json` };
 	}
@@ -56,6 +56,7 @@
 					<th class="px-3 py-2 text-left font-normal">Dataset</th>
 					<th class="px-3 py-2 text-left font-normal">E2B (2B)</th>
 					<th class="px-3 py-2 text-left font-normal">E4B (4B)</th>
+					<th class="px-3 py-2 text-left font-normal">12B</th>
 					<th class="px-3 py-2 text-left font-normal">Upstream license</th>
 				</tr>
 			</thead>
@@ -63,6 +64,7 @@
 				{#each datasets as ds (ds.slug)}
 					{@const e2b = urls('E2B', ds.slug)}
 					{@const e4b = urls('E4B', ds.slug)}
+					{@const b12 = urls('12B', ds.slug)}
 					<tr class="border-t border-subtle">
 						<td class="px-3 py-2 text-text">{ds.label}</td>
 						<td class="px-3 py-2">
@@ -74,6 +76,11 @@
 							<a class={linkClass} href={e4b.csv} target="_blank" rel="noopener">csv</a>
 							<span class="text-muted">·</span>
 							<a class={linkClass} href={e4b.json} target="_blank" rel="noopener">json</a>
+						</td>
+						<td class="px-3 py-2">
+							<a class={linkClass} href={b12.csv} target="_blank" rel="noopener">csv</a>
+							<span class="text-muted">·</span>
+							<a class={linkClass} href={b12.json} target="_blank" rel="noopener">json</a>
 						</td>
 						<td class="px-3 py-2">
 							<a class={linkClass} href={ds.licenseUrl} target="_blank" rel="noopener"

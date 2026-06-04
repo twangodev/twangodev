@@ -1,6 +1,6 @@
 {
   "config": {
-    "model": "google/gemma-4-E4B-it",
+    "model": "google/gemma-4-12B-it",
     "dataset": "earnings22",
     "split": "test",
     "backend": "vllm",
@@ -15,25 +15,25 @@
     "prompt": "Transcribe the following speech segment in its original language.",
     "max_output_tokens": null,
     "chunk_duration_s": null,
-    "batch_size": 16
+    "batch_size": 8
   },
   "corpus_metrics": {
-    "wer": 0.13979835988466022,
-    "cer": 0.08988351689521108,
-    "mer": 0.1353368573182079,
-    "wil": 0.19890968843346235,
-    "substitution_rate": 0.06969467678275629,
-    "insertion_rate": 0.03296590932329904,
-    "deletion_rate": 0.03713777377860488,
+    "wer": 0.5039571361377533,
+    "cer": 0.3854952347820768,
+    "mer": 0.46497103718938093,
+    "wil": 0.6161775635312747,
+    "substitution_rate": 0.21237653121740732,
+    "insertion_rate": 0.08384629542526432,
+    "deletion_rate": 0.2077343094950817,
     "latency": {
-      "mean": 0.03772485775572619,
-      "p50": 0.03593064725282602,
-      "p95": 0.052721058502356755
+      "mean": 0.1244895535550345,
+      "p50": 0.10963858262402937,
+      "p95": 0.22648817962181056
     },
     "rtfx": {
-      "mean": 192.06942805537122,
-      "p50": 164.94585566614683,
-      "p95": 460.0307044034869
+      "mean": 63.01479438472583,
+      "p50": 53.811823156995786,
+      "p95": 149.9791398648187
     },
     "audio_duration": {
       "mean": 7.12854683509668,
@@ -44,7 +44,7 @@
     },
     "num_samples": 2741,
     "bleu": null,
-    "throughput_rtfx": 165.79935813116683
+    "throughput_rtfx": 54.88587640387496
   },
   "sample_results": []
 }

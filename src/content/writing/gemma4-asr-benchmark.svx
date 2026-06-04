@@ -1,7 +1,7 @@
 ---
 title: How Good is Gemma 4 at ASR Tasks? Benchmarking Against the Open ASR Leaderboard
-description: Benchmarking Gemma 4 E2B and E4B across all eight Open ASR Leaderboard short-form datasets. WER, RTFx, where a general-purpose multimodal LLM holds up, and where it doesn't.
-date: '2026-04-19'
+description: Benchmarking the Gemma 4 family (E2B, E4B, and the new 12B) across all eight Open ASR Leaderboard short-form datasets, batched. WER, RTFx, where a general-purpose multimodal LLM holds up, and where it doesn't.
+date: '2026-06-04'
 published: true
 tags:
   - ml
@@ -21,71 +21,67 @@ series:
 	import EvalDataTable from '$lib/components/writing/EvalDataTable.svelte';
 </script>
 
-Gemma 4 does audio. I ran both variants, E2B (2B) and E4B (4B), against all eight Open ASR Leaderboard short-form datasets. Performance is **decent on clean speech** and **unreliable on harder inputs**, so it's useful as a general-purpose capability and for understanding. **Don't swap it in for a dedicated ASR model.**
+Gemma 4 does audio. I ran all three sizes, E2B (2B), E4B (4B), and the new 12B, against all eight Open ASR Leaderboard short-form datasets, batched. Performance is **decent on clean speech** and **unreliable on harder inputs**, so it's useful as a general-purpose capability and for understanding. **Don't swap it in for a dedicated ASR model.** The surprise: scaling reverses at the top. The 12B, the biggest, is the worst of the three.
 
 <div class="not-prose my-10 grid grid-cols-2 gap-5 sm:grid-cols-4">
-	<StatCard value="4.17%" label="Best WER" sublabel="E4B · LS Clean" emphasis tilt="left" />
-	<StatCard value="9.81%" label="E4B mean WER" sublabel="7 datasets, ex-AMI" tilt="right" />
-	<StatCard value="2,203%" label="E2B on clips <1s" sublabel="n=6,232 · 1,766% ins rate" tilt="left" />
-	<StatCard value="40.6×" label="E2B RTFx" sublabel="LS Clean · vLLM, unbatched" tilt="right" />
+	<StatCard value="3.05%" label="Best WER" sublabel="E4B · LS Clean" emphasis tilt="left" />
+	<StatCard value="7.6%" label="E4B mean WER" sublabel="7 datasets, ex-AMI" tilt="right" />
+	<StatCard value="265×" label="E2B throughput" sublabel="LS Clean · batched" tilt="left" />
+	<StatCard value="7.4%" label="12B refusal rate" sublabel="vs 0.14% for E2B/E4B" emphasis tilt="right" />
 </div>
 
 ## Setup
 
 - Harness: [gemma4-audio](https://github.com/twangodev/gemma4-audio), `jiwer` for WER/CER/MER/WIL.
-- Backend: **vLLM**, bf16. `batch_size=16` in the config, but the audio path is currently broken for batching, so everything runs one sample at a time. RTFx numbers are a floor.
+- Backend: **vLLM**, bf16, batched (16 for E2B/E4B, 8 for the 12B). RTFx is throughput: total audio / wall clock. The 12B needed a from-source vLLM build and a fix to its batched-audio path.
 - Hardware: **RTX 6000 Pro Blackwell, 96 GB**.
 - Prompt:
 
 ```
 Transcribe the following speech segment in its original language.
-* Only output the transcription, with no newlines.
-* When transcribing numbers, write the digits, i.e. write 1.7
-  and not one point seven, and write 3 instead of three.
 ```
+
+Text before audio, the model card's order. Audio-first ordering and extra instruction bullets both inflate the 12B's refusals; this stripped-down prompt roughly quarters them.
 
 ## WER across the suite
 
 <WerHeatmap />
 
-E4B stays within 2–3 WER points of the leaders on clean read speech. The gap widens on noisy spontaneous audio. On LS Clean specifically, **E4B (4.17%) beats Whisper base.en (4.25%)**. A 4B generalist holding its own against a 74M CTC model isn't bad.
+E4B stays within 2–3 WER points of the leaders on clean read speech. The gap widens on noisy spontaneous audio. On LS Clean specifically, **E4B (3.05%) beats Whisper base.en (4.25%)**. A 4B generalist holding its own against a 74M CTC model isn't bad. E2B trails E4B by ~10–15% everywhere; more parameters help.
 
-E2B on AMI: 202% WER. The model wrote about twice as many words as the reference. E4B lands at 41%. Still bad, but at least legible.
+Then the 12B. Fine on LS Clean (3.85%), off a cliff everywhere else: **104% on AMI, 50% on Earnings22, 54% on SPGISpeech**. A 12B losing to a 2B on clean financial speech by 10×. At the top, more parameters stop helping.
 
 ## Speed vs accuracy
 
 <WerRtfxScatter />
 
-Competitor RTFx is batched. Ours is single-stream. Apples to oranges. Once vLLM batching lands, the Gemma dots shift right. Probably not all the way to Parakeet's 3,386×.
+Competitor RTFx and ours are both batched. E2B runs **265×** real-time on LS Clean, E4B **178×**. Short of Parakeet's 3,386×, but usable. The 12B trails at **61×**: more tokens per clip, most of them wrong.
 
 ## Error composition
 
 <ErrorCompositionChart />
 
-Insertions climb on noisy data. LS Clean: 0.49% insertion rate. AMI: 20% (E4B), **180% (E2B)**. That's the LM prior making things up when the audio is hard to decode.
-
-CER/WER tells the same story from another angle. Clean ASR runs around 0.43 on clean data, and E2B matches that on LS Clean. On AMI, E2B's ratio jumps to **1.14**. CER exceeds WER because each hallucinated insertion is a long run of characters. The failure mode is generation, not misrecognition.
+Insertions climb on noisy data: the LM prior filling in when the audio is hard to decode. E4B: **0.2%** on LS Clean, **3%** on AMI. The 12B is a different animal. AMI insertion rate **64%**, pure hallucination. On short or hard clips it flips, stops inserting and starts refusing.
 
 ## Where Gemma 4 actually breaks
 
 <DurationHallucinationChart />
 
-Bucket every sample by audio duration and you get a U-shape. Anything over 3s is fine. Under that it falls apart. Sub-1s is a cliff.
+Bucket every sample by audio duration and you get a U-shape. Over ~3s is fine. Under that it slips. Sub-1s is the cliff.
 
-- **Sub-1s, E2B**: 2,203% mean WER, 1,766% insertion rate, **8.7% are literal refusals** ("I'm sorry, I cannot…").
-- **Sub-1s, E4B**: 220% / 164% / 0.9%. Better by an order of magnitude. Still broken.
+- **Sub-1s, E2B**: 49% mean WER. Audio-first ordering would make it 2,203%.
+- **Sub-1s, E4B**: 42%.
+- **Sub-1s, 12B**: 667%.
 
-When the audio is too short to constrain the token distribution, the instruction-tuned prior takes over. More parameters help. Neither variant is speech-first.
+The 12B is worse at every bucket, never under ~40% even at a comfortable 6–15s. More parameters help, except at the top.
 
-AMI-wide refusal rate for E2B: **3.98%** (503 samples). A five-line regex would catch almost all of them.
+### The 12B's failure mode
 
-### The worst single sample
+The 12B doesn't mis-hear so much as stop transcribing. **7% of its outputs are refusals** (E2B and E4B: 0.14%):
 
-1.3-second LibriSpeech clip. Reference: `a story`. E2B produced:
+> I'm sorry, but I cannot fulfill this request. I am a text-based AI and do not have the ability to listen to or process audio.
 
-> I'm sorry, but you haven't provided any audio or text for me to transcribe. Please provide the audio or text you would like me to transcribe.
-
-WER of 14.0. 26 insertions. A CTC model physically can't do this; *I'm sorry* isn't in its vocabulary. E4B got the same clip right.
+From a model that was handed audio. The rest is greedy loops (`comment on your revenue growth` → "come on, come on, come on…") and paraphrase in place of verbatim transcription. The extra scale bought a chatbot, not a transcriber.
 
 ## Raw data
 

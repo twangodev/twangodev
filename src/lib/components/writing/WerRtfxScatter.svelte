@@ -5,7 +5,8 @@
 
 	// Competitor numbers from huggingface/open_asr_leaderboard en_shortform.csv (Apr 2026).
 	// WER = LibriSpeech test-clean (apples-to-apples). Competitor RTFx = their suite-average
-	// BATCHED throughput. Gemma runs are LS Clean RTFx, vLLM unbatched, RTX 6000 Pro Blackwell.
+	// BATCHED throughput. Gemma runs are LS Clean throughput RTFx (total audio / wall clock),
+	// vLLM batched (16 for E2B/E4B, 8 for 12B), RTX 6000 Pro Blackwell.
 	const competitors = [
 		{ model: 'Cohere', rtfx: 525, wer: 1.25 },
 		{ model: 'Parakeet 0.6B v2', rtfx: 3386, wer: 1.69 },
@@ -18,13 +19,14 @@
 	];
 
 	const ours = [
-		{ model: 'Gemma 4 E4B', rtfx: 28.1, wer: 4.17 },
-		{ model: 'Gemma 4 E2B', rtfx: 40.6, wer: 5.24 }
+		{ model: 'Gemma 4 E2B', rtfx: 265, wer: 3.7 },
+		{ model: 'Gemma 4 E4B', rtfx: 178, wer: 3.05 },
+		{ model: 'Gemma 4 12B', rtfx: 61, wer: 3.85 }
 	];
 
 	const config = {
 		competitor: { label: 'Open ASR Leaderboard (batched)', color: 'var(--color-muted)' },
-		ours: { label: 'Gemma 4 (this run, unbatched)', color: 'var(--color-accent)' }
+		ours: { label: 'Gemma 4 (this run, batched)', color: 'var(--color-accent)' }
 	} satisfies Chart.ChartConfig;
 
 	type Point = { model: string; rtfx: number; wer: number };
@@ -80,9 +82,10 @@
 	</Chart.Container>
 
 	<figcaption class="text-sm leading-relaxed text-muted">
-		LibriSpeech <code>test-clean</code> WER vs RTFx, log x-axis. Competitor RTFx is
-		<strong>batched</strong> leaderboard throughput; our Gemma runs are
-		<strong>unbatched, one-at-a-time</strong> on an RTX 6000 Pro Blackwell (96 GB). The Gemma dots are
-		a floor on speed — expect them to move right with real batching.
+		LibriSpeech <code>test-clean</code> WER vs RTFx, log x-axis. Both axes are apples-to-apples:
+		competitor RTFx is <strong>batched</strong> leaderboard throughput, and our Gemma runs are
+		<strong>batched too</strong> (throughput RTFx = total audio / wall clock) on an RTX 6000 Pro Blackwell
+		(96 GB). They trail dedicated ASR models on raw speed, and the 12B is both the slowest and the least
+		accurate of the three, despite being the largest.
 	</figcaption>
 </figure>
