@@ -1,8 +1,6 @@
 import type { AgentText } from './agent-text';
 
-// Every writing component that opts into clean agent output by exporting
-// `agentText` from its `<script module>` block. Resolved by file name, which
-// matches the tag name posts import it as (e.g. StatCard.svelte → <StatCard>).
+// Keyed by file name, which is the tag posts use (StatCard.svelte → <StatCard>).
 const modules = import.meta.glob<{ agentText?: AgentText }>(
 	'/src/lib/components/writing/*.svelte',
 	{ eager: true }

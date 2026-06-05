@@ -1,5 +1,4 @@
-// Raw `.svx` source for each post (the markdown the agent endpoints transform),
-// distinct from the compiled component returned by `$lib/writing`.
+// Raw `.svx` source (what the agent endpoints transform), not the compiled component.
 const sources = import.meta.glob('/src/content/writing/*.svx', {
 	query: '?raw',
 	import: 'default',

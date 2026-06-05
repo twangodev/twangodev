@@ -10,13 +10,8 @@
 	let { headers, rows, caption }: Props = $props();
 </script>
 
-<!--
-	Visually-hidden semantic fallback for the adjacent (aria-hidden) chart. Gives
-	screen readers — and agents reading the rendered HTML — the underlying data
-	the visual conveys. Built from the same module-scope data as the chart's
-	`agentText`, so there is a single source of truth. Inside a <figure>, the
-	visible <figcaption> serves as the caption, so one is optional here.
--->
+<!-- Visually-hidden data table for the adjacent aria-hidden chart. The figure's
+	visible <figcaption> serves as the caption, so one here is optional. -->
 <table class="sr-only">
 	{#if caption}
 		<caption>{caption}</caption>

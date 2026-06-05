@@ -7,8 +7,7 @@ import type { EntryGenerator, RequestHandler } from './$types';
 
 export const prerender = true;
 
-// The prerender crawler only follows <a>, not <link rel="alternate">, so the
-// per-post markdown URLs must be declared explicitly.
+// The prerender crawler only follows <a>, not <link>, so list .md URLs explicitly.
 export const entries: EntryGenerator = () => getAllPosts().map((post) => ({ slug: post.slug }));
 
 export const GET: RequestHandler = ({ params }) => {

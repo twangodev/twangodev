@@ -12,9 +12,7 @@ function monthYear(date: string): string {
 	return new Date(date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
 }
 
-// https://llmstxt.org — a curated, LLM-friendly index of the site. Generated
-// from the same sources as the sitemap/feeds so it never drifts. Posts link to
-// their clean `.md` twins.
+// https://llmstxt.org index, generated from the same sources as the sitemap.
 export const GET: RequestHandler = () => {
 	const sections: string[] = [];
 

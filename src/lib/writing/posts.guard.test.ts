@@ -2,11 +2,9 @@ import { describe, it, expect } from 'vitest';
 import { toMarkdown } from './markdown';
 import type { AgentText } from './agent-text';
 
-// Regression guard over every real post. Runs without compiling Svelte: it reads
-// the raw .svx and the raw component *source text*, so it stays in the fast
-// isolated config. Catches the silent failures the unit tests can't: a post
-// using a component that never got an `agentText`, or a parser regression that
-// leaks tags / mask tokens into the output.
+// Regression guard over every real post, without compiling Svelte (reads raw .svx
+// and component source text). Catches what unit tests can't: a component used in a
+// post that lacks agentText, or a parser regression leaking tags/tokens.
 
 const postSources = import.meta.glob('/src/content/writing/*.svx', {
 	query: '?raw',

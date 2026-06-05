@@ -8,17 +8,9 @@ export interface ToMarkdownOptions {
 	baseUrl?: string;
 }
 
-/**
- * Convert a `.svx` source string to clean Markdown.
- *
- * svx *is* markdown, save for frontmatter, the `<script>` block, and component
- * tags. So prose and fenced code pass through verbatim — only the component
- * tags are transformed. Parsing is delegated to real parsers, never regex over
- * tag structure: the remark/mdast core ({@link fromMarkdown}) locates fenced and
- * inline code so it is never mistaken for markup, and htmlparser2 in `xmlMode`
- * parses the component tags (honouring self-closing custom elements, case, and
- * nesting). Components are dispatched to their {@link AgentText} renderers.
- */
+// svx is markdown apart from frontmatter, <script>, and component tags. Parsing
+// is delegated to real parsers so prose and fenced code pass through verbatim:
+// mdast protects code spans, htmlparser2 (xmlMode) parses the component tags.
 export function toMarkdown(rawSvx: string, options: ToMarkdownOptions): string {
 	const notes: string[] = [];
 	const footnote = (body: string): string => {
@@ -51,13 +43,10 @@ function stripFrontmatter(src: string): string {
 	return match ? src.slice(match[0].length) : src;
 }
 
-// `<script>`/`<style>` blocks are stripped before HTML parsing: in xmlMode their
-// TypeScript/CSS bodies (e.g. `Map<string, number>`) would be misread as markup.
+// Stripped before parsing: xmlMode would misread TS/CSS bodies (e.g. Map<string, number>) as markup.
 function stripScriptsAndStyles(src: string): string {
 	return src.replace(/<(script|style)[\s\S]*?<\/\1>/gi, '');
 }
-
-// --- code masking (remark/mdast) ---------------------------------------------
 
 interface MdNode {
 	type: string;
@@ -97,8 +86,6 @@ function collectCodeSpans(node: MdNode, spans: { start: number; end: number }[])
 	for (const child of node.children ?? []) collectCodeSpans(child, spans);
 }
 
-// --- HTML/component rendering (htmlparser2) -----------------------------------
-
 interface DomNode {
 	type: string;
 	name?: string;
@@ -124,7 +111,7 @@ function renderNode(node: DomNode, ctx: RenderCtx): string {
 		if (text.trim() === '') return text.includes('\n') ? '\n' : ' ';
 		return text;
 	}
-	if (node.type !== 'tag') return ''; // comments, cdata, directives — drop
+	if (node.type !== 'tag') return '';
 
 	const name = node.name ?? '';
 	const children = node.children ?? [];
@@ -149,8 +136,7 @@ function renderNode(node: DomNode, ctx: RenderCtx): string {
 		case 'br':
 			return '\n';
 		default:
-			// Layout wrappers (div/figure/…) and unregistered components unwrap to
-			// their inner content.
+			// div/figure wrappers and unregistered components unwrap to inner content.
 			return renderNodes(children, ctx);
 	}
 }

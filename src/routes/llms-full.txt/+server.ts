@@ -7,8 +7,7 @@ import type { RequestHandler } from './$types';
 
 export const prerender = true;
 
-// The whole writing corpus as clean Markdown, one document. `getAllPosts` is
-// published-only at build time, matching the feeds and sitemap.
+// Whole published corpus as one Markdown document (getAllPosts is published-only at build).
 export const GET: RequestHandler = () => {
 	const renderers = getRenderers();
 
