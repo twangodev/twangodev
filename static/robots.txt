@@ -1,27 +1,6 @@
-# twango.dev is open to crawlers, including AI / LLM agents.
-# Machine-readable index for LLMs: https://twango.dev/llms.txt
-# Full writing corpus as Markdown: https://twango.dev/llms-full.txt
-
-# Everything is allowed by default.
+# twango.dev is open to all crawlers, including AI / LLM agents.
+# LLM index: https://twango.dev/llms.txt · full corpus: https://twango.dev/llms-full.txt
 User-agent: *
 Disallow:
-
-# AI / LLM crawlers and assistants — explicitly welcomed.
-User-agent: GPTBot
-User-agent: OAI-SearchBot
-User-agent: ChatGPT-User
-User-agent: ClaudeBot
-User-agent: anthropic-ai
-User-agent: Claude-Web
-User-agent: Claude-User
-User-agent: PerplexityBot
-User-agent: Perplexity-User
-User-agent: Google-Extended
-User-agent: Applebot-Extended
-User-agent: CCBot
-User-agent: Bytespider
-User-agent: Amazonbot
-User-agent: Meta-ExternalAgent
-Allow: /
 
 Sitemap: https://twango.dev/sitemap.xml
