@@ -105,9 +105,6 @@
 	:global(.prose .footnotes li::marker) {
 		color: var(--color-muted);
 	}
-	:global(.prose .footnotes a:not(.footnote-backref)) {
-		color: var(--color-accent);
-	}
 	:global(.prose .footnote-backref) {
 		margin-left: 0.35em;
 		color: var(--color-text);
