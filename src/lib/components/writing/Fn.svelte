@@ -1,3 +1,9 @@
+<script module lang="ts">
+	import type { AgentText } from '$lib/writing/agent-text';
+
+	export const agentText: AgentText = ({ content, footnote }) => footnote(content);
+</script>
+
 <script lang="ts">
 	import { Tooltip } from 'bits-ui';
 	import type { Snippet } from 'svelte';

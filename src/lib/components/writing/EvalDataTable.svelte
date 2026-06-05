@@ -1,4 +1,7 @@
-<script lang="ts">
+<script module lang="ts">
+	import type { AgentText } from '$lib/writing/agent-text';
+	import { markdownTable } from '$lib/writing/agent-table';
+
 	const datasets = [
 		{
 			label: 'AMI',
@@ -43,6 +46,27 @@
 		return { csv: `${base}/results.csv`, json: `${base}/results.json` };
 	}
 
+	const caption =
+		'Per-sample metrics. CSV: one row per utterance with sample id, WER, CER, MER, WIL, substitutions/insertions/deletions, latency, RTFx, audio duration. JSON has the run config and corpus-level metrics. References and hypotheses are stripped to avoid redistributing upstream text; originals are recoverable by sample id from each dataset. SPGISpeech (Kensho research-only) and TED-LIUM (CC BY-NC-ND 3.0) are excluded from redistribution, but aggregate metrics from those runs still appear in the charts above.';
+
+	export const agentText: AgentText = () => {
+		const cell = (model: 'E2B' | 'E4B' | '12B', slug: string) => {
+			const u = urls(model, slug);
+			return `[csv](${u.csv}) · [json](${u.json})`;
+		};
+		const headers = ['Dataset', 'E2B (2B)', 'E4B (4B)', '12B', 'Upstream license'];
+		const rows = datasets.map((ds) => [
+			ds.label,
+			cell('E2B', ds.slug),
+			cell('E4B', ds.slug),
+			cell('12B', ds.slug),
+			`[${ds.license}](${ds.licenseUrl})`
+		]);
+		return `${caption}\n\n${markdownTable(headers, rows)}`;
+	};
+</script>
+
+<script lang="ts">
 	const linkClass =
 		'underline underline-offset-2 decoration-subtle hover:text-accent hover:decoration-accent';
 </script>
@@ -92,12 +116,5 @@
 			</tbody>
 		</table>
 	</div>
-	<figcaption class="text-sm leading-relaxed text-muted">
-		Per-sample metrics. CSV: one row per utterance with sample id, WER, CER, MER, WIL,
-		substitutions/insertions/deletions, latency, RTFx, audio duration. JSON has the run config and
-		corpus-level metrics. References and hypotheses are stripped to avoid redistributing upstream
-		text; originals are recoverable by sample id from each dataset. SPGISpeech (Kensho
-		research-only) and TED-LIUM (CC BY-NC-ND 3.0) are excluded from redistribution, but aggregate
-		metrics from those runs still appear in the charts above.
-	</figcaption>
+	<figcaption class="text-sm leading-relaxed text-muted">{caption}</figcaption>
 </figure>

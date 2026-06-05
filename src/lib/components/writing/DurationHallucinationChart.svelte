@@ -1,7 +1,6 @@
-<script lang="ts">
-	import * as Chart from '$lib/components/ui/chart';
-	import { BarChart, Tooltip } from 'layerchart';
-	import { scaleLog } from 'd3-scale';
+<script module lang="ts">
+	import type { AgentText } from '$lib/writing/agent-text';
+	import { markdownTable } from '$lib/writing/agent-table';
 
 	// Computed from static/data/gemma4-audio/eval_results/ across all 8 datasets,
 	// bucketed by audio_duration_s. Values are MEAN WER (%) per bucket.
@@ -19,6 +18,22 @@
 		{ bucket: '30s+', e2b: 15.0, e4b: 14.4, b12: 26.4, n: 39 }
 	];
 
+	const tableHeaders = ['Duration bucket', 'E2B WER (%)', 'E4B WER (%)', '12B WER (%)', 'n'];
+	const tableRows = data.map((d) => [d.bucket, d.e2b, d.e4b, d.b12, d.n]);
+
+	const caption =
+		"Mean WER (%, log scale) by audio-duration bucket, across all 8 Open ASR short-form datasets (93k+ samples). The U-shape persists, but the story is model size: the model card's text-first prompt holds the small models together at the short end (sub-1s E2B is 49%; audio-first ordering produces 2,203% on the same clips), while the 12B is worse at every single bucket: 667% on sub-1s clips and still ~42% even on the comfortable 6–15s range. The largest model degrades the most.";
+
+	export const agentText: AgentText = () =>
+		`${caption}\n\n${markdownTable(tableHeaders, tableRows)}`;
+</script>
+
+<script lang="ts">
+	import * as Chart from '$lib/components/ui/chart';
+	import { BarChart, Tooltip } from 'layerchart';
+	import { scaleLog } from 'd3-scale';
+	import ChartA11yTable from './ChartA11yTable.svelte';
+
 	const config = {
 		e2b: { label: 'E2B (2B)', color: 'var(--color-chart-1)' },
 		e4b: { label: 'E4B (4B)', color: 'var(--color-accent)' },
@@ -35,58 +50,63 @@
 </script>
 
 <figure class="not-prose my-8 flex flex-col gap-3">
-	<Chart.Container {config} class="h-96 w-full">
-		<BarChart
-			{data}
-			x="bucket"
-			yScale={scaleLog()}
-			yDomain={[1, 2500]}
-			series={[
-				{ key: 'e2b', label: config.e2b.label, color: config.e2b.color },
-				{ key: 'e4b', label: config.e4b.label, color: config.e4b.color },
-				{ key: 'b12', label: config.b12.label, color: config.b12.color }
-			]}
-			seriesLayout="group"
-			legend
-			props={{
-				yAxis: {
-					format: (d: number) => `${d}%`,
-					ticks: [1, 10, 100, 1000]
-				}
-			}}
-		>
-			{#snippet tooltip()}
-				<Tooltip.Root variant="none">
-					{#snippet children({ data }: { data: Bucket })}
-						<div
-							class="grid min-w-[12rem] gap-1.5 rounded-lg border border-border/50 bg-background px-2.5 py-1.5 text-xs shadow-xl"
-						>
-							<div class="flex items-baseline justify-between gap-4">
-								<span class="font-semibold text-text">{data.bucket}</span>
-								<span class="font-mono text-muted">n={data.n.toLocaleString()}</span>
-							</div>
-							{#each rows as row (row.key)}
-								<div class="flex items-center justify-between gap-4">
-									<span class="flex items-center gap-1.5">
-										<span
-											class="inline-block h-2.5 w-2.5 rounded-[2px]"
-											style:background-color={row.color}
-										></span>
-										<span class="text-muted">{row.label}</span>
-									</span>
-									<span class="font-mono text-text tabular-nums">
-										{(data[row.key] as number) >= 100
-											? (data[row.key] as number).toFixed(0)
-											: (data[row.key] as number).toFixed(1)}%
-									</span>
+	<div aria-hidden="true" class="contents">
+		<Chart.Container {config} class="h-96 w-full">
+			<BarChart
+				{data}
+				x="bucket"
+				yScale={scaleLog()}
+				yDomain={[1, 2500]}
+				series={[
+					{ key: 'e2b', label: config.e2b.label, color: config.e2b.color },
+					{ key: 'e4b', label: config.e4b.label, color: config.e4b.color },
+					{ key: 'b12', label: config.b12.label, color: config.b12.color }
+				]}
+				seriesLayout="group"
+				legend
+				props={{
+					yAxis: {
+						format: (d: number) => `${d}%`,
+						ticks: [1, 10, 100, 1000]
+					}
+				}}
+			>
+				{#snippet tooltip()}
+					<Tooltip.Root variant="none">
+						{#snippet children({ data }: { data: Bucket })}
+							<div
+								class="grid min-w-[12rem] gap-1.5 rounded-lg border border-border/50 bg-background px-2.5 py-1.5 text-xs shadow-xl"
+							>
+								<div class="flex items-baseline justify-between gap-4">
+									<span class="font-semibold text-text">{data.bucket}</span>
+									<span class="font-mono text-muted">n={data.n.toLocaleString()}</span>
 								</div>
-							{/each}
-						</div>
-					{/snippet}
-				</Tooltip.Root>
-			{/snippet}
-		</BarChart>
-	</Chart.Container>
+								{#each rows as row (row.key)}
+									<div class="flex items-center justify-between gap-4">
+										<span class="flex items-center gap-1.5">
+											<span
+												class="inline-block h-2.5 w-2.5 rounded-[2px]"
+												style:background-color={row.color}
+											></span>
+											<span class="text-muted">{row.label}</span>
+										</span>
+										<span class="font-mono text-text tabular-nums">
+											{(data[row.key] as number) >= 100
+												? (data[row.key] as number).toFixed(0)
+												: (data[row.key] as number).toFixed(1)}%
+										</span>
+									</div>
+								{/each}
+							</div>
+						{/snippet}
+					</Tooltip.Root>
+				{/snippet}
+			</BarChart>
+		</Chart.Container>
+	</div>
+
+	<ChartA11yTable headers={tableHeaders} rows={tableRows} />
+
 	<figcaption class="text-sm leading-relaxed text-muted">
 		Mean WER (%, log scale) by audio-duration bucket, across all 8 Open ASR short-form datasets
 		(93k+ samples). The U-shape persists, but the story is the model size: switching to the model

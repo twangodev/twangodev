@@ -1,3 +1,12 @@
+<script module lang="ts">
+	import type { AgentText } from '$lib/writing/agent-text';
+
+	export const agentText: AgentText = ({ props }) => {
+		const sub = props.sublabel ? ` (${props.sublabel})` : '';
+		return `- **${props.value}** — ${props.label}${sub}`;
+	};
+</script>
+
 <script lang="ts">
 	interface Props {
 		value: string;

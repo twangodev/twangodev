@@ -1,7 +1,6 @@
-<script lang="ts">
-	import * as Chart from '$lib/components/ui/chart';
-	import { ScatterChart, Tooltip } from 'layerchart';
-	import { scaleLog } from 'd3-scale';
+<script module lang="ts">
+	import type { AgentText } from '$lib/writing/agent-text';
+	import { markdownTable } from '$lib/writing/agent-table';
 
 	// Competitor numbers from huggingface/open_asr_leaderboard en_shortform.csv (Apr 2026).
 	// WER = LibriSpeech test-clean (apples-to-apples). Competitor RTFx = their suite-average
@@ -24,6 +23,24 @@
 		{ model: 'Gemma 4 12B', rtfx: 61, wer: 3.85 }
 	];
 
+	const headers = ['Model', 'WER (%)', 'RTFx (×)', 'Source'];
+	const rows = [
+		...competitors.map((c) => [c.model, c.wer, c.rtfx, 'Open ASR Leaderboard']),
+		...ours.map((o) => [o.model, o.wer, o.rtfx, 'Gemma 4 (this run)'])
+	];
+
+	const caption =
+		'LibriSpeech test-clean WER vs RTFx, log x-axis. Both axes are apples-to-apples: competitor RTFx is batched leaderboard throughput, and the Gemma runs are batched too (throughput RTFx = total audio / wall clock) on an RTX 6000 Pro Blackwell (96 GB). They trail dedicated ASR models on raw speed, and the 12B is both the slowest and the least accurate of the three, despite being the largest.';
+
+	export const agentText: AgentText = () => `${caption}\n\n${markdownTable(headers, rows)}`;
+</script>
+
+<script lang="ts">
+	import * as Chart from '$lib/components/ui/chart';
+	import { ScatterChart, Tooltip } from 'layerchart';
+	import { scaleLog } from 'd3-scale';
+	import ChartA11yTable from './ChartA11yTable.svelte';
+
 	const config = {
 		competitor: { label: 'Open ASR Leaderboard (batched)', color: 'var(--color-muted)' },
 		ours: { label: 'Gemma 4 (this run, batched)', color: 'var(--color-accent)' }
@@ -33,53 +50,57 @@
 </script>
 
 <figure class="not-prose my-8 flex flex-col gap-3">
-	<Chart.Container {config} class="h-80 w-full">
-		<ScatterChart
-			x="rtfx"
-			y="wer"
-			xScale={scaleLog()}
-			xDomain={[20, 4000]}
-			series={[
-				{
-					key: 'competitor',
-					label: config.competitor.label,
-					data: competitors,
-					color: config.competitor.color
-				},
-				{ key: 'ours', label: config.ours.label, data: ours, color: config.ours.color }
-			]}
-			legend
-			props={{
-				xAxis: {
-					format: (d: number) => `${d}×`,
-					ticks: [30, 100, 300, 1000, 3000]
-				},
-				yAxis: {
-					format: (d: number) => `${d}%`
-				}
-			}}
-		>
-			{#snippet tooltip()}
-				<Tooltip.Root variant="none">
-					{#snippet children({ data }: { data: Point })}
-						<div
-							class="grid min-w-[10rem] gap-1.5 rounded-lg border border-border/50 bg-background px-2.5 py-1.5 text-xs shadow-xl"
-						>
-							<div class="font-semibold text-text">{data.model}</div>
-							<div class="flex justify-between gap-4">
-								<span class="text-muted">WER</span>
-								<span class="font-mono text-text tabular-nums">{data.wer}%</span>
+	<div aria-hidden="true" class="contents">
+		<Chart.Container {config} class="h-80 w-full">
+			<ScatterChart
+				x="rtfx"
+				y="wer"
+				xScale={scaleLog()}
+				xDomain={[20, 4000]}
+				series={[
+					{
+						key: 'competitor',
+						label: config.competitor.label,
+						data: competitors,
+						color: config.competitor.color
+					},
+					{ key: 'ours', label: config.ours.label, data: ours, color: config.ours.color }
+				]}
+				legend
+				props={{
+					xAxis: {
+						format: (d: number) => `${d}×`,
+						ticks: [30, 100, 300, 1000, 3000]
+					},
+					yAxis: {
+						format: (d: number) => `${d}%`
+					}
+				}}
+			>
+				{#snippet tooltip()}
+					<Tooltip.Root variant="none">
+						{#snippet children({ data }: { data: Point })}
+							<div
+								class="grid min-w-[10rem] gap-1.5 rounded-lg border border-border/50 bg-background px-2.5 py-1.5 text-xs shadow-xl"
+							>
+								<div class="font-semibold text-text">{data.model}</div>
+								<div class="flex justify-between gap-4">
+									<span class="text-muted">WER</span>
+									<span class="font-mono text-text tabular-nums">{data.wer}%</span>
+								</div>
+								<div class="flex justify-between gap-4">
+									<span class="text-muted">RTFx</span>
+									<span class="font-mono text-text tabular-nums">{data.rtfx}×</span>
+								</div>
 							</div>
-							<div class="flex justify-between gap-4">
-								<span class="text-muted">RTFx</span>
-								<span class="font-mono text-text tabular-nums">{data.rtfx}×</span>
-							</div>
-						</div>
-					{/snippet}
-				</Tooltip.Root>
-			{/snippet}
-		</ScatterChart>
-	</Chart.Container>
+						{/snippet}
+					</Tooltip.Root>
+				{/snippet}
+			</ScatterChart>
+		</Chart.Container>
+	</div>
+
+	<ChartA11yTable {headers} {rows} />
 
 	<figcaption class="text-sm leading-relaxed text-muted">
 		LibriSpeech <code>test-clean</code> WER vs RTFx, log x-axis. Both axes are apples-to-apples:
