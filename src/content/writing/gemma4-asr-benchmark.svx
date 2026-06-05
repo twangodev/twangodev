@@ -19,9 +19,10 @@ series:
 	import DurationHallucinationChart from '$lib/components/writing/DurationHallucinationChart.svelte';
 	import StatCard from '$lib/components/writing/StatCard.svelte';
 	import EvalDataTable from '$lib/components/writing/EvalDataTable.svelte';
+	import Fn from '$lib/components/writing/Fn.svelte';
 </script>
 
-Gemma 4 does audio. I ran all three sizes, E2B (2B), E4B (4B), and the new 12B, against all eight Open ASR Leaderboard short-form datasets, batched. Performance is **decent on clean speech** and **unreliable on harder inputs**, so it's useful as a general-purpose capability and for understanding. **Don't swap it in for a dedicated ASR model.** The surprise: scaling reverses at the top. The 12B, the biggest, is the worst of the three.
+[Gemma 4](https://huggingface.co/google/gemma-4-12B) does audio. I ran all three sizes, E2B (2B), E4B (4B), and the new 12B, against all eight [Open ASR Leaderboard](https://huggingface.co/spaces/hf-audio/open_asr_leaderboard) short-form datasets, batched. Performance is **decent on clean speech** and **unreliable on harder inputs**, so it's useful as a general-purpose capability and for understanding. **Don't swap it in for a dedicated ASR model.** The surprise: scaling reverses at the top. The 12B, the biggest, is the worst of the three.
 
 <div class="not-prose my-10 grid grid-cols-2 gap-5 sm:grid-cols-4">
 	<StatCard value="3.05%" label="Best WER" sublabel="E4B · LS Clean" emphasis tilt="left" />
@@ -32,8 +33,8 @@ Gemma 4 does audio. I ran all three sizes, E2B (2B), E4B (4B), and the new 12B, 
 
 ## Setup
 
-- Harness: [gemma4-audio](https://github.com/twangodev/gemma4-audio), `jiwer` for WER/CER/MER/WIL.
-- Backend: **vLLM**, bf16, batched (16 for E2B/E4B, 8 for the 12B). RTFx is throughput: total audio / wall clock. The 12B needed a from-source vLLM build and a fix to its batched-audio path.
+- Harness: [gemma4-audio](https://github.com/twangodev/gemma4-audio), `jiwer` for WER/CER/MER/WIL.<Fn>Word error rate: (substitutions + insertions + deletions) divided by the number of words in the reference, computed with <code>jiwer</code>. CER, MER, and WIL are the character-error, match-error, and word-information-lost variants the same harness records.</Fn>
+- Backend: **vLLM**, bf16, batched (16 for E2B/E4B, 8 for the 12B). RTFx is throughput: total audio / wall clock. The 12B needed a from-source vLLM build and a fix to its batched-audio path.<Fn>vLLM's stock build mishandled the 12B's batched-audio path, so this run used a from-source build with a patch to it. The exact build lives in the <a href="https://github.com/twangodev/gemma4-audio">gemma4-audio</a> harness.</Fn>
 - Hardware: **RTX 6000 Pro Blackwell, 96 GB**.
 - Prompt:
 
@@ -41,27 +42,27 @@ Gemma 4 does audio. I ran all three sizes, E2B (2B), E4B (4B), and the new 12B, 
 Transcribe the following speech segment in its original language.
 ```
 
-Text before audio, the model card's order. Audio-first ordering and extra instruction bullets both inflate the 12B's refusals; this stripped-down prompt roughly quarters them.
+Text before audio, the model card's order. Audio-first ordering and extra instruction bullets both inflate the 12B's refusals; this stripped-down prompt roughly quarters them.<Fn>"Audio-first" puts the audio ahead of the text instruction in the prompt. That ordering sharply raises the 12B's refusal rate and, on sub-1-second clips, sends E2B's WER to 2,203%. Every number here uses text-first ordering, the order given on the model card.</Fn>
 
 ## WER across the suite
 
 <WerHeatmap />
 
-E4B stays within 2–3 WER points of the leaders on clean read speech. The gap widens on noisy spontaneous audio. On LS Clean specifically, **E4B (3.05%) beats Whisper base.en (4.25%)**. A 4B generalist holding its own against a 74M CTC model isn't bad. E2B trails E4B by ~10–15% everywhere; more parameters help.
+E4B stays within 2–3 WER points of the leaders on clean read speech. The gap widens on noisy spontaneous audio. On LS Clean specifically, **E4B (3.05%) beats [Whisper base.en](https://huggingface.co/openai/whisper-base.en) (4.25%)**. A 4B generalist holding its own against a 74M CTC model isn't bad. E2B trails E4B by ~10–15% everywhere; more parameters help.
 
-Then the 12B. Fine on LS Clean (3.85%), off a cliff everywhere else: **104% on AMI, 50% on Earnings22, 54% on SPGISpeech**. A 12B losing to a 2B on clean financial speech by 10×. At the top, more parameters stop helping.
+Then the 12B. Fine on LS Clean (3.85%), off a cliff everywhere else: **104% on [AMI](https://groups.inf.ed.ac.uk/ami/corpus/), 50% on [Earnings22](https://github.com/revdotcom/speech-datasets/tree/main/earnings22), 54% on [SPGISpeech](https://huggingface.co/datasets/kensho/spgispeech)**.<Fn>WER isn't capped at 100%. Insertions count as errors, so a model that emits more words than the reference contains — here, hallucinated runs of text — pushes the rate past 100%.</Fn> A 12B losing to a 2B on clean financial speech by 10×. At the top, more parameters stop helping.
 
 ## Speed vs accuracy
 
 <WerRtfxScatter />
 
-Competitor RTFx and ours are both batched. E2B runs **265×** real-time on LS Clean, E4B **178×**. Short of Parakeet's 3,386×, but usable. The 12B trails at **61×**: more tokens per clip, most of them wrong.
+Competitor RTFx and ours are both batched. E2B runs **265×** real-time on LS Clean, E4B **178×**. Short of [Parakeet](https://huggingface.co/nvidia/parakeet-tdt-0.6b-v2)'s 3,386×, but usable. The 12B trails at **61×**: more tokens per clip, most of them wrong.
 
 ## Error composition
 
 <ErrorCompositionChart />
 
-Insertions climb on noisy data: the LM prior filling in when the audio is hard to decode. E4B: **0.2%** on LS Clean, **3%** on AMI. The 12B is a different animal. AMI insertion rate **64%**, pure hallucination. On short or hard clips it flips, stops inserting and starts refusing.
+Insertions climb on noisy data: the LM prior filling in when the audio is hard to decode. E4B: **0.2%** on LS Clean, **3%** on AMI.<Fn>AMI is far-field, multi-speaker meeting audio recorded on distant microphones — the hardest set in the suite. Every model degrades on it and the 12B collapses, which is why the mean WER above is quoted over the other seven datasets.</Fn> The 12B is a different animal. AMI insertion rate **64%**, pure hallucination. On short or hard clips it flips, stops inserting and starts refusing.
 
 ## Where Gemma 4 actually breaks
 
@@ -77,7 +78,7 @@ The 12B is worse at every bucket, never under ~40% even at a comfortable 6–15s
 
 ### The 12B's failure mode
 
-The 12B doesn't mis-hear so much as stop transcribing. **7% of its outputs are refusals** (E2B and E4B: 0.14%):
+The 12B doesn't mis-hear so much as stop transcribing. **7% of its outputs are refusals**<Fn>Refusals are outputs that decline the task instead of transcribing — the stock "I'm sorry, but I cannot fulfill this request" reply quoted below and its close variants.</Fn> (E2B and E4B: 0.14%):
 
 > I'm sorry, but I cannot fulfill this request. I am a text-based AI and do not have the ability to listen to or process audio.
 

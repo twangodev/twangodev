@@ -1,6 +1,10 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import TagPill from './TagPill.svelte';
+	import Footnotes from './Footnotes.svelte';
+	import { setFootnoteRegistry } from './footnotes';
+
+	setFootnoteRegistry();
 
 	interface Props {
 		title: string;
@@ -55,5 +59,61 @@
 	</header>
 	<div class="prose max-w-none prose-neutral dark:prose-invert">
 		{@render children()}
+		<Footnotes />
 	</div>
 </article>
+
+<style>
+	:global(.prose .footnote-ref) {
+		font-weight: 600;
+		line-height: 0;
+		white-space: nowrap;
+		scroll-margin-top: 5rem;
+	}
+	:global(.prose .footnote-ref a) {
+		padding: 0 0.15em;
+		color: var(--color-accent);
+		text-decoration: none;
+	}
+	:global(.prose .footnote-ref a:hover) {
+		text-decoration: underline;
+	}
+
+	:global(.prose .footnotes) {
+		margin-top: 3rem;
+		border-top: 1px solid var(--color-subtle);
+		padding-top: 1.5rem;
+	}
+	:global(.prose .footnotes h2) {
+		margin: 0 0 1rem;
+		font-size: 0.7rem;
+		font-weight: 600;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--color-muted);
+	}
+	:global(.prose .footnotes ol) {
+		margin: 0;
+		padding-left: 1.25rem;
+		font-size: 0.875rem;
+		color: var(--color-muted);
+	}
+	:global(.prose .footnotes li) {
+		margin: 0.5rem 0;
+		scroll-margin-top: 5rem;
+	}
+	:global(.prose .footnotes li::marker) {
+		color: var(--color-muted);
+	}
+	:global(.prose .footnotes a:not(.footnote-backref)) {
+		color: var(--color-accent);
+	}
+	:global(.prose .footnote-backref) {
+		margin-left: 0.35em;
+		color: var(--color-accent);
+		text-decoration: none;
+	}
+	:global(.prose .footnote-backref:hover) {
+		text-decoration: underline;
+	}
+</style>
