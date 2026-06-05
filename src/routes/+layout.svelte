@@ -5,7 +5,6 @@
 	import { page } from '$app/state';
 	import { afterNavigate, onNavigate } from '$app/navigation';
 	import { flight } from '$lib/flight.svelte';
-	import favicon from '$lib/assets/favicon.svg';
 	import { websiteSchema } from '$lib/schema';
 	import Header from '$lib/components/Header.svelte';
 	import FlightBanner from '$lib/components/FlightBanner.svelte';
@@ -48,7 +47,6 @@
 
 <ModeWatcher defaultMode="dark" disableHeadScriptInjection />
 <svelte:head>
-	<link rel="icon" href={favicon} />
 	{@html `<script type="application/ld+json">${JSON.stringify(websiteSchema())}</script>`}
 </svelte:head>
 
