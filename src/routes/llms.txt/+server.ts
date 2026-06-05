@@ -69,9 +69,6 @@ export const GET: RequestHandler = () => {
 	);
 
 	return new Response(sections.join('\n\n') + '\n', {
-		headers: {
-			'Content-Type': 'text/markdown; charset=utf-8',
-			'Cache-Control': 'max-age=0, s-maxage=3600'
-		}
+		headers: { 'Content-Type': 'text/markdown; charset=utf-8' }
 	});
 };

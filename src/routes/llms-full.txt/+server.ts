@@ -24,9 +24,6 @@ export const GET: RequestHandler = () => {
 	const body = [header, ...documents].join('\n---\n\n');
 
 	return new Response(body, {
-		headers: {
-			'Content-Type': 'text/markdown; charset=utf-8',
-			'Cache-Control': 'max-age=0, s-maxage=3600'
-		}
+		headers: { 'Content-Type': 'text/markdown; charset=utf-8' }
 	});
 };

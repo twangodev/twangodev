@@ -18,9 +18,6 @@ export const GET: RequestHandler = ({ params }) => {
 	const markdown = toMarkdown(source, { metadata: post.metadata, renderers: getRenderers() });
 
 	return new Response(markdown, {
-		headers: {
-			'Content-Type': 'text/markdown; charset=utf-8',
-			'Cache-Control': 'max-age=0, s-maxage=3600'
-		}
+		headers: { 'Content-Type': 'text/markdown; charset=utf-8' }
 	});
 };
