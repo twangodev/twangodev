@@ -2,10 +2,6 @@ import { describe, it, expect } from 'vitest';
 import { toMarkdown } from './markdown';
 import type { AgentText } from './agent-text';
 
-// Regression guard over every real post, without compiling Svelte (reads raw .svx
-// and component source text). Catches what unit tests can't: a component used in a
-// post that lacks agentText, or a parser regression leaking tags/tokens.
-
 const postSources = import.meta.glob('/src/content/writing/*.svx', {
 	query: '?raw',
 	import: 'default',
@@ -32,8 +28,6 @@ const posts = Object.entries(postSources).map(([path, source]) => ({
 	source
 }));
 
-// A renderer Proxy that records which components a post dispatches (capitalized
-// tags only — lowercase tags keep the dispatcher's built-in handling).
 function recordingRenderers(used: Set<string>): Record<string, AgentText> {
 	return new Proxy(
 		{},
@@ -69,8 +63,8 @@ describe.each(posts)('post: $slug', ({ source }) => {
 			renderers: recordingRenderers(used)
 		});
 		expect(md).not.toMatch(/<script/i);
-		expect(md).not.toMatch(/<\/?[A-Z][A-Za-z0-9]*[\s/>]/); // no leftover component tags
-		expect(md).not.toMatch(MASK_TOKEN); // code-mask tokens fully restored
+		expect(md).not.toMatch(/<\/?[A-Z][A-Za-z0-9]*[\s/>]/);
+		expect(md).not.toMatch(MASK_TOKEN);
 		expect(md.trim().length).toBeGreaterThan(0);
 	});
 });

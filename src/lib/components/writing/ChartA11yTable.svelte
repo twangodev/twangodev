@@ -10,8 +10,6 @@
 	let { headers, rows, caption }: Props = $props();
 </script>
 
-<!-- Visually-hidden data table for the adjacent aria-hidden chart. The figure's
-	visible <figcaption> serves as the caption, so one here is optional. -->
 <table class="sr-only">
 	{#if caption}
 		<caption>{caption}</caption>

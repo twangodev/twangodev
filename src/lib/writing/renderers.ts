@@ -1,6 +1,5 @@
 import type { AgentText } from './agent-text';
 
-// Keyed by file name, which is the tag posts use (StatCard.svelte → <StatCard>).
 const modules = import.meta.glob<{ agentText?: AgentText }>(
 	'/src/lib/components/writing/*.svelte',
 	{ eager: true }

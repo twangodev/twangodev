@@ -15,7 +15,6 @@
 			section?: string;
 		};
 		noindex?: boolean;
-		/** Path to a clean Markdown twin of this page, surfaced for agents. */
 		markdown?: string;
 		jsonLd?: WithContext<Thing> | WithContext<Thing>[];
 	}

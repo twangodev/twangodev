@@ -7,7 +7,6 @@ import type { RequestHandler } from './$types';
 
 export const prerender = true;
 
-// Whole published corpus as one Markdown document (getAllPosts is published-only at build).
 export const GET: RequestHandler = () => {
 	const renderers = getRenderers();
 

@@ -8,9 +8,6 @@ export interface ToMarkdownOptions {
 	baseUrl?: string;
 }
 
-// svx is markdown apart from frontmatter, <script>, and component tags. Parsing
-// is delegated to real parsers so prose and fenced code pass through verbatim:
-// mdast protects code spans, htmlparser2 (xmlMode) parses the component tags.
 export function toMarkdown(rawSvx: string, options: ToMarkdownOptions): string {
 	const notes: string[] = [];
 	const footnote = (body: string): string => {
@@ -136,12 +133,10 @@ function renderNode(node: DomNode, ctx: RenderCtx): string {
 		case 'br':
 			return '\n';
 		default:
-			// div/figure wrappers and unregistered components unwrap to inner content.
 			return renderNodes(children, ctx);
 	}
 }
 
-/** htmlparser2 yields string attributes; bare attributes (`emphasis`) become `''`. */
 function coerceProps(attribs: Record<string, string>): Record<string, string | boolean> {
 	const props: Record<string, string | boolean> = {};
 	for (const [key, value] of Object.entries(attribs)) {

@@ -1,4 +1,3 @@
-// Raw `.svx` source (what the agent endpoints transform), not the compiled component.
 const sources = import.meta.glob('/src/content/writing/*.svx', {
 	query: '?raw',
 	import: 'default',
