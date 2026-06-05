@@ -72,7 +72,7 @@
 	}
 	:global(.prose .footnote-ref a) {
 		padding: 0 0.15em;
-		color: var(--color-accent);
+		color: var(--color-text);
 		text-decoration: none;
 	}
 	:global(.prose .footnote-ref a:hover) {
@@ -110,7 +110,7 @@
 	}
 	:global(.prose .footnote-backref) {
 		margin-left: 0.35em;
-		color: var(--color-accent);
+		color: var(--color-text);
 		text-decoration: none;
 	}
 	:global(.prose .footnote-backref:hover) {
