@@ -11,6 +11,7 @@
 	title={data.metadata.title}
 	description={data.metadata.description}
 	canonical={`/writing/${data.metadata.slug}`}
+	markdown={`/writing/${data.metadata.slug}.md`}
 	type="article"
 	article={{
 		publishedTime: data.metadata.date,

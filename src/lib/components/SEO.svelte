@@ -15,6 +15,8 @@
 			section?: string;
 		};
 		noindex?: boolean;
+		/** Path to a clean Markdown twin of this page, surfaced for agents. */
+		markdown?: string;
 		jsonLd?: WithContext<Thing> | WithContext<Thing>[];
 	}
 
@@ -26,11 +28,13 @@
 		image,
 		article,
 		noindex = false,
+		markdown,
 		jsonLd
 	}: Props = $props();
 
 	const fullTitle = $derived(title ? `${title} | ${site.name}` : site.name);
 	const canonicalUrl = $derived(canonical ? `${site.url}${canonical}` : undefined);
+	const markdownUrl = $derived(markdown ? `${site.url}${markdown}` : undefined);
 
 	const jsonLdScripts = $derived(jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : []);
 </script>
@@ -43,6 +47,9 @@
 	{/if}
 	{#if canonicalUrl}
 		<link rel="canonical" href={canonicalUrl} />
+	{/if}
+	{#if markdownUrl}
+		<link rel="alternate" type="text/markdown" href={markdownUrl} />
 	{/if}
 
 	<link
