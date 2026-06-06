@@ -23,6 +23,7 @@
 		"feed": "^5.2.1",
 		"globals": "^17.5.0",
 		"htmlparser2": "^12.0.0",
+		"katex": "^0.17.0",
 		"layerchart": "^2.0.0-next.57",
 		"mdast-util-from-markdown": "^2.0.3",
 		"mdsvex": "^0.12.7",
@@ -32,8 +33,11 @@
 		"prettier": "^3.8.3",
 		"prettier-plugin-svelte": "^3.5.1",
 		"prettier-plugin-tailwindcss": "^0.7.2",
+		"rehype-katex-svelte": "^1.2.0",
+		"remark-math": "3",
 		"schema-dts": "^1.1.5",
 		"sharp": "^0.34.5",
+		"shiki": "^4.2.0",
 		"svelte": "^5.55.4",
 		"svelte-check": "^4.4.6",
 		"tailwind-merge": "^3.5.0",
@@ -63,5 +67,8 @@
 	"type": "module",
 	"workspaces": [
 		"packages/*"
-	]
+	],
+	"dependencies": {
+		"@icons-pack/svelte-simple-icons": "^7.2.0"
+	}
 }
