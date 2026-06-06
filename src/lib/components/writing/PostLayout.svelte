@@ -3,6 +3,7 @@
 	import TagPill from './TagPill.svelte';
 	import Footnotes from './Footnotes.svelte';
 	import { setFootnoteRegistry } from './footnotes';
+	import { highlightFootnotes } from './footnote-highlight';
 
 	setFootnoteRegistry();
 
@@ -103,7 +104,11 @@
 			</div>
 		{/if}
 	</header>
-	<div class="prose max-w-none prose-neutral dark:prose-invert" {@attach enhanceCodeBlocks}>
+	<div
+		class="prose max-w-none prose-neutral dark:prose-invert"
+		{@attach enhanceCodeBlocks}
+		{@attach highlightFootnotes}
+	>
 		{@render children()}
 		<Footnotes />
 	</div>
@@ -158,5 +163,23 @@
 	}
 	:global(.prose .footnote-backref:hover) {
 		text-decoration: underline;
+	}
+
+	/* Transient highlight applied when a footnote link is followed. The base
+	   class appears instantly; the `--out` modifier fades it away. */
+	:global(.prose .fn-hl) {
+		border-radius: 0.2rem;
+		background-color: color-mix(in srgb, var(--color-accent) 32%, transparent);
+		box-decoration-break: clone;
+		-webkit-box-decoration-break: clone;
+	}
+	:global(.prose .fn-hl--out) {
+		background-color: transparent;
+		transition: background-color 600ms ease-out;
+	}
+	@media (prefers-reduced-motion: reduce) {
+		:global(.prose .fn-hl--out) {
+			transition: none;
+		}
 	}
 </style>
