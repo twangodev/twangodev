@@ -2,6 +2,7 @@
 title: 'The TartanAviation ATC Collection: Audio, ADS-B, and 531k Labels'
 description: "Three Hugging Face datasets from CMU's TartanAviation air traffic control corpus: paired audio and ADS-B clips, a half-million-utterance VAD split, and a full ASR label set. Why decode-time biasing and LLM correction lost to a plain ROVER vote, and the one signal that moved label quality."
 date: '2026-06-05'
+published: true
 tags:
   - ml
   - asr
@@ -18,11 +19,11 @@ category: engineering
 	import ConfidenceExplorer from '$lib/components/writing/ConfidenceExplorer.svelte';
 </script>
 
-[TartanAviation](https://arxiv.org/abs/2403.03372)<Fn>CMU AirLab's terminal-airspace corpus: paired ATC radio and ADS-B from two Pittsburgh airports, KAGC and KBTP. CC-BY-4.0.</Fn> ships 398 hours of air traffic control radio and exactly zero transcripts. I setup a pipeline with the goal to transcribe all 531,050 utterances. The final result? A three-dataset collection on Huggingface, check out the collection [here](https://huggingface.co/collections/twangodev/tartanaviation-atc-adsb).
+[TartanAviation](https://arxiv.org/abs/2403.03372)<Fn>CMU [AirLab](https://theairlab.org)'s terminal-airspace corpus: paired ATC radio and ADS-B from two Pittsburgh airports, KAGC and KBTP. [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/).</Fn> ships 398 hours of air traffic control radio and exactly zero transcripts. I setup a pipeline with the goal to transcribe all 531,050 utterances. The final result? A three-dataset collection on Huggingface, check out the collection [here](https://huggingface.co/collections/twangodev/tartanaviation-atc-adsb).
 
 ## A Rough Idea
 
-AirLab keeps most of its data on a Swift object storage instance. The first job was just getting it mirrored onto Huggingface, so here comes [squawk](https://github.com/twangodev/squawk). It downloads the audio and ADS-B<Fn>Automatic Dependent Surveillance-Broadcast: aircraft continuously broadcast their GPS position, velocity, and identity (including callsign) on 1090 MHz, logged by ground receivers. The callsign field is what pairs onto each clip.</Fn> and sets up the initial mirror. Next, squawk runs a VAD<Fn>pyannote.audio's VoiceActivityDetection pipeline over pyannote/segmentation-3.0, 16 kHz, with a 0.15s minimum speech span and a 0.1s minimum silence gap.</Fn> to slice long clips into individual utterances, and the pipeline in [readback](https://github.com/twangodev/readback) labels every one. The labels land in a third dataset, text only, that snaps 1:1 onto utterances.
+AirLab keeps most of its data on a Swift object storage instance. The first job was just getting it mirrored onto Huggingface, so here comes [squawk](https://github.com/twangodev/squawk). It downloads the audio and ADS-B<Fn>Automatic Dependent Surveillance-Broadcast: aircraft continuously broadcast their GPS position, velocity, and identity (including callsign) on 1090 MHz, logged by ground receivers. The callsign field is what pairs onto each clip.</Fn> and sets up the initial mirror. Next, squawk runs a VAD<Fn>[pyannote.audio](https://github.com/pyannote/pyannote-audio)'s VoiceActivityDetection pipeline over [pyannote/segmentation-3.0](https://huggingface.co/pyannote/segmentation-3.0), 16 kHz, with a 0.15s minimum speech span and a 0.1s minimum silence gap.</Fn> to slice long clips into individual utterances, and the pipeline in [readback](https://github.com/twangodev/readback) labels every one. The labels land in a third dataset, text only, that snaps 1:1 onto utterances.
 
 <CollectionFlow />
 
@@ -32,7 +33,7 @@ At this point, all we have is raw audio clips and some nicely formatted ADS-B da
 
 ## Ensemble, Vote, Snap
 
-Three ASR models<Fn>nvidia/parakeet-tdt-0.6b-v2, nvidia/canary-qwen-2.5b, and jlvdoorn/whisper-large-v3-atco2-asr. The ATC-tuned Whisper carries a 2x vote weight; it is the strongest member.</Fn> transcribe each clip, weighted ROVER<Fn>ROVER, Recognizer Output Voting Error Reduction (Fiscus, 1997): align the hypotheses word by word, take the weighted majority at each slot. The baseline to beat.</Fn> fuses them, and a fuzzy match snaps the spoken callsign to the right ADS-B tail. A review studio cleans a sample. Deliberately simple.
+Three ASR models<Fn>[nvidia/parakeet-tdt-0.6b-v2](https://huggingface.co/nvidia/parakeet-tdt-0.6b-v2), [nvidia/canary-qwen-2.5b](https://huggingface.co/nvidia/canary-qwen-2.5b), and [jlvdoorn/whisper-large-v3-atco2-asr](https://huggingface.co/jlvdoorn/whisper-large-v3-atco2-asr). The ATC-tuned Whisper carries a 2x vote weight; it is the strongest member.</Fn> transcribe each clip, weighted ROVER<Fn>ROVER, Recognizer Output Voting Error Reduction ([Fiscus, 1997](https://doi.org/10.1109/ASRU.1997.659110)): align the hypotheses word by word, take the weighted majority at each slot. The baseline to beat.</Fn> fuses them, and a fuzzy match snaps the spoken callsign to the right ADS-B tail. A review studio cleans a sample. Deliberately simple.
 
 <Agreement />
 
@@ -42,9 +43,9 @@ On **67% of clips only one of the three models** agrees with the fused output. T
 
 Three ideas. The vote beat all three.
 
-**Decode-time ADS-B biasing.**<Fn>NVIDIA's GPU-PB / TurboBias boosting tree in NeMo: shallow-fusion contextual biasing at decode time, no retraining.</Fn> Bias the decoder toward the present callsigns. It backfires: ADS-B lists who is airborne, not who is transmitting, and on **63% of callsign-list clips the spoken callsign isn't in the list at all**. Biasing just shoves in callsigns nobody said, WER climbs the harder you push, and fuse-plus-snap already recovers the real ones.
+**Decode-time ADS-B biasing.**<Fn>NVIDIA's GPU-PB / TurboBias boosting tree in [NeMo](https://github.com/NVIDIA/NeMo): shallow-fusion contextual biasing at decode time, no retraining.</Fn> Bias the decoder toward the present callsigns. It backfires: ADS-B lists who is airborne, not who is transmitting, and on **63% of callsign-list clips the spoken callsign isn't in the list at all**. Biasing just shoves in callsigns nobody said, WER climbs the harder you push, and fuse-plus-snap already recovers the real ones.
 
-**LLM correction.** Hand an LLM the hypotheses and it cheerfully over-corrects the labels that were already right, with no signal<Fn>Not inter-model agreement, not the model's own confidence. The model is confidently wrong.</Fn> for which ones to leave alone. Audio omni models<Fn>Qwen3-Omni (bf16) and NVIDIA Nemotron Nano 3 Omni (NVFP4).</Fn> ramble past **300% WER**. Real gains do exist on the clips a human flagged, but you just can't find them automatically.
+**LLM correction.** Hand an LLM the hypotheses and it cheerfully over-corrects the labels that were already right, with no signal<Fn>Not inter-model agreement, not the model's own confidence. The model is confidently wrong.</Fn> for which ones to leave alone. Audio omni models<Fn>[Qwen3-Omni](https://huggingface.co/Qwen/Qwen3-Omni-30B-A3B-Instruct) (bf16) and [NVIDIA Nemotron Nano 3 Omni](https://huggingface.co/nvidia/Nemotron-3-Nano-Omni-30B-A3B-Reasoning-NVFP4) (NVFP4).</Fn> ramble past **300% WER**. Real gains do exist on the clips a human flagged, but you just can't find them automatically.
 
 **Can an LLM out-vote ROVER?** It cannot even reproduce the vote.<Fn>Told to take a per-word majority, it matches ROVER's exact output 20% of the time. It paraphrases and normalizes; it cannot help but interpret.</Fn> I tried re-fusing from scratch, picking the single best, span-locking the agreed words, and a per-clip reasoning agent with the surrounding conversation.
 
@@ -54,7 +55,7 @@ Every text-only method is worse overall. Accepted clips use the fused transcript
 
 ## Scoring
 
-The pipeline already computed how far an out-of-vote advisory model<Fn>twangodev/rasr-parakeet-v1, the in-house model whose successor (rasr-parakeet-v2) these labels train. Held out of the vote so it can flag its own blind spots.</Fn> diverged from the fused text, then threw the number away. Folding it back in, a plain average of three signals (agreement, the ROVER confidence, and how little the advisory model disagrees)<Fn>$c = \operatorname{mean}(a,\ r,\ 1 - d)$ over agreement $a$, ROVER confidence $r$, and advisory disagreement $d$.</Fn> ranks correctness at **AUC 0.80**, beating every single signal and a learned blend that overfits. One number per label, pick your own cutoff.
+The pipeline already computed how far an out-of-vote advisory model<Fn>[twangodev/rasr-parakeet-v1](https://huggingface.co/twangodev/rasr-parakeet-v1), the in-house model whose successor ([rasr-parakeet-v2](https://huggingface.co/twangodev/rasr-parakeet-v2)) these labels train. Held out of the vote so it can flag its own blind spots.</Fn> diverged from the fused text, then threw the number away. Folding it back in, a plain average of three signals (agreement, the ROVER confidence, and how little the advisory model disagrees)<Fn>$c = \operatorname{mean}(a,\ r,\ 1 - d)$ over agreement $a$, ROVER confidence $r$, and advisory disagreement $d$.</Fn> ranks correctness at **AUC 0.80**, beating every single signal and a learned blend that overfits. One number per label, pick your own cutoff.
 
 <ConfidenceExplorer />
 
