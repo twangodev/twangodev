@@ -1,5 +1,6 @@
 <script lang="ts">
 	import './layout.css';
+	import 'katex/dist/katex.min.css';
 	import { ModeWatcher } from 'mode-watcher';
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
