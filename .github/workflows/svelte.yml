@@ -16,7 +16,7 @@ jobs:
       - name: GitHub Metrics
         uses: twangodev/gmetrics@v1.5.0
         with:
-          token: ${{ secrets.METRICS_TOKEN }}
+          token: ${{ secrets.METRICS_TOKEN || secrets.GITHUB_TOKEN }}
           user: ${{ github.repository_owner }}
           filename: github-metrics.svg
           base: header, activity, community, repositories, metadata
