@@ -1,0 +1,16 @@
+---
+layout: experience
+company: Sparkles
+role: Founding Engineer
+dateStart: '2026-06-08'
+logo: sparkles.png
+url: https://sparkles.dev
+tags:
+  - ai
+  - infrastructure
+  - systems
+published: true
+commits:
+  - first hire, building core product and infrastructure
+  - i should probably add more bullet points later
+---
