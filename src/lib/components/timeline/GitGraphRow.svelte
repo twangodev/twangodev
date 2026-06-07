@@ -32,7 +32,9 @@
 	const svgWidth = $derived(graphWidth(maxLane + 1));
 
 	function toDateStr(d: Date): string {
-		return d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+		// dateStart/dateEnd are date-only strings parsed as UTC midnight; format in UTC
+		// too so the displayed month doesn't shift back a day for viewers west of UTC.
+		return d.toLocaleDateString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' });
 	}
 
 	const DOT_OFFSET = ROW_HEIGHT / 2;

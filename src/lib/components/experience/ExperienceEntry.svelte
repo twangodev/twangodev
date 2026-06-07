@@ -28,7 +28,8 @@
 	const dateStartStr = $derived(
 		toDate(experience.dateStart).toLocaleDateString('en-US', {
 			month: 'short',
-			year: 'numeric'
+			year: 'numeric',
+			timeZone: 'UTC'
 		})
 	);
 
@@ -36,7 +37,8 @@
 		experience.dateEnd
 			? toDate(experience.dateEnd).toLocaleDateString('en-US', {
 					month: 'short',
-					year: 'numeric'
+					year: 'numeric',
+					timeZone: 'UTC'
 				})
 			: 'Present'
 	);

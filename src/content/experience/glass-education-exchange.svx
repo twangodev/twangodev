@@ -12,8 +12,8 @@ tags:
   - devops
 published: true
 commits:
-  - Architect and build pay-walled, multi-tenant content platform with SAML SSO + ASN IP auth layers
-  - Migrate 50 orgs (12K WAUs) with minimal downtime
-  - Deploy infrastructure services on Oracle Cloud with tiered caching via Docker Compose
-  - Build multi-environment CI/CD pipelines and Grafana dashboards for real-time metrics and alerts
+  - built a paywalled, multi-tenant content platform with saml sso + asn ip auth
+  - migrated 50 orgs (12k weekly actives) with barely any downtime
+  - deployed infra on oracle cloud with tiered caching via docker compose
+  - set up multi-env ci/cd and grafana dashboards for real-time metrics and alerts
 ---

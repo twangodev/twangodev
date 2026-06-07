@@ -11,6 +11,6 @@ tags:
   - java
 published: true
 commits:
-  - Hold weekly office hours helping students with Java OOP, data structures, and Big-O analysis
-  - Debug student code and clarify inheritance, polymorphism, generics, and exception handling
+  - ran weekly office hours on java oop, data structures, and big-o
+  - debugged student code and untangled inheritance, polymorphism, generics, and exceptions
 ---

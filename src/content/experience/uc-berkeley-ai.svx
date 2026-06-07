@@ -11,6 +11,6 @@ tags:
   - cs61a
 published: true
 commits:
-  - 'Assist in labs and give mini-lectures for CS61A: Structure and Interpretation of Computer Programs'
-  - Support one of Berkeley's largest undergrad offerings enrolling 1.5K+ students
+  - helped run labs and gave mini-lectures for cs61a (structure and interpretation of computer programs)
+  - supported one of berkeley's biggest courses, 1.5k+ students
 ---

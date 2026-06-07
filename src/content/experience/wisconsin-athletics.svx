@@ -11,6 +11,6 @@ tags:
   - live-events
 published: true
 commits:
-  - Engineer live audio mixing for events with 97,000+ capacity at Camp Randall and Kohl Center
-  - Manage AV setups including Dante on A&H/Yamaha mixers and Roadhog lighting controllers
+  - mixed live audio for 97,000+ capacity crowds at camp randall and the kohl center
+  - ran av setups — dante on a&h/yamaha mixers and roadhog lighting
 ---

@@ -12,7 +12,7 @@ tags:
   - python
 published: true
 commits:
-  - Teach Python, Linux CLI, CUDA programming, and embedded systems across 15 Jetson Orin Nano workstations
-  - Deliver neural network theory and CNN architectures, adapting complex math for varying skill levels
-  - Orchestrate real-time computer vision projects (YOLO/OpenCV) ensuring NVIDIA certification standards
+  - taught python, linux cli, cuda, and embedded systems across 15 jetson orin nano workstations
+  - broke down neural nets and cnns, making the scary math click for any skill level
+  - ran real-time computer vision projects (yolo/opencv) up to nvidia's certification bar
 ---

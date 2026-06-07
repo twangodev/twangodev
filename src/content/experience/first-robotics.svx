@@ -11,7 +11,7 @@ tags:
   - leadership
 published: true
 commits:
-  - Lead team meetings and drive critical decision-making in a fast-paced environment
-  - Manage 30+ students across Design, Fabrication, Electrical, Software, and Business teams
-  - Raise $35K+ and contribute 1.2K+ hours to achieve competition outcomes
+  - ran team meetings and made the calls when things moved fast
+  - led 30+ students across design, fabrication, electrical, software, and business
+  - raised $35k+ and poured in 1.2k+ hours to get us to competition
 ---
