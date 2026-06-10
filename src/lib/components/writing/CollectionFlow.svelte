@@ -43,7 +43,9 @@
 		[
 			'The TartanAviation ATC collection on Hugging Face, built by squawk (https://github.com/twangodev/squawk) mirroring CMU TartanAviation:',
 			'',
-			...nodes.map((n) => `- **${n.name}**, ${n.label}, ${n.sub} (${n.stat}): ${n.href} (repo ${n.repo})`)
+			...nodes.map(
+				(n) => `- **${n.name}**, ${n.label}, ${n.sub} (${n.stat}): ${n.href} (repo ${n.repo})`
+			)
 		].join('\n');
 </script>
 
@@ -62,7 +64,7 @@
 		<div class="relative w-2/5 {left(i) ? 'mr-auto -rotate-1' : 'ml-auto rotate-1'}">
 			<div class="flex flex-col gap-1.5 rounded-sm border border-subtle bg-surface/40 px-4 py-3">
 				<div
-					class="font-mono text-xs leading-none font-semibold tracking-tight tabular-nums text-text"
+					class="font-mono text-xs leading-none font-semibold tracking-tight text-text tabular-nums"
 				>
 					{node.label}
 				</div>
@@ -119,10 +121,12 @@
 
 	<figcaption class="mt-3 text-sm leading-relaxed text-muted">
 		The three-stage TartanAviation ATC collection on Hugging Face, built by
-		<a href="https://github.com/twangodev/squawk" target="_blank" rel="noopener noreferrer">squawk</a>
+		<a href="https://github.com/twangodev/squawk" target="_blank" rel="noopener noreferrer"
+			>squawk</a
+		>
 		mirroring CMU TartanAviation. Raw <strong>clips</strong> (~41.8k paired ATC audio + ADS-B) are
-		VAD-split into <strong>531,050 utterances</strong> (~398h), then run through ensemble ASR, ROVER,
-		ADS-B snap, and review to produce the <strong>labels</strong> dataset (531,050 rows, 25MB), the subject
-		of this post.
+		VAD-split into <strong>531,050 utterances</strong> (~398h), then run through ensemble ASR,
+		ROVER, ADS-B snap, and review to produce the <strong>labels</strong> dataset (531,050 rows, 25MB),
+		the subject of this post.
 	</figcaption>
 </figure>

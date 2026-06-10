@@ -81,8 +81,8 @@
 
 	<figcaption class="text-sm leading-relaxed text-muted">
 		How many of the three voting models fully agree with the fused transcript, across all
-		<strong>531,050</strong> utterances. All three agree on only 11%; on 67% a single model carries
-		the slot. The models genuinely disagree on most of this corpus, which is what makes the vote do
-		real work and where I went looking for gains.
+		<strong>531,050</strong> utterances. All three agree on only 11%; on 67% a single model carries the
+		slot. The models genuinely disagree on most of this corpus, which is what makes the vote do real work
+		and where I went looking for gains.
 	</figcaption>
 </figure>

@@ -65,9 +65,7 @@
 			class="bio-layout flex flex-1 flex-col gap-8 lg:grid lg:grid-rows-[1fr] lg:items-stretch lg:gap-12"
 			style:grid-template-columns={gridColumns}
 		>
-			<aside
-				class="flex flex-col justify-center overflow-hidden lg:sticky lg:top-0 lg:max-h-svh"
-			>
+			<aside class="flex flex-col justify-center overflow-hidden lg:sticky lg:top-0 lg:max-h-svh">
 				<div class="lg:min-w-80">
 					<Bio
 						compact={collapsed}

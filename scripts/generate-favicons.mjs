@@ -80,4 +80,6 @@ const maskable = await sharp(svg, { density: 384 })
 	.toBuffer();
 await writeFile(join(staticDir, 'icon-maskable.png'), maskable);
 
-console.log('Generated: favicon.ico, apple-touch-icon.png, icon-192.png, icon-512.png, icon-maskable.png');
+console.log(
+	'Generated: favicon.ico, apple-touch-icon.png, icon-192.png, icon-512.png, icon-maskable.png'
+);
