@@ -3,6 +3,7 @@
 	import 'katex/dist/katex.min.css';
 	import { ModeWatcher } from 'mode-watcher';
 	import { onMount } from 'svelte';
+	import { dev } from '$app/environment';
 	import { page } from '$app/state';
 	import { afterNavigate, onNavigate } from '$app/navigation';
 	import { flight } from '$lib/flight.svelte';
@@ -49,6 +50,9 @@
 <ModeWatcher defaultMode="dark" disableHeadScriptInjection />
 <svelte:head>
 	{@html `<script type="application/ld+json">${JSON.stringify(websiteSchema())}</script>`}
+	{#if !dev}
+		<script src="https://rybbit.twango.dev/api/script.js" data-site-id="3" defer></script>
+	{/if}
 </svelte:head>
 
 <div class="flex min-h-svh flex-col bg-bg">
