@@ -4,8 +4,14 @@ export interface BioDetail {
 	annotation?: string;
 }
 
+export interface BioRouteHeading {
+	from: string;
+	to: string;
+}
+
 export interface BioOverride {
 	heading?: string;
+	headingRoute?: BioRouteHeading;
 	description?: string;
 	details?: BioDetail[];
 	handwriting?: string[];

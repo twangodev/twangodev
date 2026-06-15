@@ -26,6 +26,7 @@
 	const collapsed = $derived(userOverride !== null ? userOverride : !pageWantsExpanded);
 	const bioOverride = $derived(bio.override);
 	const bioHeading = $derived(bioOverride?.heading ?? page.data.bioHeading);
+	const bioHeadingRoute = $derived(bioOverride?.headingRoute ?? page.data.bioHeadingRoute);
 	const bioDescription = $derived(bioOverride?.description ?? page.data.bioDescription);
 	const bioDetails = $derived(bioOverride?.details ?? page.data.bioDetails);
 	const bioHandwriting = $derived(bioOverride?.handwriting ?? page.data.bioHandwriting);
@@ -76,6 +77,7 @@
 					<Bio
 						compact={collapsed}
 						heading={bioHeading}
+						headingRoute={bioHeadingRoute}
 						description={bioDescription}
 						details={bioDetails}
 						handwriting={bioHandwriting}

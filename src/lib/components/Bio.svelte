@@ -9,25 +9,42 @@
 		Tooltip
 	} from '$lib/components/ui';
 	import Handwriting from '$lib/components/ui/Handwriting.svelte';
-	import { Info } from '@lucide/svelte';
+	import { ArrowRight, Info } from '@lucide/svelte';
 	import { flight } from '$lib/flight.svelte';
+	import type { BioRouteHeading } from '$lib/bio.svelte';
 
 	interface Props {
 		compact?: boolean;
 		heading?: string;
+		headingRoute?: BioRouteHeading;
 		description?: string;
 		details?: { label: string; value: string; annotation?: string }[];
 		handwriting?: string[];
 	}
 
-	let { compact = false, heading, description, details, handwriting }: Props = $props();
+	let {
+		compact = false,
+		heading,
+		headingRoute,
+		description,
+		details,
+		handwriting
+	}: Props = $props();
 
 	const location = $derived(flight.location);
 	const locationInfo = $derived(flight.locationInfo);
 </script>
 
 <Heading class={handwriting ? 'group' : undefined}>
-	{heading ?? 'James Ding'}
+	{#if headingRoute}
+		<span class="inline-flex min-w-0 items-baseline gap-3">
+			<span>{headingRoute.from}</span>
+			<ArrowRight size={44} strokeWidth={2.1} class="shrink-0 translate-y-[7px] text-muted" />
+			<span>{headingRoute.to}</span>
+		</span>
+	{:else}
+		{heading ?? 'James Ding'}
+	{/if}
 	{#if handwriting}
 		<Handwriting phrases={handwriting} class="ml-2 text-lg font-extralight text-muted sm:text-xl" />
 	{/if}

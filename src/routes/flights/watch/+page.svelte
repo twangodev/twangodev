@@ -162,18 +162,20 @@
 
 	$effect(() => {
 		if (!activeFlight) return;
+		const fromAirport = airportByIata.get(activeFlight.fromIata);
+		const toAirport = airportByIata.get(activeFlight.toIata);
+		const airportDescription =
+			fromAirport && toAirport
+				? `${fromAirport.name} to ${toAirport.name}.`
+				: 'chronological playback of the flight log.';
 
 		bio.set({
-			heading: 'Flight watch',
-			description: `replaying ${activeFlight.fromIata} to ${activeFlight.toIata}.`,
+			headingRoute: { from: activeFlight.fromIata, to: activeFlight.toIata },
+			description: airportDescription,
 			handwriting: playing
 				? ['in motion', 'cruising', 'airspeed']
 				: ['paused', 'holding', 'standby'],
 			details: [
-				{
-					label: 'route',
-					value: `${activeFlight.fromIata} -> ${activeFlight.toIata}`
-				},
 				{
 					label: 'flight',
 					value: activeFlight.flightNumber ?? 'unknown',
