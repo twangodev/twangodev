@@ -6,6 +6,7 @@
 	import { dev } from '$app/environment';
 	import { page } from '$app/state';
 	import { afterNavigate, onNavigate } from '$app/navigation';
+	import { bio } from '$lib/bio.svelte';
 	import { flight } from '$lib/flight.svelte';
 	import { websiteSchema } from '$lib/schema';
 	import Header from '$lib/components/Header.svelte';
@@ -23,6 +24,11 @@
 
 	const pageWantsExpanded = $derived(page.data.bioExpanded ?? page.url.pathname === '/');
 	const collapsed = $derived(userOverride !== null ? userOverride : !pageWantsExpanded);
+	const bioOverride = $derived(bio.override);
+	const bioHeading = $derived(bioOverride?.heading ?? page.data.bioHeading);
+	const bioDescription = $derived(bioOverride?.description ?? page.data.bioDescription);
+	const bioDetails = $derived(bioOverride?.details ?? page.data.bioDetails);
+	const bioHandwriting = $derived(bioOverride?.handwriting ?? page.data.bioHandwriting);
 
 	afterNavigate(() => {
 		userOverride = null;
@@ -69,10 +75,10 @@
 				<div class="lg:min-w-80">
 					<Bio
 						compact={collapsed}
-						heading={page.data.bioHeading}
-						description={page.data.bioDescription}
-						details={page.data.bioDetails}
-						handwriting={page.data.bioHandwriting}
+						heading={bioHeading}
+						description={bioDescription}
+						details={bioDetails}
+						handwriting={bioHandwriting}
 					/>
 				</div>
 			</aside>

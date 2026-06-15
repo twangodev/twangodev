@@ -64,6 +64,7 @@ export const GET: RequestHandler = () => {
 			`- [Writing](${u('/writing')}): all posts, with category, series, and tag indexes`,
 			`- [Experience](${u('/experience')}): work history timeline`,
 			`- [Flights](${u('/flights')}): flight map`,
+			`- [Flight Watch](${u('/flights/watch')}): chronological flight playback`,
 			`- [Security](${u('/security')}): PGP key and security policy`
 		].join('\n')
 	);

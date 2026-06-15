@@ -229,6 +229,12 @@
 
 <div class="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden">
 	<div class="relative aspect-square max-h-[calc(100svh-16rem)] w-full max-w-5xl">
+		<a
+			href="/flights/watch"
+			class="absolute top-2 right-2 z-20 rounded-sm border border-subtle bg-bg/85 px-3 py-1.5 font-mono text-xs text-muted shadow-sm backdrop-blur transition-colors hover:border-muted hover:text-text"
+		>
+			watch playback
+		</a>
 		<canvas bind:this={canvasEl} style="cursor: grab" class="absolute inset-0 h-full w-full"
 		></canvas>
 		{#each airportLabels as label (label.id)}
