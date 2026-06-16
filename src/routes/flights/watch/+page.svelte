@@ -28,7 +28,10 @@
 
 	let canvasEl: HTMLCanvasElement;
 	let playing = $state(true);
-	let mileCursor = $state(0);
+	// Position along the playback track, measured in miles plus the phantom dwell gaps
+	// inserted between legs (see GAP_MILES). Distinct from liveMiles, which is the real
+	// distance flown.
+	let trackCursor = $state(0);
 	let speed = $state(16);
 	let follow = $state(true);
 	let repeat = $state(true);
@@ -41,7 +44,37 @@
 			return totals;
 		}, [])
 	);
-	const activeIndex = $derived(findActiveIndex(mileCursor, cumulativeMiles));
+	// Phantom dwell region inserted between consecutive legs, in track space (so the hold is
+	// scrubbable). Its width does not set the pause length — DWELL_SECONDS does.
+	const GAP_MILES = 100;
+	// Fixed wall-clock hold between legs, applied regardless of playback speed so the wait
+	// stays visible at 16x/32x instead of shrinking to nothing.
+	const DWELL_SECONDS = 0.125;
+	const trackStarts = $derived(
+		flights.map((_: FlightRoute, i: number) => (cumulativeMiles[i - 1] ?? 0) + i * GAP_MILES)
+	);
+	const trackLength = $derived(
+		flights.length === 0 ? 0 : (trackStarts.at(-1) ?? 0) + (flights.at(-1)?.distance ?? 0)
+	);
+	const trackState = $derived.by(() => {
+		const count = flights.length;
+		if (count === 0) return { index: 0, progress: 0, inGap: false };
+		const clamped = Math.min(Math.max(trackCursor, 0), Math.max(0, trackLength - 0.001));
+		for (let i = 0; i < count; i++) {
+			const start = trackStarts[i];
+			const span = flights[i].distance;
+			if (clamped < start + span) {
+				const progress = span > 0 ? (clamped - start) / span : 1;
+				return { index: i, progress: Math.min(1, Math.max(0, progress)), inGap: false };
+			}
+			if (clamped < start + span + GAP_MILES) {
+				return { index: i, progress: 1, inGap: true };
+			}
+		}
+		return { index: count - 1, progress: 1, inGap: false };
+	});
+	const activeIndex = $derived(trackState.index);
+	const inGap = $derived(trackState.inGap);
 	const activeFlight = $derived(flights[activeIndex]);
 	const airportByIata = $derived(new Map(airports.map((airport) => [airport.iata, airport])));
 	const maxAirportCount = $derived(
@@ -76,12 +109,7 @@
 					.filter((label) => label !== null)
 			: []
 	);
-	const activeStartMiles = $derived(cumulativeMiles[activeIndex - 1] ?? 0);
-	const activeProgress = $derived(
-		activeFlight
-			? Math.min(1, Math.max(0, (mileCursor - activeStartMiles) / activeFlight.distance))
-			: 0
-	);
+	const activeProgress = $derived(activeFlight ? trackState.progress : 0);
 	const sortedFlightDistances = $derived(
 		flights.map((flight) => flight.distance).toSorted((a, b) => a - b)
 	);
@@ -95,7 +123,12 @@
 	const easedProgress = $derived(easeInOut(activeProgress));
 	const arcHeadProgress = $derived(activeFlight ? Math.max(0.015, easedProgress) : 0);
 	const liveMiles = $derived(
-		Math.min(Math.max(mileCursor, 0), Math.max(totalMiles, cumulativeMiles.at(-1) ?? 0))
+		activeFlight
+			? Math.min(
+					totalMiles,
+					(cumulativeMiles[activeIndex - 1] ?? 0) + activeProgress * activeFlight.distance
+				)
+			: 0
 	);
 	const roundedLiveMiles = $derived(Math.round(liveMiles));
 	const roundedTotalMiles = $derived(Math.round(totalMiles));
@@ -158,13 +191,6 @@
 		const m = minutes % 60;
 		if (h === 0) return `${m}m`;
 		return m === 0 ? `${h}h` : `${h}h ${m}m`;
-	}
-
-	function findActiveIndex(miles: number, totals: number[]): number {
-		if (totals.length === 0) return 0;
-		const clamped = Math.min(Math.max(miles, 0), Math.max(0, totals.at(-1)! - 0.001));
-		const index = totals.findIndex((total) => clamped < total);
-		return index === -1 ? totals.length - 1 : index;
 	}
 
 	function easeInOut(t: number): number {
@@ -235,18 +261,17 @@
 	});
 
 	function setCursor(value: number) {
-		const maxMiles = Math.max(0, totalMiles || cumulativeMiles.at(-1) || 0);
-		mileCursor = Math.min(Math.max(value, 0), Math.max(0, maxMiles - 0.001));
+		trackCursor = Math.min(Math.max(value, 0), Math.max(0, trackLength - 0.001));
 	}
 
 	function skip(delta: number) {
 		const nextIndex = Math.min(Math.max(activeIndex + delta, 0), Math.max(0, flights.length - 1));
-		setCursor(cumulativeMiles[nextIndex - 1] ?? 0);
+		setCursor(trackStarts[nextIndex] ?? 0);
 		follow = true;
 	}
 
 	function resetPlayback() {
-		mileCursor = 0;
+		trackCursor = 0;
 		playing = true;
 		follow = true;
 	}
@@ -444,22 +469,28 @@
 			lastFrame = now;
 
 			if (playing) {
-				const next = mileCursor + dt * BASE_MILES_PER_SECOND * speed * activeFlightSpeedScale;
-				if (next >= totalMiles) {
+				// In a dwell, cross the gap at a fixed wall-clock rate so the wait is identical at
+				// every speed; otherwise advance at the current playback speed.
+				const advance = inGap
+					? dt * (GAP_MILES / DWELL_SECONDS)
+					: dt * BASE_MILES_PER_SECOND * speed * activeFlightSpeedScale;
+				const next = trackCursor + advance;
+				if (next >= trackLength) {
 					if (repeat) {
-						mileCursor = 0;
+						trackCursor = 0;
 					} else {
-						setCursor(totalMiles);
+						setCursor(trackLength);
 						playing = false;
 					}
 				} else {
-					mileCursor = next;
+					trackCursor = next;
 				}
 			}
 			const pulse = (Math.sin(now / 240) + 1) / 2;
 
 			if (follow && activeFlight) {
-				const lookahead = Math.min(0.88, Math.max(0.12, easedProgress));
+				// During the dwell, ease the camera all the way onto the arrival airport.
+				const lookahead = inGap ? 1 : Math.min(0.88, Math.max(0.12, easedProgress));
 				const [lat, lng] = interpolateGreatCircle(activeFlight.from, activeFlight.to, lookahead);
 				const target = locationToAngles(lat, lng);
 				phi = lerpAngle(phi, target.phi, 0.045);
@@ -627,9 +658,9 @@
 			<input
 				type="range"
 				min="0"
-				max={Math.max(0, totalMiles - 0.001)}
+				max={Math.max(0, trackLength - 0.001)}
 				step="1"
-				value={mileCursor}
+				value={trackCursor}
 				aria-label="Flight playback position"
 				class="watch-range h-1.5 w-full cursor-pointer appearance-none rounded-full bg-subtle"
 				oninput={(e) => {
