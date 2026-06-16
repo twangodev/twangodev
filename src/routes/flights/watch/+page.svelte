@@ -10,10 +10,12 @@
 		SkipBack,
 		SkipForward
 	} from '@lucide/svelte';
+	import NumberFlow from '@number-flow/svelte';
 	import createGlobe from 'cobe';
 	import { bio } from '$lib/bio.svelte';
 	import SEO from '$lib/components/SEO.svelte';
 	import AirportLabel from '$lib/components/flights/AirportLabel.svelte';
+	import { compactMilesFormatFor, formatCompactMiles } from '$lib/flights/format';
 	import { interpolateGreatCircle } from '$lib/globe/projection';
 	import { breadcrumbSchema } from '$lib/schema';
 	import type { FlightAirport, FlightRoute } from '$lib/flights/data';
@@ -80,14 +82,28 @@
 			? Math.min(1, Math.max(0, (mileCursor - activeStartMiles) / activeFlight.distance))
 			: 0
 	);
+	const sortedFlightDistances = $derived(
+		flights.map((flight) => flight.distance).toSorted((a, b) => a - b)
+	);
+	const shortFlightDistance = $derived(percentile(sortedFlightDistances, 0.25));
+	const medianFlightDistance = $derived(percentile(sortedFlightDistances, 0.5));
+	const activeFlightSpeedScale = $derived(
+		activeFlight
+			? flightSpeedScale(activeFlight.distance, shortFlightDistance, medianFlightDistance)
+			: 1
+	);
 	const easedProgress = $derived(easeInOut(activeProgress));
 	const arcHeadProgress = $derived(activeFlight ? Math.max(0.015, easedProgress) : 0);
 	const liveMiles = $derived(
 		Math.min(Math.max(mileCursor, 0), Math.max(totalMiles, cumulativeMiles.at(-1) ?? 0))
 	);
+	const roundedLiveMiles = $derived(Math.round(liveMiles));
+	const roundedTotalMiles = $derived(Math.round(totalMiles));
+	const liveMilesFormat = $derived(compactMilesFormatFor(roundedLiveMiles));
+	const totalMilesFormat = $derived(compactMilesFormatFor(roundedTotalMiles));
 	const THETA = 0.3;
 	const DPR = 2;
-	const BASE_MILES_PER_SECOND = 120;
+	const BASE_MILES_PER_SECOND = 240;
 	const ACTIVE_TRAIL_PAD = 0.02;
 	const COBE_GLOBE_RADIUS = 0.8;
 
@@ -136,10 +152,6 @@
 		return dateFormatter.format(new Date(ms));
 	}
 
-	function formatMiles(miles: number): string {
-		return `${Math.round(miles).toLocaleString()} mi`;
-	}
-
 	function formatDuration(ms: number): string {
 		const minutes = Math.max(1, Math.round(ms / 60000));
 		const h = Math.floor(minutes / 60);
@@ -158,6 +170,26 @@
 	function easeInOut(t: number): number {
 		const clamped = Math.min(1, Math.max(0, t));
 		return clamped * clamped * (3 - 2 * clamped);
+	}
+
+	function percentile(values: number[], p: number): number {
+		if (values.length === 0) return 0;
+		const index = (values.length - 1) * p;
+		const lower = Math.floor(index);
+		const upper = Math.ceil(index);
+		const amount = index - lower;
+		return values[lower] + (values[upper] - values[lower]) * amount;
+	}
+
+	function flightSpeedScale(
+		distance: number,
+		shortDistance: number,
+		medianDistance: number
+	): number {
+		if (medianDistance <= shortDistance) return 1;
+		if (distance <= shortDistance) return 0.5;
+		if (distance >= medianDistance) return 1;
+		return 0.5 + easeInOut((distance - shortDistance) / (medianDistance - shortDistance)) * 0.5;
 	}
 
 	$effect(() => {
@@ -182,14 +214,9 @@
 					annotation: `${activeIndex + 1}/${flights.length}`
 				},
 				{
-					label: 'miles',
-					value: formatMiles(liveMiles),
-					annotation: `of ${formatMiles(totalMiles)}`
-				},
-				{
 					label: 'leg',
 					value: `${Math.round(activeProgress * 100)}%`,
-					annotation: formatMiles(activeFlight.distance)
+					annotation: formatCompactMiles(activeFlight.distance)
 				},
 				{
 					label: 'date',
@@ -417,7 +444,7 @@
 			lastFrame = now;
 
 			if (playing) {
-				const next = mileCursor + dt * BASE_MILES_PER_SECOND * speed;
+				const next = mileCursor + dt * BASE_MILES_PER_SECOND * speed * activeFlightSpeedScale;
 				if (next >= totalMiles) {
 					if (repeat) {
 						mileCursor = 0;
@@ -596,7 +623,7 @@
 			</div>
 		</div>
 
-		<div class="grid items-center">
+		<div class="grid items-center gap-2">
 			<input
 				type="range"
 				min="0"
@@ -611,6 +638,17 @@
 					setCursor(Number(e.currentTarget.value));
 				}}
 			/>
+			<div class="flex items-baseline justify-between gap-4 font-mono text-[10px] text-muted/75">
+				<span class="min-w-0 tabular-nums">
+					<NumberFlow value={roundedLiveMiles} format={liveMilesFormat} />
+					<span> miles</span>
+				</span>
+				<span class="shrink-0 tabular-nums">
+					<span>of </span>
+					<NumberFlow value={roundedTotalMiles} format={totalMilesFormat} />
+					<span> miles</span>
+				</span>
+			</div>
 		</div>
 	</div>
 </div>
