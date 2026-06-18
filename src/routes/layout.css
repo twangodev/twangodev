@@ -119,11 +119,11 @@
 	padding: 0.2em 0.4em;
 	border-radius: 0.25rem;
 	background-color: var(--color-surface);
-}
 
-.prose :where(code):not(:where(pre code))::before,
-.prose :where(code):not(:where(pre code))::after {
-	content: none;
+	&::before,
+	&::after {
+		content: none;
+	}
 }
 
 .prose .code-block {
