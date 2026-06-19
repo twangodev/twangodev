@@ -41,7 +41,7 @@
 	]}
 />
 
-<div class="flex flex-col gap-6 pb-24">
+<div class="mx-auto flex w-full max-w-2xl flex-col gap-6 pb-24">
 	<Heading level={2}>Writing</Heading>
 
 	<SearchInput value={search} oninput={(e) => (search = e.currentTarget.value)} />
