@@ -14,11 +14,12 @@ jobs:
       group: ${{ github.workflow }}-metrics-${{ github.ref }}
     steps:
       - name: GitHub Metrics
-        uses: twangodev/gmetrics@v1.6.0
+        uses: twangodev/gmetrics@v1.7.0
         with:
           token: ${{ secrets.METRICS_TOKEN || secrets.GITHUB_TOKEN }}
           user: ${{ github.repository_owner }}
           filename: github-metrics.svg
+          plugins_errors_fatal: yes
           base: header, activity, community, repositories, metadata
           base_hireable: yes
           base_indepth: yes
@@ -38,7 +39,7 @@ jobs:
           plugin_people_size: 28
 
       - name: Sidebar Metrics (WakaTime, Last.fm, Steam)
-        uses: twangodev/gmetrics@v1.6.0
+        uses: twangodev/gmetrics@v1.7.0
         with:
           token: NOT_NEEDED
           user: ${{ github.repository_owner }}
