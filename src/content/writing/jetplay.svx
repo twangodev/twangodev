@@ -1,6 +1,6 @@
 ---
 title: 'Jetplay: Audio and Video Playback for JetBrains IDEs'
-description: 'Jetplay plays audio and video inside JetBrains IDEs (IntelliJ, PyCharm, WebStorm, and the rest), right in the editor tab. How a loopback server and some RPC got it working, Remote Dev included.'
+description: 'A plugin to allow playback of audio and video inside JetBrains IDEs (IntelliJ, PyCharm, WebStorm, and the rest), right in the editor tab.'
 date: '2026-06-16'
 published: true
 tags:
@@ -13,27 +13,37 @@ category: engineering
 <script>
 	import MediaFlow from '$lib/components/writing/MediaFlow.svelte';
 	import Fn from '$lib/components/writing/Fn.svelte';
+	import JetplayInstall from '$lib/components/writing/JetplayInstall.svelte';
 </script>
 
 So apparently JetBrains IDEs have never supported audio or video playback.
 
-So when you open a video in IntelliJ, PyCharm, WebStorm, etc. all you get is to set up a file association so some other program can open it. And over a remote session there's nothing useful to hand it to anyway, since the file lives on the host. So why not build a plugin to handle this all within the IDE itself? Here's [Jetplay](https://plugins.jetbrains.com/plugin/31014). Now you can have audio and video playback within your JetBrains IDE.
+So when you open a video in IntelliJ, PyCharm, WebStorm, or any other JetBrains IDE, all you get is to set up a file association so some other program can open it. Which, in my opinion, is kind of cooked (VSCode supports this, btw.)
 
-The first version took an afternoon. Getting it to really work took quite a bit longer, and then Remote Dev came along and broke it all over again.
+So why not build a plugin to handle this all within the IDE itself? So I built [Jetplay](https://plugins.jetbrains.com/plugin/31014).
+
+This solves the dumb problem of audio and video playback support within your JetBrains IDE. Feel free to install it by clicking below:
+
+<JetplayInstall />
+
+The rest of this writeup will mostly be about the hoops to build this and my engineering decisions.
 
 ## Just Use a Browser
 
-JetBrains already ships a browser. JCEF<Fn>Java Chromium Embedded Framework, a full Chromium embedded in the IDE. It already runs the Markdown preview and the login screens.</Fn> is embedded Chromium, and Chromium plays audio and video. The first version did the obvious thing: load a small player page into JCEF and point an `<audio>` or `<video>` tag at the file.
+So apparently JetBrains already ships a browser. I think it's already used in JetBrains official Markdown plugin for rendering, but there are other plugins harnessing this, like a [PDF Viewer Plugin](https://plugins.jetbrains.com/plugin/14494-pdf-viewer).
+
+What actually lies under the hood is JCEF<Fn>Java Chromium Embedded Framework, a full Chromium embedded in the IDE.</Fn>, which is basically Chromium (and most importantly, allows playback of audio and video). The first version did the obvious thing: load a small player page into JCEF and point an `<audio>` or `<video>` tag at the file.
 
 And locally, that's the whole trick: double-click and it plays. JCEF is happy to play a `file://` URL, audio or video. The early versions of Jetplay were exactly that, a player with a progress bar and nothing else, and they worked fine.
 
-The loopback server came later, when I added a waveform you could scrub. A null-origin page can *play* a `file://` URL but can't `fetch()` and decode its bytes, and drawing a waveform needs exactly that. `file://` also has no real Range support<Fn>The <code>Range: bytes=…</code> header. It asks for a slice of a file instead of the whole thing. Without it, seeking gets unreliable, because the player can't ask for the bytes from 2:00 onward.</Fn>, so seeking was shaky on big files too. So local media moved onto a tiny HTTP server on `127.0.0.1` that hands the page a real `http://` URL, with the CORS header it wants, `Accept-Ranges: bytes`, and a `206 Partial Content` for whatever range it asks for.<Fn>Loopback only, a random token per file, and a Host-header check against DNS rebinding. It serves the files you've opened and nothing else.</Fn> Same playback, just a fetchable URL behind it.
+
+The loopback server came later, when I added a waveform you could scrub. A null-origin page can *play* a `file://` URL but can't `fetch()` and decode its bytes, and drawing a waveform needs exactly that. `file://` also has no real Range support<Fn>The <code>Range: bytes=…</code> header. It asks for a slice of a file instead of the whole thing. Without it, seeking gets unreliable, because the player can't ask for the bytes from 2:00 onward.</Fn>, so seeking was shaky on big files too. So local media moved onto a tiny HTTP server on `127.0.0.1` that hands the page a real `http://` URL, with the CORS header it wants, `Accept-Ranges: bytes`, and a `206 Partial Content` for whatever range it asks for.<Fn>Loopback only, a random token per file, and a Host-header check against DNS rebinding. It serves the files you've opened and nothing else.</Fn> Same playback, just a server handling a fetchable URL now.
 
 ## Remote Development
 
-All of that worked well, but only on local setups, which, for me, recently has been pretty rare. The first time I opened something over Remote Dev,<Fn>Gateway and the JetBrains Client: the IDE backend runs on a remote host, a thin client paints the UI on your laptop. Your files live on the host. You never see them locally.</Fn> it came apart. Video wouldn't play at all. Audio would start, run for a couple of seconds, and then randomly cut out.
+All of that worked well, but only on local setups, which, for me, recently has been pretty rare. The first time I opened something over RD<Fn>Remote Development: the IDE backend runs on a remote host, a thin client paints the UI on your laptop. Your files live on the host. You never see them locally.</Fn>, it came apart. Video wouldn't play at all. Audio would start, run for a couple of seconds, and then randomly cut out.
 
-Remote Dev splits it across two machines: the file on the host, the browser on the client (since JCEF only runs there). And a loopback server only answers on its own machine. Put it on the host and the browser can't reach it; put it on the client and there's no file to read. Either way the player runs out of bytes, which is the cut-out, and why video never even started.
+Architecturally, RD splits it across two machines: the file on the host, the browser on the client (since JCEF only runs there). And a loopback server only answers on its own machine. Put it on the host and the browser can't reach it; put it on the client and there's no file to read. Either way the player runs out of bytes, which is the cut-out, and why video never even started.
 
 <MediaFlow />
 
@@ -43,6 +53,8 @@ You don't see any of this. You double-click and it plays, whether the file is on
 
 ## What it plays
 
-Pretty much anything. If the embedded Chromium can decode it, it plays the moment you open it. If it can't, a bundled FFmpeg<Fn>JavaCV's bundled build, so there's no system install and nothing on your <code>PATH</code>.</Fn> transcodes it to WebM the first time, with a progress bar. Either way you just double-click.
+Pretty much anything. If the embedded Chromium can decode it, it plays the moment you open it.
+
+It's not over just yet though, Chromium doesn't support proprietary codecs.<Fn>Chromium ships only royalty-free codecs; Chrome layers the licensed ones on top. So the embedded build won't decode H.264, HEVC, or AAC, which is most of what's sitting in an <code>.mp4</code>.</Fn> So we need to re-encode all them into codecs Chromium can play with FFmpeg. We bundle FFmpeg<Fn>JavaCV's bundled build, so there's no system install and nothing on your <code>PATH</code>.</Fn> to transcode it to WebM the first time, with a progress bar. Either way you just double-click any registered media, and Jetplay either plays it natively or via a transcoded format
 
 The current list of formats lives on [GitHub](https://github.com/twangodev/jetplay), and it keeps growing. To install, search for "jetplay" under <kbd>Settings</kbd> → <kbd>Plugins</kbd> → <kbd>Marketplace</kbd>.

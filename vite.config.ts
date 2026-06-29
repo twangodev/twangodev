@@ -48,14 +48,32 @@ function getFlightLocation(): { location: string; info: string } {
 	}
 }
 
+function getJetplayDownloads(): number {
+	// Fetched at build time from the JetBrains Marketplace API and inlined via `define`.
+	// Falls back to the last-known count when the network is unavailable at build.
+	const fallback = 2395;
+	try {
+		const json = execSync('curl -fsSL https://plugins.jetbrains.com/api/plugins/31014', {
+			encoding: 'utf-8',
+			timeout: 5000
+		});
+		const downloads = JSON.parse(json).downloads;
+		return typeof downloads === 'number' ? downloads : fallback;
+	} catch {
+		return fallback;
+	}
+}
+
 const flightLocation = getFlightLocation();
+const jetplayDownloads = getJetplayDownloads();
 
 export default defineConfig({
 	define: {
 		__BUILD_TIME__: JSON.stringify(new Date().toISOString()),
 		__COMMIT_HASH__: JSON.stringify(getCommitHash()),
 		__CURRENT_LOCATION__: JSON.stringify(flightLocation.location),
-		__LOCATION_INFO__: JSON.stringify(flightLocation.info)
+		__LOCATION_INFO__: JSON.stringify(flightLocation.info),
+		__JETPLAY_DOWNLOADS__: JSON.stringify(jetplayDownloads)
 	},
 	plugins: [buildWorkspaces(), tailwindcss(), sveltekit(), devtoolsJson()],
 	server: {
