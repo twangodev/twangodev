@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
+	import { site } from '$lib/config';
 	import TagPill from './TagPill.svelte';
 	import Footnotes from './Footnotes.svelte';
 	import { setFootnoteRegistry } from './footnotes';
@@ -91,6 +92,8 @@
 	<header class="mb-8 flex flex-col gap-3">
 		<h1 class="font-sans text-3xl font-semibold tracking-tight sm:text-4xl">{title}</h1>
 		<div class="flex items-center gap-2 font-mono text-xs tracking-wide text-muted">
+			<a href="/" class="text-text hover:underline">{site.author.name}</a>
+			<span>&middot;</span>
 			<time datetime={date}>{dateStr}</time>
 			{#if updatedStr}
 				<span>&middot; Updated {updatedStr}</span>
