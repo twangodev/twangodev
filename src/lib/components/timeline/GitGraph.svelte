@@ -67,7 +67,10 @@
 		</button>
 	</div>
 	{#each layout as row, i (rowKey(row, i))}
-		<div animate:flip={{ duration: mounted ? 300 : 0, easing: cubicOut }}>
+		<div
+			class={row.type === 'fork' ? 'relative z-10' : ''}
+			animate:flip={{ duration: mounted ? 300 : 0, easing: cubicOut }}
+		>
 			<GitGraphRow
 				{row}
 				{maxLane}
