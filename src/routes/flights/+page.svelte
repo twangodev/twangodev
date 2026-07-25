@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { Play, Route } from '@lucide/svelte';
+	import { resolve } from '$app/paths';
 	import createGlobe from 'cobe';
 	import SEO from '$lib/components/SEO.svelte';
 	import AirportLabel from '$lib/components/flights/AirportLabel.svelte';
@@ -229,12 +231,27 @@
 
 <div class="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden">
 	<div class="relative aspect-square max-h-[calc(100svh-16rem)] w-full max-w-5xl">
-		<a
-			href="/flights/watch"
-			class="absolute top-2 right-2 z-20 rounded-sm border border-subtle bg-bg/85 px-3 py-1.5 font-mono text-xs text-muted shadow-sm backdrop-blur transition-colors hover:border-muted hover:text-text"
+		<nav
+			aria-label="Flight views"
+			class="absolute top-2 right-2 z-20 flex items-center gap-1 rounded-sm bg-bg/85 p-1 shadow-sm backdrop-blur"
 		>
-			watch playback
-		</a>
+			<a
+				href={resolve('/flights/watch')}
+				title="Watch playback"
+				aria-label="Watch flight playback"
+				class="flex size-8 items-center justify-center rounded-sm text-muted transition-colors hover:bg-surface hover:text-text focus-visible:bg-surface focus-visible:text-text focus-visible:outline-none"
+			>
+				<Play size={17} strokeWidth={1.8} />
+			</a>
+			<a
+				href={resolve('/flights/routes')}
+				title="View all routes"
+				aria-label="View all flight routes"
+				class="flex size-8 items-center justify-center rounded-sm text-muted transition-colors hover:bg-surface hover:text-text focus-visible:bg-surface focus-visible:text-text focus-visible:outline-none"
+			>
+				<Route size={17} strokeWidth={1.8} />
+			</a>
+		</nav>
 		<canvas bind:this={canvasEl} style="cursor: grab" class="absolute inset-0 h-full w-full"
 		></canvas>
 		{#each airportLabels as label (label.id)}
