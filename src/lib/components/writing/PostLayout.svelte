@@ -5,6 +5,8 @@
 	import Footnotes from './Footnotes.svelte';
 	import { setFootnoteRegistry } from './footnotes';
 	import { highlightFootnotes } from './footnote-highlight';
+	import { formatPostDate } from '$lib/writing/dates';
+	import { getPostMetadataContext } from '$lib/writing/post-context';
 
 	setFootnoteRegistry();
 
@@ -20,26 +22,13 @@
 	}
 
 	let { title, date, updated, published = true, tags, children }: Props = $props();
+	const getPostMetadata = getPostMetadataContext();
 
 	const displayTags = $derived(published ? tags : ['unpublished', ...tags]);
 
-	const dateStr = $derived(
-		new Date(date).toLocaleDateString('en-US', {
-			year: 'numeric',
-			month: 'long',
-			day: 'numeric'
-		})
-	);
-
-	const updatedStr = $derived(
-		updated
-			? new Date(updated).toLocaleDateString('en-US', {
-					year: 'numeric',
-					month: 'long',
-					day: 'numeric'
-				})
-			: null
-	);
+	const dateStr = $derived(formatPostDate(date));
+	const effectiveUpdated = $derived(getPostMetadata?.().updated ?? updated);
+	const updatedStr = $derived(effectiveUpdated ? formatPostDate(effectiveUpdated) : null);
 
 	const copyIcon =
 		'<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>';
@@ -94,9 +83,9 @@
 		<div class="flex items-center gap-2 font-mono text-xs tracking-wide text-muted">
 			<a href="/" class="text-text hover:underline">{site.author.name}</a>
 			<span>&middot;</span>
-			<time datetime={date}>{dateStr}</time>
-			{#if updatedStr}
-				<span>&middot; Updated {updatedStr}</span>
+			<span>Posted on <time datetime={date}>{dateStr}</time></span>
+			{#if effectiveUpdated && updatedStr}
+				<span>&middot; Last updated <time datetime={effectiveUpdated}>{updatedStr}</time></span>
 			{/if}
 		</div>
 		{#if displayTags.length > 0}

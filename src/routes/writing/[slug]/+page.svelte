@@ -2,9 +2,12 @@
 	import { SeriesNav } from '$lib/components/writing';
 	import SEO from '$lib/components/SEO.svelte';
 	import { articleSchema, breadcrumbSchema } from '$lib/schema';
+	import { setPostMetadataContext } from '$lib/writing/post-context';
 
 	const { data } = $props();
 	const Component = $derived(data.component);
+
+	setPostMetadataContext(() => data.metadata);
 </script>
 
 <SEO

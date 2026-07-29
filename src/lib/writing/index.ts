@@ -1,5 +1,6 @@
 import type { PostMetadata } from '$lib/types/writing';
 import type { Component } from 'svelte';
+import { resolvePostUpdatedDate } from './dates';
 
 interface PostModule {
 	default: Component;
@@ -12,12 +13,25 @@ function slugFromPath(path: string): string {
 	return path.replace('/src/content/writing/', '').replace('.svx', '');
 }
 
+function metadataFromModule(path: string, mod: PostModule): PostMetadata {
+	const slug = slugFromPath(path);
+	const { updated: frontmatterUpdated, ...metadata } = mod.metadata;
+	const updated = resolvePostUpdatedDate(
+		metadata.date,
+		__POST_GIT_DATES__[slug],
+		frontmatterUpdated
+	);
+
+	return {
+		...metadata,
+		...(updated ? { updated } : {}),
+		slug
+	};
+}
+
 export function getAllPosts(): PostMetadata[] {
 	return Object.entries(modules)
-		.map(([path, mod]) => ({
-			...mod.metadata,
-			slug: slugFromPath(path)
-		}))
+		.map(([path, mod]) => metadataFromModule(path, mod))
 		.filter((post) => import.meta.env.DEV || post.published)
 		.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 }
@@ -30,7 +44,7 @@ export function getPostBySlug(
 	const [path, mod] = entry;
 	if (!import.meta.env.DEV && !mod.metadata.published) return undefined;
 	return {
-		metadata: { ...mod.metadata, slug: slugFromPath(path) },
+		metadata: metadataFromModule(path, mod),
 		component: mod.default
 	};
 }

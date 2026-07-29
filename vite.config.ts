@@ -4,6 +4,8 @@ import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig, type Plugin } from 'vite';
 import { execSync } from 'child_process';
 import { readFileSync } from 'fs';
+import { dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import {
 	findAirport,
 	findLatestLanded,
@@ -11,6 +13,9 @@ import {
 	formatCityLabel,
 	formatLocationInfo
 } from './src/lib/flight-location';
+import { getPostGitDates } from './src/lib/writing/git-dates';
+
+const repositoryRoot = dirname(fileURLToPath(import.meta.url));
 
 function buildWorkspaces(): Plugin {
 	return {
@@ -66,11 +71,13 @@ function getJetplayDownloads(): number {
 
 const flightLocation = getFlightLocation();
 const jetplayDownloads = getJetplayDownloads();
+const postGitDates = getPostGitDates(repositoryRoot);
 
 export default defineConfig({
 	define: {
 		__BUILD_TIME__: JSON.stringify(new Date().toISOString()),
 		__COMMIT_HASH__: JSON.stringify(getCommitHash()),
+		__POST_GIT_DATES__: JSON.stringify(postGitDates),
 		__CURRENT_LOCATION__: JSON.stringify(flightLocation.location),
 		__LOCATION_INFO__: JSON.stringify(flightLocation.info),
 		__JETPLAY_DOWNLOADS__: JSON.stringify(jetplayDownloads)

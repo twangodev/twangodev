@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { PostMetadata } from '$lib/types/writing';
 	import TagPill from './TagPill.svelte';
+	import { formatPostDate } from '$lib/writing/dates';
 
 	interface Props {
 		post: PostMetadata;
@@ -8,13 +9,7 @@
 
 	let { post }: Props = $props();
 
-	const dateStr = $derived(
-		new Date(post.date).toLocaleDateString('en-US', {
-			year: 'numeric',
-			month: 'short',
-			day: 'numeric'
-		})
-	);
+	const dateStr = $derived(formatPostDate(post.date, 'short'));
 
 	const displayTags = $derived(post.published ? post.tags : ['unpublished', ...post.tags]);
 </script>
