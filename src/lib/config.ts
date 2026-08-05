@@ -8,7 +8,7 @@ export const site = {
 		url: 'https://twango.dev',
 		github: 'https://github.com/twangodev',
 		linkedin: 'https://linkedin.com/in/jamesding365',
-		x: 'https://x.com/twangodev',
+		x: 'https://x.com/twango',
 		lastfm: 'twangodev',
 		email: 'james@twango.dev'
 	},

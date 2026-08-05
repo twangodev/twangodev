@@ -53,7 +53,7 @@
 	<Link href="https://linkedin.com/in/jamesding365">linkedin</Link>
 {/snippet}
 {#snippet x()}
-	<Link href="https://x.com/twangodev">x</Link>
+	<Link href="https://x.com/twango">x</Link>
 {/snippet}
 {#snippet email()}
 	<Link href="mailto:james@twango.dev">email</Link>
