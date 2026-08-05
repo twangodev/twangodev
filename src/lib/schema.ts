@@ -31,7 +31,7 @@ export function personSchema(): WithContext<Person> {
 			'Web Development',
 			'Distributed Systems'
 		],
-		sameAs: [site.author.github, site.author.linkedin, site.author.x]
+		sameAs: [site.author.github, site.author.linkedin, site.author.x.url]
 	};
 }
 

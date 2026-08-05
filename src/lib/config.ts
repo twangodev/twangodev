@@ -1,3 +1,5 @@
+const xUsername = 'twango';
+
 export const site = {
 	name: 'James Ding',
 	url: 'https://twango.dev',
@@ -8,7 +10,10 @@ export const site = {
 		url: 'https://twango.dev',
 		github: 'https://github.com/twangodev',
 		linkedin: 'https://linkedin.com/in/jamesding365',
-		x: 'https://x.com/twango',
+		x: {
+			username: xUsername,
+			url: `https://x.com/${xUsername}`
+		},
 		lastfm: 'twangodev',
 		email: 'james@twango.dev'
 	},

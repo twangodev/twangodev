@@ -6,6 +6,7 @@
 <script lang="ts">
 	import { Row, Stack, Logo, Text, Link, LinkGroup, StatusBadge } from './ui';
 	import { scramble } from '$lib/actions/scramble';
+	import { site } from '$lib/config';
 	import { format } from 'timeago.js';
 
 	const buildDate = new Date(__BUILD_TIME__);
@@ -47,16 +48,16 @@
 	</Link>
 {/snippet}
 {#snippet github()}
-	<Link href="https://github.com/twangodev">github</Link>
+	<Link href={site.author.github}>github</Link>
 {/snippet}
 {#snippet linkedin()}
-	<Link href="https://linkedin.com/in/jamesding365">linkedin</Link>
+	<Link href={site.author.linkedin}>linkedin</Link>
 {/snippet}
 {#snippet x()}
-	<Link href="https://x.com/twango">x</Link>
+	<Link href={site.author.x.url}>x</Link>
 {/snippet}
 {#snippet email()}
-	<Link href="mailto:james@twango.dev">email</Link>
+	<Link href={`mailto:${site.author.email}`}>email</Link>
 {/snippet}
 {#snippet status()}
 	<Link href="https://status.twango.dev" icon={false} class="inline-flex items-center gap-2">

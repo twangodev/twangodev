@@ -105,7 +105,7 @@
 	<meta name="twitter:card" content={image ? 'summary_large_image' : 'summary'} />
 	<meta name="twitter:title" content={fullTitle} />
 	<meta name="twitter:description" content={description} />
-	<meta name="twitter:creator" content="@twango" />
+	<meta name="twitter:creator" content={`@${site.author.x.username}`} />
 	{#if image}
 		<meta name="twitter:image" content={image} />
 	{/if}
