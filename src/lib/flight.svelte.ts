@@ -7,6 +7,7 @@ import {
 	formatCityLabel,
 	formatLocationInfo
 } from './flight-location';
+import { flightLog } from './flights/data';
 
 export type { Airport, Arc };
 
@@ -37,8 +38,9 @@ const MAX_LAYOVER_MS = 24 * 60 * 60 * 1000;
 const TICK_MS = 1_000;
 
 class FlightTracker {
-	arcs = $state<Arc[]>([]);
-	airports = $state<Airport[]>([]);
+	// The flight log ships with the bundle, so only the clock is reactive.
+	readonly arcs: Arc[] = flightLog.arcs;
+	readonly airports: Airport[] = flightLog.airports;
 	now = $state(Date.now());
 
 	#started = false;
@@ -46,23 +48,11 @@ class FlightTracker {
 	start(): () => void {
 		if (typeof window === 'undefined' || this.#started) return () => {};
 		this.#started = true;
-		void this.#load();
 		const tick = setInterval(() => (this.now = Date.now()), TICK_MS);
 		return () => {
 			clearInterval(tick);
 			this.#started = false;
 		};
-	}
-
-	async #load(): Promise<void> {
-		try {
-			const res = await fetch('/globe-arcs.json');
-			const data = await res.json();
-			this.arcs = data.arcs ?? [];
-			this.airports = data.airports ?? [];
-		} catch {
-			// best-effort; consumers render fallback state
-		}
 	}
 
 	get status(): FlightStatus {

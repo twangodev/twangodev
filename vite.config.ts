@@ -36,7 +36,7 @@ function getCommitHash(): string {
 
 function getFlightLocation(): { location: string; info: string } {
 	try {
-		const data = JSON.parse(readFileSync('static/globe-arcs.json', 'utf-8'));
+		const data = JSON.parse(readFileSync('src/lib/flights/globe-arcs.json', 'utf-8'));
 		const now = Date.now();
 		const arcs = data.arcs ?? [];
 		const airports = data.airports ?? [];

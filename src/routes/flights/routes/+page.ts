@@ -1,7 +1,7 @@
-import { buildFlightMapModel, loadFlightLog } from '$lib/flights/data';
+import { buildFlightMapModel, flightLog } from '$lib/flights/data';
 
-export const load = async ({ fetch }) => {
-	const model = buildFlightMapModel(await loadFlightLog(fetch));
+export const load = () => {
+	const model = buildFlightMapModel(flightLog);
 
 	return {
 		bioExpanded: true,

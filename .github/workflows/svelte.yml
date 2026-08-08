@@ -107,7 +107,7 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           name: arc-data
-          path: static/
+          path: src/lib/flights/
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
       - name: Install Dependencies

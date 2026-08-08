@@ -1,6 +1,5 @@
 import type { Arc as GlobeArc } from '$lib/globe/projection';
-
-type FetchLike = typeof fetch;
+import flightLogJson from './globe-arcs.json';
 
 export interface RawFlightArc {
 	startLat: number;
@@ -89,10 +88,20 @@ export function haversine(lat1: number, lon1: number, lat2: number, lon2: number
 	return EARTH_RADIUS_MILES * 2 * Math.asin(Math.sqrt(a));
 }
 
-export async function loadFlightLog(fetchFn: FetchLike): Promise<FlightLogData> {
-	const res = await fetchFn('/globe-arcs.json');
-	return res.json();
+function assertFlightLog(data: unknown): FlightLogData {
+	const log = data as FlightLogData;
+	if (!Array.isArray(log?.arcs) || !Array.isArray(log?.airports)) {
+		throw new Error('Unsupported flight log format');
+	}
+	return log;
 }
+
+/**
+ * The flight log ships with the bundle. The file itself is gitignored: CI
+ * regenerates it via mfr24 before every build (see .github/workflows/svelte.yml),
+ * and local dev needs a copy at src/lib/flights/globe-arcs.json.
+ */
+export const flightLog: FlightLogData = assertFlightLog(flightLogJson);
 
 function parseDateMs(value: string | undefined): number | undefined {
 	if (!value) return undefined;
