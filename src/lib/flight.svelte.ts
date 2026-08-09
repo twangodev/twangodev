@@ -30,9 +30,6 @@ export type FlightStatus =
 	  }
 	| null;
 
-declare const __CURRENT_LOCATION__: string;
-declare const __LOCATION_INFO__: string;
-
 const HORIZON_MS = 24 * 60 * 60 * 1000;
 const MAX_LAYOVER_MS = 24 * 60 * 60 * 1000;
 const TICK_MS = 1_000;
@@ -101,7 +98,7 @@ class FlightTracker {
 
 	get location(): string {
 		const s = this.status;
-		if (!s) return __CURRENT_LOCATION__;
+		if (!s) return 'unknown';
 		if (s.kind === 'flying') return 'the cloud';
 
 		const iata =
@@ -113,7 +110,7 @@ class FlightTracker {
 
 	get locationInfo(): string {
 		const s = this.status;
-		if (!s) return __LOCATION_INFO__;
+		if (!s) return '';
 		if (s.kind === 'flying') return 'high availability achieved';
 
 		let landed: { arc: Arc; arrMs: number } | undefined;
