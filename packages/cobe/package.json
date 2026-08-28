@@ -14,12 +14,12 @@
     "chrome:debug": "open -na \"Google Chrome\" --args --new-window --disable-frame-rate-limit --user-data-dir=\"/tmp/chrome_dev_session\" --disable-web-security http://localhost:3000/playground"
   },
   "devDependencies": {
-    "esbuild": "^0.28.1",
-    "glslx": "^0.3.0",
+    "esbuild": "^0.28.2",
+    "glslx": "^0.4.1",
     "next": "^15.5.18",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "terser": "^5.49.0",
+    "terser": "^5.50.0",
     "typescript": "^4.5.4"
   },
   "packageManager": "pnpm@8.7.0+sha512.1d61f8c10e8a5a5dbfbddea0f1f5efb7dbd5177223073aec953cf230aa46416884b9427a6421dba78f28ad0f93fbede38ba57083237b350243de6b1e3a8ce71d"
