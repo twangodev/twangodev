@@ -2,7 +2,7 @@
 title: 'LibriVox Mirror: A Public-Domain Audiobook Dataset on Hugging Face'
 description: 'A continuously updated copy of LibriVox built for streaming and large audio jobs.'
 date: '2026-09-04'
-published: false
+published: true
 tags:
   - ml
   - audio
