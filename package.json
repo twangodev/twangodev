@@ -20,7 +20,7 @@
 		"cobe": "workspace:*",
 		"d3-scale": "^4.0.2",
 		"d3-shape": "^3.2.0",
-		"eslint": "^9.39.2",
+		"eslint": "^10.9.1",
 		"eslint-config-prettier": "^10.1.8",
 		"eslint-plugin-svelte": "^3.22.0",
 		"feed": "^5.2.1",
