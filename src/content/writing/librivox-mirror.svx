@@ -1,0 +1,35 @@
+---
+title: 'LibriVox Mirror: A Public-Domain Audiobook Dataset on Hugging Face'
+description: 'A continuously updated copy of LibriVox built for streaming and large audio jobs.'
+date: '2026-09-04'
+published: false
+tags:
+  - ml
+  - audio
+  - dataset
+category: engineering
+---
+
+<script>
+	import Fn from '$lib/components/writing/Fn.svelte';
+	import LibrivoxDataView from '$lib/components/writing/LibrivoxDataView.svelte';
+	import LibrivoxStats from '$lib/components/writing/LibrivoxStats.svelte';
+</script>
+
+[LibriVox](https://librivox.org/) volunteers record public-domain books and give the audio away. The [Internet Archive](https://archive.org/) hosts it. They have been doing this for more than 20 years.<Fn>LibriVox accepts readers without auditions or prior recording experience. The project says it has no paid staff, board, or offices. See [how volunteering works](https://librivox.org/pages/volunteer-for-librivox/) and its [note to donors](https://librivox.org/pages/how-to-donate/).</Fn>
+
+I wanted to use the collection in large audio jobs. The Internet Archive is an excellent archive, but repeatedly walking half a million MP3s is a rough input pipeline.
+
+So that's what [LibriVox Mirror](https://huggingface.co/datasets/twangodev/librivox-mirror) is for. It keeps the original MP3s, packs each book into a streamable WebDataset TAR, and adds typed Parquet indexes for books and audio segments.
+
+I guess the main point is convenience: the mirror gives you LibriVox already organized and fast to stream from Hugging Face, without another crawl through the Internet Archive.
+
+At the time of this build: <LibrivoxStats />.<Fn>Book, segment, and duration totals come from the mirror's versioned [`state/sync.json`](https://huggingface.co/datasets/twangodev/librivox-mirror/resolve/main/state/sync.json). Storage comes from Hugging Face repository usage. Both are fetched at build time.</Fn>
+
+Here is the collection by Internet Archive publication date, in a GitHub-esque contribution graph.<Fn>The grid reads each book's exact `section_count` and `archive_metadata.publicdate`, then groups those segments into seven-day blocks and three-hour UTC windows. It measures when the containing book became public, not when somebody narrated it. The data is refreshed at build time, with a last-known snapshot as fallback.</Fn>
+
+<LibrivoxDataView />
+
+Every sample keeps its LibriVox project, exact Internet Archive source file, upstream checksums, and a mirror SHA-256.<Fn>The mirror is a downstream cache, not a replacement for either project. The source links and checksums make every file traceable to the original.</Fn> Records with missing or contradictory source files are quarantined instead of guessed.<Fn>Typical failures are a missing Archive item or metadata naming an MP3 that does not exist.</Fn>
+
+A scheduled sync picks up new books as LibriVox publishes them. The [dataset is on Hugging Face](https://huggingface.co/datasets/twangodev/librivox-mirror), and the [mirroring tool is open source](https://github.com/twangodev/librivox-mirror).

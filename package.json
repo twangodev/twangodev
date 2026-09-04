@@ -26,6 +26,8 @@
 		"feed": "^5.2.1",
 		"globals": "^17.8.0",
 		"htmlparser2": "^12.0.0",
+		"hyparquet": "^1.29.2",
+		"hyparquet-compressors": "^1.1.1",
 		"katex": "^0.18.1",
 		"layerchart": "^2.0.4",
 		"mdast-util-from-markdown": "^2.0.3",

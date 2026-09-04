@@ -11,6 +11,11 @@ import {
 	parseMarketplaceDownloadSeries,
 	type MarketplaceDownloadPoint
 } from './src/lib/jetbrains/marketplace-downloads';
+import {
+	LIBRIVOX_ACTIVITY_FALLBACK,
+	type LibrivoxActivitySnapshot
+} from './src/lib/librivox/activity';
+import { fetchLibrivoxActivity } from './src/lib/librivox/hugging-face';
 import { getPostGitDates } from './src/lib/writing/git-dates';
 
 const repositoryRoot = dirname(fileURLToPath(import.meta.url));
@@ -42,6 +47,17 @@ async function fetchJson(url: string, init?: RequestInit): Promise<unknown> {
 		return await response.json();
 	} finally {
 		clearTimeout(timeout);
+	}
+}
+
+async function getLibrivoxActivity(): Promise<LibrivoxActivitySnapshot> {
+	// Read two Parquet columns plus the small sync summary; the browser receives aggregate data only.
+	try {
+		return await fetchLibrivoxActivity();
+	} catch (error) {
+		const message = error instanceof Error ? error.message : String(error);
+		console.warn(`Unable to fetch LibriVox activity: ${message}`);
+		return LIBRIVOX_ACTIVITY_FALLBACK;
 	}
 }
 
@@ -80,9 +96,10 @@ const postGitDates = getPostGitDates(repositoryRoot);
 
 export default defineConfig(async ({ mode }) => {
 	const env = loadEnv(mode, repositoryRoot, 'JETBRAINS_');
-	const [jetplayDownloads, jetplayDownloadSeries] = await Promise.all([
+	const [jetplayDownloads, jetplayDownloadSeries, librivoxActivity] = await Promise.all([
 		getJetplayDownloads(),
-		getJetplayDownloadSeries(env.JETBRAINS_MARKETPLACE_TOKEN)
+		getJetplayDownloadSeries(env.JETBRAINS_MARKETPLACE_TOKEN),
+		getLibrivoxActivity()
 	]);
 
 	return {
@@ -91,7 +108,8 @@ export default defineConfig(async ({ mode }) => {
 			__COMMIT_HASH__: JSON.stringify(getCommitHash()),
 			__POST_GIT_DATES__: JSON.stringify(postGitDates),
 			__JETPLAY_DOWNLOADS__: JSON.stringify(jetplayDownloads),
-			__JETPLAY_DOWNLOAD_SERIES__: JSON.stringify(jetplayDownloadSeries)
+			__JETPLAY_DOWNLOAD_SERIES__: JSON.stringify(jetplayDownloadSeries),
+			__LIBRIVOX_ACTIVITY__: JSON.stringify(librivoxActivity)
 		},
 		plugins: [syncFlightLog(), buildWorkspaces(), tailwindcss(), sveltekit(), devtoolsJson()],
 		server: {
