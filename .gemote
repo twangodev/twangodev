@@ -1,0 +1,10 @@
+# -*- mode: toml -*-
+# vim: set ft=toml:
+[settings]
+extra_remotes = "ignore"
+
+[remotes.origin]
+url = "https://github.com/twangodev/twangodev"
+
+[remotes.cobe]
+url = "https://github.com/shuding/cobe.git"
