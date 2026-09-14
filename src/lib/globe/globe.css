@@ -1,0 +1,23 @@
+/* Fade before the canvas boundary so a focused globe blends into either page theme.
+   Keep controls and route tooltips outside these masked visual layers. */
+.globe-edge-fade {
+	mask-image: radial-gradient(
+		ellipse closest-side,
+		#000 64%,
+		#000f 70%,
+		#000c 80%,
+		#0006 90%,
+		#0000 100%
+	);
+}
+
+.globe-scene {
+	position: absolute;
+	inset: 0;
+}
+
+/* Inspection owns the pointer while the camera is focused. Moving labels should
+   not open airport cards underneath a stationary route-hover pointer. */
+.globe-scene.route-focused [data-airport-label] {
+	pointer-events: none;
+}

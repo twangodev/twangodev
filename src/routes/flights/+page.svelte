@@ -4,8 +4,7 @@
 	import { resolve } from '$app/paths';
 	import createGlobe from 'cobe';
 	import RouteInspector from '$lib/components/flights/RouteInspector.svelte';
-	import type { Arc } from 'cobe';
-	import type { View } from '$lib/globe/route-picking';
+	import type { RouteInspectorHandle } from '$lib/globe/route-camera';
 	import SEO from '$lib/components/SEO.svelte';
 	import AirportLabel from '$lib/components/flights/AirportLabel.svelte';
 	import { breadcrumbSchema } from '$lib/schema';
@@ -44,9 +43,8 @@
 	);
 
 	let canvasEl = $state<HTMLCanvasElement>(null!);
-	let inspector:
-		| { update: (view: View, arcs: Arc[]) => void; isPaused: () => boolean; clear: () => void }
-		| undefined;
+	let inspector: RouteInspectorHandle | undefined;
+	let routeFocused = $state(false);
 	let dragGlobe: (dx: number, dy: number) => void = () => {};
 	let startDrag = () => {};
 	let endDrag = () => {};
@@ -158,7 +156,7 @@
 
 		let animationId: number;
 
-		function animate() {
+		function animate(now: number) {
 			const inspecting = inspector?.isPaused() ?? false;
 			if (!dragging && !labelHovered && !inspecting) phi += 0.0018;
 			if (!inspecting) dragPhi += (pointerMovement / 200 - dragPhi) * 0.1;
@@ -187,8 +185,9 @@
 					trailLength: RAY_LENGTH
 				}))
 			};
-			globe.update(frame);
-			inspector?.update(frame, frame.arcs);
+			const view = inspector?.getView(frame, frame.arcs, now) ?? frame;
+			globe.update({ ...frame, ...view });
+			inspector?.update(view, frame.arcs);
 
 			animationId = requestAnimationFrame(animate);
 		}
@@ -237,13 +236,20 @@
 				<Route size={17} strokeWidth={1.8} />
 			</a>
 		</nav>
-		<canvas
-			bind:this={canvasEl}
-			style="cursor: grab; touch-action: none"
-			class="absolute inset-0 h-full w-full"
-		></canvas>
+		<div class="globe-scene globe-edge-fade" class:route-focused={routeFocused}>
+			<canvas
+				bind:this={canvasEl}
+				style="cursor: grab; touch-action: none"
+				class="absolute inset-0 h-full w-full"
+			></canvas>
+
+			{#each airportLabels as label (label.id)}
+				<AirportLabel {...label} onhover={(h) => (labelHovered = h)} />
+			{/each}
+		</div>
 		<RouteInspector
 			bind:this={inspector}
+			onfocuschange={(focused) => (routeFocused = focused)}
 			canvas={canvasEl}
 			routes={data.routeSummaries}
 			routeIds={data.arcRouteIds}
@@ -251,8 +257,5 @@
 			ondragstart={() => startDrag()}
 			ondragend={() => endDrag()}
 		/>
-		{#each airportLabels as label (label.id)}
-			<AirportLabel {...label} onhover={(h) => (labelHovered = h)} />
-		{/each}
 	</div>
 </div>

@@ -13,8 +13,8 @@
 	import NumberFlow from '@number-flow/svelte';
 	import createGlobe from 'cobe';
 	import RouteInspector from '$lib/components/flights/RouteInspector.svelte';
-	import type { Arc } from 'cobe';
 	import { arcControls, arcPoint, projectPoint, type View } from '$lib/globe/route-picking';
+	import type { RouteInspectorHandle } from '$lib/globe/route-camera';
 	import { bio } from '$lib/bio.svelte';
 	import SEO from '$lib/components/SEO.svelte';
 	import AirportLabel from '$lib/components/flights/AirportLabel.svelte';
@@ -30,9 +30,8 @@
 	const totalMiles = $derived(data.totalMiles as number);
 
 	let canvasEl = $state<HTMLCanvasElement>(null!);
-	let inspector:
-		| { update: (view: View, arcs: Arc[]) => void; isPaused: () => boolean; clear: () => void }
-		| undefined;
+	let inspector: RouteInspectorHandle | undefined;
+	let routeFocused = $state(false);
 	let dragGlobe: (dx: number, dy: number) => void = () => {};
 	let startDrag = () => {};
 	let endDrag = () => {};
@@ -305,20 +304,8 @@
 		return a + diff * amount;
 	}
 
-	function projectCobeArcHead(
-		flight: FlightRoute,
-		progress: number,
-		phi: number,
-		theta: number,
-		width: number,
-		height: number
-	) {
-		return projectPoint(arcPoint(arcControls(flight), Math.min(1, Math.max(0, progress))), {
-			phi,
-			theta,
-			width,
-			height
-		});
+	function projectCobeArcHead(flight: FlightRoute, progress: number, view: View) {
+		return projectPoint(arcPoint(arcControls(flight), Math.min(1, Math.max(0, progress))), view);
 	}
 
 	function buildPlaybackArcs() {
@@ -434,28 +421,21 @@
 				theta = Math.max(-0.9, Math.min(1.25, lerp(theta, target.theta, 0.045)));
 			}
 
+			const frameArcs = buildPlaybackArcs();
+			const base = { phi, theta, width: canvasEl.offsetWidth, height: canvasEl.offsetHeight };
+			const view = inspector?.getView(base, frameArcs, now) ?? base;
+
 			if (activeFlight) {
 				activeDot = {
-					...projectCobeArcHead(
-						activeFlight,
-						arcHeadProgress,
-						phi,
-						theta,
-						canvasEl.offsetWidth,
-						canvasEl.offsetHeight
-					),
+					...projectCobeArcHead(activeFlight, arcHeadProgress, view),
 					pulse
 				};
 			} else {
 				activeDot.visible = false;
 			}
 
-			const frameArcs = buildPlaybackArcs();
 			globe.update({
-				phi,
-				theta,
-				width: canvasEl.offsetWidth,
-				height: canvasEl.offsetHeight,
+				...view,
 				dark: themeDark,
 				baseColor: themeBase,
 				glowColor: themeGlow,
@@ -463,10 +443,7 @@
 				markers: buildPlaybackMarkers(),
 				arcs: frameArcs
 			});
-			inspector?.update(
-				{ phi, theta, width: canvasEl.offsetWidth, height: canvasEl.offsetHeight },
-				frameArcs
-			);
+			inspector?.update(view, frameArcs);
 
 			animationId = requestAnimationFrame(animate);
 		}
@@ -497,13 +474,32 @@
 <div class="relative flex min-h-[calc(100svh-16rem)] flex-1 flex-col overflow-hidden">
 	<div class="relative flex min-h-0 flex-1 items-center justify-center">
 		<div class="relative aspect-square max-h-[calc(100svh-18rem)] w-full max-w-5xl">
-			<canvas
-				bind:this={canvasEl}
-				style="cursor: grab; touch-action: none"
-				class="absolute inset-0 h-full w-full"
-			></canvas>
+			<div class="globe-scene globe-edge-fade" class:route-focused={routeFocused}>
+				<canvas
+					bind:this={canvasEl}
+					style="cursor: grab; touch-action: none"
+					class="absolute inset-0 h-full w-full"
+				></canvas>
+
+				{#each playbackAirportLabels as label (label.id)}
+					<AirportLabel {...label} />
+				{/each}
+				{#if activeFlight}
+					<div
+						class="active-flight-ping pointer-events-none absolute"
+						style:left={`${activeDot.x}px`}
+						style:top={`${activeDot.y}px`}
+						style:opacity={activeDot.visible ? 1 : 0.38}
+						style:--active-flight-pulse={activeDot.pulse}
+						class:active-flight-ping--occluded={!activeDot.visible}
+					>
+						<span></span>
+					</div>
+				{/if}
+			</div>
 			<RouteInspector
 				bind:this={inspector}
+				onfocuschange={(focused) => (routeFocused = focused)}
 				canvas={canvasEl}
 				routes={data.routeSummaries}
 				routeIds={flights.map((flight) => flight.routeId)}
@@ -511,21 +507,6 @@
 				ondragstart={() => startDrag()}
 				ondragend={() => endDrag()}
 			/>
-			{#each playbackAirportLabels as label (label.id)}
-				<AirportLabel {...label} />
-			{/each}
-			{#if activeFlight}
-				<div
-					class="active-flight-ping pointer-events-none absolute"
-					style:left={`${activeDot.x}px`}
-					style:top={`${activeDot.y}px`}
-					style:opacity={activeDot.visible ? 1 : 0.38}
-					style:--active-flight-pulse={activeDot.pulse}
-					class:active-flight-ping--occluded={!activeDot.visible}
-				>
-					<span></span>
-				</div>
-			{/if}
 		</div>
 	</div>
 

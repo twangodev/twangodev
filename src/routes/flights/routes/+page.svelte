@@ -2,8 +2,7 @@
 	import { onMount } from 'svelte';
 	import createGlobe from 'cobe';
 	import RouteInspector from '$lib/components/flights/RouteInspector.svelte';
-	import type { Arc } from 'cobe';
-	import type { View } from '$lib/globe/route-picking';
+	import type { RouteInspectorHandle } from '$lib/globe/route-camera';
 	import SEO from '$lib/components/SEO.svelte';
 	import AirportLabel from '$lib/components/flights/AirportLabel.svelte';
 	import { breadcrumbSchema } from '$lib/schema';
@@ -42,9 +41,8 @@
 	);
 
 	let canvasEl = $state<HTMLCanvasElement>(null!);
-	let inspector:
-		| { update: (view: View, arcs: Arc[]) => void; isPaused: () => boolean; clear: () => void }
-		| undefined;
+	let inspector: RouteInspectorHandle | undefined;
+	let routeFocused = $state(false);
 	let dragGlobe: (dx: number, dy: number) => void = () => {};
 	let startDrag = () => {};
 	let endDrag = () => {};
@@ -128,12 +126,11 @@
 		});
 
 		let animationId: number;
-		function render() {
+		function render(now: number) {
+			const base = { phi, theta, width: canvasEl.offsetWidth, height: canvasEl.offsetHeight };
+			const view = inspector?.getView(base, staticArcs, now) ?? base;
 			globe.update({
-				phi,
-				theta,
-				width: canvasEl.offsetWidth,
-				height: canvasEl.offsetHeight,
+				...view,
 				dark: themeDark,
 				baseColor: themeBase,
 				glowColor: themeGlow,
@@ -141,10 +138,7 @@
 				arcs: staticArcs
 			});
 
-			inspector?.update(
-				{ phi, theta, width: canvasEl.offsetWidth, height: canvasEl.offsetHeight },
-				staticArcs
-			);
+			inspector?.update(view, staticArcs);
 			animationId = requestAnimationFrame(render);
 		}
 
@@ -172,13 +166,20 @@
 
 <div class="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden">
 	<div class="relative aspect-square max-h-[calc(100svh-16rem)] w-full max-w-5xl">
-		<canvas
-			bind:this={canvasEl}
-			style="cursor: grab; touch-action: none"
-			class="absolute inset-0 h-full w-full"
-		></canvas>
+		<div class="globe-scene globe-edge-fade" class:route-focused={routeFocused}>
+			<canvas
+				bind:this={canvasEl}
+				style="cursor: grab; touch-action: none"
+				class="absolute inset-0 h-full w-full"
+			></canvas>
+
+			{#each airportLabels as label (label.id)}
+				<AirportLabel {...label} />
+			{/each}
+		</div>
 		<RouteInspector
 			bind:this={inspector}
+			onfocuschange={(focused) => (routeFocused = focused)}
 			canvas={canvasEl}
 			routes={data.routeSummaries}
 			routeIds={data.arcRouteIds}
@@ -186,8 +187,5 @@
 			ondragstart={() => startDrag()}
 			ondragend={() => endDrag()}
 		/>
-		{#each airportLabels as label (label.id)}
-			<AirportLabel {...label} />
-		{/each}
 	</div>
 </div>
