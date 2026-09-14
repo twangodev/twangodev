@@ -12,6 +12,9 @@
 	} from '@lucide/svelte';
 	import NumberFlow from '@number-flow/svelte';
 	import createGlobe from 'cobe';
+	import RouteInspector from '$lib/components/flights/RouteInspector.svelte';
+	import type { Arc } from 'cobe';
+	import { arcControls, arcPoint, projectPoint, type View } from '$lib/globe/route-picking';
 	import { bio } from '$lib/bio.svelte';
 	import SEO from '$lib/components/SEO.svelte';
 	import AirportLabel from '$lib/components/flights/AirportLabel.svelte';
@@ -26,7 +29,13 @@
 	const airports = $derived(data.airports as FlightAirport[]);
 	const totalMiles = $derived(data.totalMiles as number);
 
-	let canvasEl: HTMLCanvasElement;
+	let canvasEl = $state<HTMLCanvasElement>(null!);
+	let inspector:
+		| { update: (view: View, arcs: Arc[]) => void; isPaused: () => boolean; clear: () => void }
+		| undefined;
+	let dragGlobe: (dx: number, dy: number) => void = () => {};
+	let startDrag = () => {};
+	let endDrag = () => {};
 	let playing = $state(true);
 	// Position along the playback track, measured in miles plus the phantom dwell gaps
 	// inserted between legs (see GAP_MILES). Distinct from liveMiles, which is the real
@@ -138,7 +147,6 @@
 	const DPR = 2;
 	const BASE_MILES_PER_SECOND = 240;
 	const ACTIVE_TRAIL_PAD = 0.02;
-	const COBE_GLOBE_RADIUS = 0.8;
 
 	const dateFormatter = new Intl.DateTimeFormat('en-US', {
 		month: 'short',
@@ -297,20 +305,6 @@
 		return a + diff * amount;
 	}
 
-	function latLonToCobe3D([lat, lng]: [number, number]): [number, number, number] {
-		const latRad = (lat * Math.PI) / 180;
-		const lngRad = (lng * Math.PI) / 180 - Math.PI;
-		const cosLat = Math.cos(latRad);
-		return [-cosLat * Math.cos(lngRad), Math.sin(latRad), cosLat * Math.sin(lngRad)];
-	}
-
-	function angularDistance(from: [number, number], to: [number, number]): number {
-		const a = latLonToCobe3D(from);
-		const b = latLonToCobe3D(to);
-		const dot = a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
-		return Math.acos(Math.min(1, Math.max(-1, dot)));
-	}
-
 	function projectCobeArcHead(
 		flight: FlightRoute,
 		progress: number,
@@ -318,52 +312,13 @@
 		theta: number,
 		width: number,
 		height: number
-	): { x: number; y: number; visible: boolean } {
-		const fromDir = latLonToCobe3D(flight.from);
-		const toDir = latLonToCobe3D(flight.to);
-		const endpointR = COBE_GLOBE_RADIUS;
-		const from = fromDir.map((value) => value * endpointR) as [number, number, number];
-		const to = toDir.map((value) => value * endpointR) as [number, number, number];
-
-		const midSum: [number, number, number] = [
-			fromDir[0] + toDir[0],
-			fromDir[1] + toDir[1],
-			fromDir[2] + toDir[2]
-		];
-		const midLen = Math.hypot(...midSum);
-		const midDir =
-			midLen > 0.001
-				? (midSum.map((value) => value / midLen) as [number, number, number])
-				: ([0, 1, 0] as [number, number, number]);
-		const arcHeight = angularDistance(flight.from, flight.to) / Math.PI;
-		const mid = midDir.map((value) => value * (COBE_GLOBE_RADIUS + arcHeight)) as [
-			number,
-			number,
-			number
-		];
-
-		const t = Math.min(1, Math.max(0, progress));
-		const u = 1 - t;
-		const point: [number, number, number] = [
-			u * u * from[0] + 2 * u * t * mid[0] + t * t * to[0],
-			u * u * from[1] + 2 * u * t * mid[1] + t * t * to[1],
-			u * u * from[2] + 2 * u * t * mid[2] + t * t * to[2]
-		];
-
-		const cx = Math.cos(theta);
-		const sx = Math.sin(theta);
-		const cy = Math.cos(phi);
-		const sy = Math.sin(phi);
-		const rx = cy * point[0] + sy * point[2];
-		const ry = sy * sx * point[0] + cx * point[1] - cy * sx * point[2];
-		const rz = -sy * cx * point[0] + sx * point[1] + cy * cx * point[2];
-		const visible = rz >= 0 || Math.hypot(rx, ry) >= COBE_GLOBE_RADIUS;
-
-		return {
-			x: width / 2 + (rx * height) / 2,
-			y: height / 2 - (ry * height) / 2,
-			visible
-		};
+	) {
+		return projectPoint(arcPoint(arcControls(flight), Math.min(1, Math.max(0, progress))), {
+			phi,
+			theta,
+			width,
+			height
+		});
 	}
 
 	function buildPlaybackArcs() {
@@ -400,8 +355,6 @@
 		let phi = 0;
 		let theta = THETA;
 		let dragging = false;
-		let lastX = 0;
-		let lastY = 0;
 		let lastFrame = performance.now();
 
 		const first = flights[0];
@@ -416,33 +369,17 @@
 			attributeFilter: ['class']
 		});
 
-		const onPointerDown = (e: PointerEvent) => {
+		startDrag = () => {
 			dragging = true;
 			follow = false;
-			lastX = e.clientX;
-			lastY = e.clientY;
-			canvasEl.setPointerCapture(e.pointerId);
-			canvasEl.style.cursor = 'grabbing';
 		};
-		const onPointerMove = (e: PointerEvent) => {
-			if (!dragging) return;
-			const dx = e.clientX - lastX;
-			const dy = e.clientY - lastY;
-			lastX = e.clientX;
-			lastY = e.clientY;
+		endDrag = () => {
+			dragging = false;
+		};
+		dragGlobe = (dx, dy) => {
 			phi += dx / 180;
 			theta = Math.max(-0.9, Math.min(1.25, theta + dy / 240));
 		};
-		const onPointerUp = (e: PointerEvent) => {
-			dragging = false;
-			if (canvasEl.hasPointerCapture(e.pointerId)) canvasEl.releasePointerCapture(e.pointerId);
-			canvasEl.style.cursor = 'grab';
-		};
-
-		canvasEl.addEventListener('pointerdown', onPointerDown);
-		canvasEl.addEventListener('pointermove', onPointerMove);
-		canvasEl.addEventListener('pointerup', onPointerUp);
-		canvasEl.addEventListener('pointercancel', onPointerUp);
 
 		const globe = createGlobe(canvasEl, {
 			devicePixelRatio: DPR,
@@ -468,7 +405,7 @@
 			const dt = Math.min(0.08, (now - lastFrame) / 1000);
 			lastFrame = now;
 
-			if (playing) {
+			if (playing && !inspector?.isPaused()) {
 				// In a dwell, cross the gap at a fixed wall-clock rate so the wait is identical at
 				// every speed; otherwise advance at the current playback speed.
 				const advance = inGap
@@ -488,7 +425,7 @@
 			}
 			const pulse = (Math.sin(now / 240) + 1) / 2;
 
-			if (follow && activeFlight) {
+			if (follow && activeFlight && !inspector?.isPaused() && !dragging) {
 				// During the dwell, ease the camera all the way onto the arrival airport.
 				const lookahead = inGap ? 1 : Math.min(0.88, Math.max(0.12, easedProgress));
 				const [lat, lng] = interpolateGreatCircle(activeFlight.from, activeFlight.to, lookahead);
@@ -513,6 +450,7 @@
 				activeDot.visible = false;
 			}
 
+			const frameArcs = buildPlaybackArcs();
 			globe.update({
 				phi,
 				theta,
@@ -523,8 +461,12 @@
 				glowColor: themeGlow,
 				markerColor: themeMarker,
 				markers: buildPlaybackMarkers(),
-				arcs: buildPlaybackArcs()
+				arcs: frameArcs
 			});
+			inspector?.update(
+				{ phi, theta, width: canvasEl.offsetWidth, height: canvasEl.offsetHeight },
+				frameArcs
+			);
 
 			animationId = requestAnimationFrame(animate);
 		}
@@ -534,10 +476,7 @@
 		return () => {
 			cancelAnimationFrame(animationId);
 			themeObserver.disconnect();
-			canvasEl.removeEventListener('pointerdown', onPointerDown);
-			canvasEl.removeEventListener('pointermove', onPointerMove);
-			canvasEl.removeEventListener('pointerup', onPointerUp);
-			canvasEl.removeEventListener('pointercancel', onPointerUp);
+
 			globe.destroy();
 			bio.clear();
 		};
@@ -558,8 +497,20 @@
 <div class="relative flex min-h-[calc(100svh-16rem)] flex-1 flex-col overflow-hidden">
 	<div class="relative flex min-h-0 flex-1 items-center justify-center">
 		<div class="relative aspect-square max-h-[calc(100svh-18rem)] w-full max-w-5xl">
-			<canvas bind:this={canvasEl} style="cursor: grab" class="absolute inset-0 h-full w-full"
+			<canvas
+				bind:this={canvasEl}
+				style="cursor: grab; touch-action: none"
+				class="absolute inset-0 h-full w-full"
 			></canvas>
+			<RouteInspector
+				bind:this={inspector}
+				canvas={canvasEl}
+				routes={data.routeSummaries}
+				routeIds={flights.map((flight) => flight.routeId)}
+				ondrag={(dx, dy) => dragGlobe(dx, dy)}
+				ondragstart={() => startDrag()}
+				ondragend={() => endDrag()}
+			/>
 			{#each playbackAirportLabels as label (label.id)}
 				<AirportLabel {...label} />
 			{/each}
@@ -578,7 +529,10 @@
 		</div>
 	</div>
 
+	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<div
+		onpointerdown={() => inspector?.clear()}
+		onkeydown={() => inspector?.clear()}
 		class="relative z-10 mx-auto flex w-full max-w-4xl flex-col gap-3 bg-bg/80 px-1 py-2 backdrop-blur"
 	>
 		<div class="flex flex-wrap items-center justify-between gap-3">

@@ -9,6 +9,8 @@ export const load = () => {
 	const firstTo = first ? airportByIata.get(first.toIata) : undefined;
 
 	return {
+		routeSummaries: model.routeSummaries,
+		arcRouteIds: model.arcRouteIds,
 		bioExpanded: true,
 		bioHeadingRoute: first ? { from: first.fromIata, to: first.toIata } : undefined,
 		bioDescription:

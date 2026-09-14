@@ -1,6 +1,9 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import createGlobe from 'cobe';
+	import RouteInspector from '$lib/components/flights/RouteInspector.svelte';
+	import type { Arc } from 'cobe';
+	import type { View } from '$lib/globe/route-picking';
 	import SEO from '$lib/components/SEO.svelte';
 	import AirportLabel from '$lib/components/flights/AirportLabel.svelte';
 	import { breadcrumbSchema } from '$lib/schema';
@@ -38,7 +41,13 @@
 		)
 	);
 
-	let canvasEl: HTMLCanvasElement;
+	let canvasEl = $state<HTMLCanvasElement>(null!);
+	let inspector:
+		| { update: (view: View, arcs: Arc[]) => void; isPaused: () => boolean; clear: () => void }
+		| undefined;
+	let dragGlobe: (dx: number, dy: number) => void = () => {};
+	let startDrag = () => {};
+	let endDrag = () => {};
 
 	const THETA = 0.3;
 	const DPR = 2;
@@ -85,9 +94,6 @@
 	onMount(() => {
 		let phi = 0;
 		let theta = THETA;
-		let dragging = false;
-		let lastX = 0;
-		let lastY = 0;
 
 		readTheme();
 
@@ -97,32 +103,10 @@
 			attributeFilter: ['class']
 		});
 
-		const onPointerDown = (e: PointerEvent) => {
-			dragging = true;
-			lastX = e.clientX;
-			lastY = e.clientY;
-			canvasEl.setPointerCapture(e.pointerId);
-			canvasEl.style.cursor = 'grabbing';
-		};
-		const onPointerMove = (e: PointerEvent) => {
-			if (!dragging) return;
-			const dx = e.clientX - lastX;
-			const dy = e.clientY - lastY;
-			lastX = e.clientX;
-			lastY = e.clientY;
+		dragGlobe = (dx, dy) => {
 			phi += dx / 180;
 			theta = Math.max(-0.9, Math.min(1.25, theta + dy / 240));
 		};
-		const onPointerUp = (e: PointerEvent) => {
-			dragging = false;
-			if (canvasEl.hasPointerCapture(e.pointerId)) canvasEl.releasePointerCapture(e.pointerId);
-			canvasEl.style.cursor = 'grab';
-		};
-
-		canvasEl.addEventListener('pointerdown', onPointerDown);
-		canvasEl.addEventListener('pointermove', onPointerMove);
-		canvasEl.addEventListener('pointerup', onPointerUp);
-		canvasEl.addEventListener('pointercancel', onPointerUp);
 
 		const globe = createGlobe(canvasEl, {
 			devicePixelRatio: DPR,
@@ -157,6 +141,10 @@
 				arcs: staticArcs
 			});
 
+			inspector?.update(
+				{ phi, theta, width: canvasEl.offsetWidth, height: canvasEl.offsetHeight },
+				staticArcs
+			);
 			animationId = requestAnimationFrame(render);
 		}
 
@@ -165,10 +153,7 @@
 		return () => {
 			cancelAnimationFrame(animationId);
 			themeObserver.disconnect();
-			canvasEl.removeEventListener('pointerdown', onPointerDown);
-			canvasEl.removeEventListener('pointermove', onPointerMove);
-			canvasEl.removeEventListener('pointerup', onPointerUp);
-			canvasEl.removeEventListener('pointercancel', onPointerUp);
+
 			globe.destroy();
 		};
 	});
@@ -187,8 +172,20 @@
 
 <div class="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden">
 	<div class="relative aspect-square max-h-[calc(100svh-16rem)] w-full max-w-5xl">
-		<canvas bind:this={canvasEl} style="cursor: grab" class="absolute inset-0 h-full w-full"
+		<canvas
+			bind:this={canvasEl}
+			style="cursor: grab; touch-action: none"
+			class="absolute inset-0 h-full w-full"
 		></canvas>
+		<RouteInspector
+			bind:this={inspector}
+			canvas={canvasEl}
+			routes={data.routeSummaries}
+			routeIds={data.arcRouteIds}
+			ondrag={(dx, dy) => dragGlobe(dx, dy)}
+			ondragstart={() => startDrag()}
+			ondragend={() => endDrag()}
+		/>
 		{#each airportLabels as label (label.id)}
 			<AirportLabel {...label} />
 		{/each}

@@ -1,3 +1,4 @@
+import { summarizeRoutes, type RouteSummary } from './route-summaries';
 import type { Arc as GlobeArc } from '$lib/globe/projection';
 import flightLogJson from './globe-arcs.json';
 
@@ -43,6 +44,7 @@ export interface FlightAirport {
 }
 
 export interface FlightRoute {
+	routeId: string;
 	id: string;
 	order: number;
 	from: [number, number];
@@ -66,6 +68,8 @@ export interface FlightLogData {
 }
 
 export interface FlightMapModel {
+	routeSummaries: RouteSummary[];
+	arcRouteIds: string[];
 	arcs: GlobeArc[];
 	markers: FlightMarker[];
 	airports: FlightAirport[];
@@ -159,13 +163,15 @@ export function buildFlightMapModel(data: FlightLogData): FlightMapModel {
 			durationMs: Math.max(1, arrMs - depMs),
 			distance,
 			estimatedArrival: parsedArrMs === undefined
-		} satisfies FlightRoute;
+		} satisfies Omit<FlightRoute, 'routeId'>;
 	});
 
+	const { routeSummaries, routeIds: arcRouteIds } = summarizeRoutes(routes, airports);
 	const flights = routes
 		.toSorted((a, b) => a.depMs - b.depMs || a.order - b.order)
 		.map((route, order) => ({
 			...route,
+			routeId: arcRouteIds[route.order],
 			id: `flight-${order}-${route.fromIata.toLowerCase()}-${route.toIata.toLowerCase()}`,
 			order
 		}));
@@ -197,5 +203,5 @@ export function buildFlightMapModel(data: FlightLogData): FlightMapModel {
 		}
 	];
 
-	return { arcs, markers, airports, flights, bioDetails, totalMiles };
+	return { arcs, markers, airports, flights, bioDetails, totalMiles, routeSummaries, arcRouteIds };
 }

@@ -15,6 +15,7 @@
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div
+	data-airport-label
 	class="group pointer-events-auto absolute mb-2 w-min rounded-sm bg-surface/80 px-1 py-0.5 font-mono text-text shadow-sm transition-[opacity,padding,border-radius,background-color] duration-200 hover:z-[9999]! hover:w-max hover:rounded-lg hover:bg-surface hover:px-4 hover:py-3 hover:opacity-100! hover:shadow-lg"
 	style:position-anchor="--cobe-{id}"
 	style:bottom="anchor(top)"

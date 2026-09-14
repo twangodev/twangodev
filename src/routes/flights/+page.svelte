@@ -3,6 +3,9 @@
 	import { Play, Route } from '@lucide/svelte';
 	import { resolve } from '$app/paths';
 	import createGlobe from 'cobe';
+	import RouteInspector from '$lib/components/flights/RouteInspector.svelte';
+	import type { Arc } from 'cobe';
+	import type { View } from '$lib/globe/route-picking';
 	import SEO from '$lib/components/SEO.svelte';
 	import AirportLabel from '$lib/components/flights/AirportLabel.svelte';
 	import { breadcrumbSchema } from '$lib/schema';
@@ -40,7 +43,13 @@
 		)
 	);
 
-	let canvasEl: HTMLCanvasElement;
+	let canvasEl = $state<HTMLCanvasElement>(null!);
+	let inspector:
+		| { update: (view: View, arcs: Arc[]) => void; isPaused: () => boolean; clear: () => void }
+		| undefined;
+	let dragGlobe: (dx: number, dy: number) => void = () => {};
+	let startDrag = () => {};
+	let endDrag = () => {};
 	let labelHovered = $state(false);
 
 	const THETA = 0.3;
@@ -88,11 +97,10 @@
 
 	onMount(() => {
 		let phi = 0;
-		let pointerInteracting: number | null = null;
+		let dragging = false;
 		let pointerMovement = 0;
 		let dragPhi = 0;
 
-		let pointerInteractingY: number | null = null;
 		let pointerMovementY = 0;
 		let dragTheta = 0;
 
@@ -108,38 +116,16 @@
 		const rayHeads = flights.map(() => Math.random() * (1 + RAY_LENGTH));
 		const raySpeeds = flights.map(() => RAY_SPEED * (0.6 + Math.random() * 0.8));
 
-		const onPointerDown = (e: PointerEvent) => {
-			pointerInteracting = e.clientX - pointerMovement;
-			pointerInteractingY = e.clientY - pointerMovementY;
-			canvasEl.style.cursor = 'grabbing';
+		startDrag = () => {
+			dragging = true;
 		};
-		const onPointerUp = () => {
-			pointerInteracting = null;
-			pointerInteractingY = null;
-			canvasEl.style.cursor = 'grab';
+		endDrag = () => {
+			dragging = false;
 		};
-		const onMouseMove = (e: MouseEvent) => {
-			if (pointerInteracting !== null) {
-				pointerMovement = e.clientX - pointerInteracting;
-			}
-			if (pointerInteractingY !== null) {
-				pointerMovementY = e.clientY - pointerInteractingY;
-			}
+		dragGlobe = (dx, dy) => {
+			pointerMovement += dx;
+			pointerMovementY += dy;
 		};
-		const onTouchMove = (e: TouchEvent) => {
-			if (pointerInteracting !== null && e.touches[0]) {
-				pointerMovement = (e.touches[0].clientX - pointerInteracting) * 2;
-			}
-			if (pointerInteractingY !== null && e.touches[0]) {
-				pointerMovementY = (e.touches[0].clientY - pointerInteractingY) * 2;
-			}
-		};
-
-		canvasEl.addEventListener('pointerdown', onPointerDown);
-		canvasEl.addEventListener('pointerup', onPointerUp);
-		canvasEl.addEventListener('pointerout', onPointerUp);
-		canvasEl.addEventListener('mousemove', onMouseMove);
-		canvasEl.addEventListener('touchmove', onTouchMove);
 
 		const initialArcs = flights.map(
 			(arc: { from: [number, number]; to: [number, number] }, i: number) => ({
@@ -173,17 +159,18 @@
 		let animationId: number;
 
 		function animate() {
-			if (pointerInteracting === null && !labelHovered) phi += 0.0018;
-			dragPhi += (pointerMovement / 200 - dragPhi) * 0.1;
-			dragTheta += (pointerMovementY / 300 - dragTheta) * 0.1;
+			const inspecting = inspector?.isPaused() ?? false;
+			if (!dragging && !labelHovered && !inspecting) phi += 0.0018;
+			if (!inspecting) dragPhi += (pointerMovement / 200 - dragPhi) * 0.1;
+			if (!inspecting) dragTheta += (pointerMovementY / 300 - dragTheta) * 0.1;
 			const effectiveTheta = Math.max(-0.5, Math.min(1.2, THETA + dragTheta));
 
 			// Advance ray heads
-			for (let i = 0; i < rayHeads.length; i++) {
+			for (let i = 0; i < rayHeads.length && !inspecting; i++) {
 				rayHeads[i] = (rayHeads[i] + raySpeeds[i]) % (1 + RAY_LENGTH);
 			}
 
-			globe.update({
+			const frame = {
 				phi: phi + dragPhi,
 				theta: effectiveTheta,
 				width: canvasEl.offsetWidth,
@@ -199,7 +186,9 @@
 					progress: rayHeads[i],
 					trailLength: RAY_LENGTH
 				}))
-			});
+			};
+			globe.update(frame);
+			inspector?.update(frame, frame.arcs);
 
 			animationId = requestAnimationFrame(animate);
 		}
@@ -209,11 +198,7 @@
 		return () => {
 			cancelAnimationFrame(animationId);
 			themeObserver.disconnect();
-			canvasEl.removeEventListener('pointerdown', onPointerDown);
-			canvasEl.removeEventListener('pointerup', onPointerUp);
-			canvasEl.removeEventListener('pointerout', onPointerUp);
-			canvasEl.removeEventListener('mousemove', onMouseMove);
-			canvasEl.removeEventListener('touchmove', onTouchMove);
+
 			globe.destroy();
 		};
 	});
@@ -252,8 +237,20 @@
 				<Route size={17} strokeWidth={1.8} />
 			</a>
 		</nav>
-		<canvas bind:this={canvasEl} style="cursor: grab" class="absolute inset-0 h-full w-full"
+		<canvas
+			bind:this={canvasEl}
+			style="cursor: grab; touch-action: none"
+			class="absolute inset-0 h-full w-full"
 		></canvas>
+		<RouteInspector
+			bind:this={inspector}
+			canvas={canvasEl}
+			routes={data.routeSummaries}
+			routeIds={data.arcRouteIds}
+			ondrag={(dx, dy) => dragGlobe(dx, dy)}
+			ondragstart={() => startDrag()}
+			ondragend={() => endDrag()}
+		/>
 		{#each airportLabels as label (label.id)}
 			<AirportLabel {...label} onhover={(h) => (labelHovered = h)} />
 		{/each}

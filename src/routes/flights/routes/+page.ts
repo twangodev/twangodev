@@ -4,6 +4,8 @@ export const load = () => {
 	const model = buildFlightMapModel(flightLog);
 
 	return {
+		routeSummaries: model.routeSummaries,
+		arcRouteIds: model.arcRouteIds,
 		bioExpanded: true,
 		bioHeading: 'Routes',
 		bioDescription: "all the routes i've flown.",
