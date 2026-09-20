@@ -8,6 +8,25 @@ tags:
   - audio
   - dataset
 category: engineering
+dataset:
+  name: LibriVox Mirror
+  description: 'A continuously updated mirror of LibriVox audiobooks with original MP3 audio in streamable WebDataset TAR shards and typed Parquet indexes for books and audio segments.'
+  sameAs: https://huggingface.co/datasets/twangodev/librivox-mirror
+  creator:
+    name: James Ding
+    url: https://twango.dev
+  license: https://creativecommons.org/licenses/by/4.0/
+  isAccessibleForFree: true
+  encodingFormat:
+    - application/x-tar
+    - application/vnd.apache.parquet
+    - audio/mpeg
+  isBasedOn:
+    - https://librivox.org/
+    - https://archive.org/details/librivoxaudio
+  includedInDataCatalog:
+    name: Hugging Face
+    url: https://huggingface.co/datasets
 ---
 
 <script>
@@ -20,7 +39,7 @@ category: engineering
 
 I wanted to use the collection in large audio jobs. The Internet Archive is an excellent archive, but repeatedly walking half a million MP3s is a rough input pipeline.
 
-So that's what [LibriVox Mirror](https://huggingface.co/datasets/twangodev/librivox-mirror) is for. It keeps the original MP3s, packs each book into a streamable WebDataset TAR, and adds typed Parquet indexes for books and audio segments.
+So that's what [LibriVox Mirror](https://huggingface.co/datasets/twangodev/librivox-mirror) is for. It keeps the original MP3s, packs each book into a streamable WebDataset TAR, and adds typed Parquet indexes for books and audio segments.<Fn>The mirror's compilation, curation, normalized metadata, indexes, and documentation are [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). The original LibriVox audio remains public domain in the United States and is not relicensed by the mirror. See the [dataset's license and attribution](https://huggingface.co/datasets/twangodev/librivox-mirror#license-and-attribution).</Fn>
 
 I guess the main point is convenience: the mirror gives you LibriVox already organized and fast to stream from Hugging Face, without another crawl through the Internet Archive.
 

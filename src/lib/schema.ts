@@ -1,6 +1,14 @@
-import type { WithContext, WebSite, Person, Blog, BlogPosting, BreadcrumbList } from 'schema-dts';
+import type {
+	WithContext,
+	WebSite,
+	Person,
+	Blog,
+	BlogPosting,
+	BreadcrumbList,
+	Dataset
+} from 'schema-dts';
 import { site } from '$lib/config';
-import type { PostMetadata } from '$lib/types/writing';
+import type { PostDataset, PostMetadata } from '$lib/types/writing';
 
 export function websiteSchema(): WithContext<WebSite> {
 	return {
@@ -50,9 +58,22 @@ export function articleSchema(post: PostMetadata): WithContext<BlogPosting> {
 		},
 		url: `${site.url}/writing/${post.slug}`,
 		mainEntityOfPage: `${site.url}/writing/${post.slug}`,
+		...(post.dataset && { about: { '@id': `${site.url}/writing/${post.slug}#dataset` } }),
 		articleSection: post.category,
 		inLanguage: site.language,
 		keywords: post.tags.join(', ')
+	};
+}
+
+export function datasetSchema(post: PostMetadata, dataset: PostDataset): WithContext<Dataset> {
+	return {
+		'@context': 'https://schema.org',
+		'@type': 'Dataset',
+		'@id': `${site.url}/writing/${post.slug}#dataset`,
+		url: `${site.url}/writing/${post.slug}`,
+		...dataset,
+		creator: { '@type': 'Person', ...dataset.creator },
+		includedInDataCatalog: { '@type': 'DataCatalog', ...dataset.includedInDataCatalog }
 	};
 }
 

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { SeriesNav } from '$lib/components/writing';
 	import SEO from '$lib/components/SEO.svelte';
-	import { articleSchema, breadcrumbSchema } from '$lib/schema';
+	import { articleSchema, breadcrumbSchema, datasetSchema } from '$lib/schema';
 	import { setPostMetadataContext } from '$lib/writing/post-context';
 
 	const { data } = $props();
@@ -24,6 +24,7 @@
 	}}
 	jsonLd={[
 		articleSchema(data.metadata),
+		...(data.metadata.dataset ? [datasetSchema(data.metadata, data.metadata.dataset)] : []),
 		breadcrumbSchema([
 			{ name: 'Home', url: '/' },
 			{ name: 'Writing', url: '/writing' },
