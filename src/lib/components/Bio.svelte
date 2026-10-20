@@ -13,6 +13,7 @@
 	import { onDestroy } from 'svelte';
 	import { flight } from '$lib/flight.svelte';
 	import type { BioRouteHeading } from '$lib/bio.svelte';
+	import { site } from '$lib/config';
 
 	interface Props {
 		compact?: boolean;
@@ -34,9 +35,8 @@
 
 	const location = $derived(flight.location);
 	const locationInfo = $derived(flight.locationInfo);
-	const defaultDescription = 'Third-year student at UW\u2013Madison studying computer science.';
 	const nextRouteKey = $derived(routeKey(headingRoute, heading));
-	const nextDescription = $derived(description ?? defaultDescription);
+	const nextDescription = $derived(description ?? site.description);
 
 	interface RouteDisplay {
 		key: string;
@@ -47,7 +47,7 @@
 	let displayedRoute = $state<RouteDisplay>({ key: 'James Ding', heading: 'James Ding' });
 	let previousRoute = $state<RouteDisplay | undefined>();
 	let routeTransitionKey = $state(0);
-	let displayedDescription = $state(defaultDescription);
+	let displayedDescription = $state<string>(site.description);
 	let previousDescription = $state<string | undefined>();
 	let descriptionTransitionKey = $state(0);
 	let routeTimer: ReturnType<typeof setTimeout> | undefined;
