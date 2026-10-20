@@ -4,7 +4,7 @@ export const site = {
 	name: 'James Ding',
 	url: 'https://twango.dev',
 	title: 'James Ding',
-	description: 'Second-year student at UW–Madison studying computer science.',
+	description: 'Third-year student at UW–Madison studying computer science.',
 	author: {
 		name: 'James Ding',
 		url: 'https://twango.dev',

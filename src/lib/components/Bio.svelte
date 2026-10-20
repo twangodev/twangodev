@@ -34,7 +34,7 @@
 
 	const location = $derived(flight.location);
 	const locationInfo = $derived(flight.locationInfo);
-	const defaultDescription = 'Second-year student at UW\u2013Madison studying computer science.';
+	const defaultDescription = 'Third-year student at UW\u2013Madison studying computer science.';
 	const nextRouteKey = $derived(routeKey(headingRoute, heading));
 	const nextDescription = $derived(description ?? defaultDescription);
 
