@@ -1,5 +1,5 @@
 import { execFileSync } from 'node:child_process';
-import { existsSync, statSync } from 'node:fs';
+import { existsSync, renameSync, rmSync, statSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import type { Plugin } from 'vite';
 
@@ -17,6 +17,12 @@ export function syncFlightLog(): Plugin {
 	return {
 		name: 'sync-flight-log',
 		buildStart() {
+			const warn = (message: string) => {
+				this.warn(message);
+				if (process.env.GITHUB_ACTIONS === 'true') {
+					console.log(`::warning title=Flight log refresh::${message}`);
+				}
+			};
 			const fresh =
 				existsSync(FLIGHT_LOG_PATH) &&
 				Date.now() - statSync(FLIGHT_LOG_PATH).mtimeMs < FLIGHT_LOG_MAX_AGE_MS;
@@ -24,14 +30,22 @@ export function syncFlightLog(): Plugin {
 
 			const username = process.env.FLIGHT_RADAR_USERNAME;
 			if (username) {
+				const temporaryPath = `${FLIGHT_LOG_PATH}.tmp`;
 				try {
-					execFileSync('uvx', ['mfr24', 'export', username, '-o', FLIGHT_LOG_PATH], {
+					execFileSync('uvx', ['mfr24', 'export', username, '-o', temporaryPath], {
 						stdio: 'inherit',
 						timeout: 180_000
 					});
+					renameSync(temporaryPath, FLIGHT_LOG_PATH);
 					return;
 				} catch {
-					this.warn(`flight log export failed; falling back to the existing ${FLIGHT_LOG_PATH}`);
+					if (existsSync(FLIGHT_LOG_PATH)) {
+						warn(
+							'Flight log export failed; using the last successful export. Flight data may be outdated. See the exporter output above for the cause.'
+						);
+					}
+				} finally {
+					rmSync(temporaryPath, { force: true });
 				}
 			}
 
@@ -42,7 +56,7 @@ export function syncFlightLog(): Plugin {
 				);
 			}
 			if (!username) {
-				this.warn(`FLIGHT_RADAR_USERNAME is not set; using the existing ${FLIGHT_LOG_PATH} as-is`);
+				warn('FLIGHT_RADAR_USERNAME is not set; using the last successful flight export as-is.');
 			}
 		}
 	};
