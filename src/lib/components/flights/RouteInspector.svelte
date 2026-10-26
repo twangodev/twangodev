@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { ArrowLeftRight } from '@lucide/svelte';
+	import { ArrowLeftRight, ArrowRight } from '@lucide/svelte';
 	import { RouteCamera } from '$lib/globe/route-camera';
 	import '$lib/globe/globe.css';
 	import type { Arc } from 'cobe';
@@ -341,8 +341,12 @@
 		<div class="flex items-center justify-between gap-4">
 			<strong class="flex items-center gap-1.5 font-mono text-sm">
 				{summary.from.code}
-				<ArrowLeftRight size={14} aria-hidden="true" class="shrink-0" />
-				<span class="sr-only">to and from</span>
+				{#if summary.bidirectional}
+					<ArrowLeftRight size={14} aria-hidden="true" class="shrink-0" />
+				{:else}
+					<ArrowRight size={14} aria-hidden="true" class="shrink-0" />
+				{/if}
+				<span class="sr-only">{summary.bidirectional ? 'to and from' : 'to'}</span>
 				{summary.to.code}
 			</strong>
 			<button
@@ -354,8 +358,12 @@
 		</div>
 		{#if summary.from.city || summary.to.city}<p class="mt-1 flex items-center gap-1.5 text-muted">
 				{summary.from.city ?? summary.from.code}
-				<ArrowLeftRight size={12} aria-hidden="true" class="shrink-0" />
-				<span class="sr-only">to and from</span>
+				{#if summary.bidirectional}
+					<ArrowLeftRight size={12} aria-hidden="true" class="shrink-0" />
+				{:else}
+					<ArrowRight size={12} aria-hidden="true" class="shrink-0" />
+				{/if}
+				<span class="sr-only">{summary.bidirectional ? 'to and from' : 'to'}</span>
 				{summary.to.city ?? summary.to.code}
 			</p>{/if}
 		<p class="mt-2">
