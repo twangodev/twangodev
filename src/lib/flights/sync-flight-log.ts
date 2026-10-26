@@ -1,5 +1,5 @@
 import { execFileSync } from 'node:child_process';
-import { existsSync, renameSync, rmSync, statSync } from 'node:fs';
+import { existsSync, readFileSync, renameSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import type { Plugin } from 'vite';
 
@@ -16,7 +16,7 @@ const FLIGHT_LOG_MAX_AGE_MS = 3 * 60 * 60 * 1000;
 export function syncFlightLog(): Plugin {
 	return {
 		name: 'sync-flight-log',
-		buildStart() {
+		async buildStart() {
 			const warn = (message: string) => {
 				this.warn(message);
 				if (process.env.GITHUB_ACTIONS === 'true') {
@@ -50,6 +50,24 @@ export function syncFlightLog(): Plugin {
 			}
 
 			if (!existsSync(FLIGHT_LOG_PATH)) {
+				try {
+					const response = await fetch('https://twango.dev/flight-log.json', {
+						signal: AbortSignal.timeout(30_000),
+						cache: 'no-store'
+					});
+					if (!response.ok) throw new Error(`HTTP ${response.status}`);
+					const snapshot = await response.json();
+					if (!Array.isArray(snapshot?.arcs) || !Array.isArray(snapshot?.airports)) {
+						throw new Error('Unsupported flight log format');
+					}
+					writeFileSync(FLIGHT_LOG_PATH, JSON.stringify(snapshot));
+					warn(
+						'Flight log refresh unavailable; using the snapshot from the deployed build. Flight data may be outdated.'
+					);
+					return;
+				} catch (error) {
+					warn(`Could not recover the deployed flight snapshot: ${String(error)}`);
+				}
 				throw new Error(
 					`${FLIGHT_LOG_PATH} is missing and could not be generated. ` +
 						'Set FLIGHT_RADAR_USERNAME (and install uv) or provide the file manually.'
@@ -58,6 +76,13 @@ export function syncFlightLog(): Plugin {
 			if (!username) {
 				warn('FLIGHT_RADAR_USERNAME is not set; using the last successful flight export as-is.');
 			}
+		},
+		generateBundle() {
+			this.emitFile({
+				type: 'asset',
+				fileName: 'flight-log.json',
+				source: readFileSync(FLIGHT_LOG_PATH, 'utf8')
+			});
 		}
 	};
 }
