@@ -1,0 +1,47 @@
+---
+title: 'Ming 3 Audio Family Quantized to NVFP4'
+description: 'Community NVFP4 releases of Ming 3.0 Audio Tiny and Flash. Quantizing with NVIDIA Model Optimizer, fitting Flash on one GPU, and checking what survived across eight benchmarks.'
+date: '2026-11-02'
+published: true
+tags:
+  - ml
+  - audio
+  - quantization
+  - benchmark
+category: engineering
+---
+
+<script>
+	import StatCard from '$lib/components/writing/StatCard.svelte';
+	import WerHeatmap from '$lib/components/writing/WerHeatmap.svelte';
+	import MingArchitecture from '$lib/components/writing/MingArchitecture.svelte';
+	import Fn from '$lib/components/writing/Fn.svelte';
+</script>
+
+I published NVFP4<Fn>NVIDIA's four-bit floating-point format.</Fn> quants of inclusionAI's **Ming 3.0 Audio [Tiny](https://huggingface.co/twangodev/Ming-3.0-audio-tiny-NVFP4) and [Flash](https://huggingface.co/twangodev/Ming-3.0-audio-flash-NVFP4)**. Both handle speech recognition, audio understanding, and reasoning in English and Chinese.
+
+Flash has 126B total parameters (239 GiB), which doesn't really fit on my RTX PRO 6000 Blackwell (96 GiB) for audio-to-text inference.
+
+## Getting it into four bits
+
+I used [NVIDIA Model Optimizer](https://github.com/NVIDIA/Model-Optimizer) for W4A4<Fn>Four-bit weights (W4) and four-bit activations (A4).</Fn> post-training quantization. Calibration used 2,053 audio and text examples with mean squared error. Only the routed experts are quantized; attention, routers, shared experts, and audio components keep their original precision.
+
+Tiny ended up keeping seven routed layers in BF16<Fn>Bfloat16, a 16-bit floating-point format.</Fn> after quality checks, with the other 16 in NVFP4. Flash quantizes all 40 routed layers. Some Flash experts barely saw calibration tokens, so I used Model Optimizer's pooled activation scales, with separate weight scales for each expert.<Fn>Pooling shares activation-scale inputs across experts. It does not mean every expert was well represented in the calibration data; the raw coverage counts are preserved in the [reproduction workflow](https://github.com/twangodev/ming3-nvfp4/blob/main/docs/reproduction.md).</Fn>
+
+<MingArchitecture />
+
+Getting there meant calibrating layer by layer, offloading source weights, auditing the export, and adapting the vLLM-Omni serving path to load the mixed precision correctly. The [repository](https://github.com/twangodev/ming3-nvfp4) includes the recipes, calibration selection, export checks, and Docker workflows for quantization, serving, and evaluation.
+
+## Benchmarks
+
+Like the [Gemma 4 benchmark](/writing/gemma4-asr-benchmark), I wanted actual measurements. I ran Tiny BF16, Tiny NVFP4, and Flash NVFP4 through eight full benchmark splits.
+
+All scores below are percentages. Lower WER/CER and higher accuracy are better.<Fn>WER is word error rate; CER is character error rate. Both count substitutions, deletions, and insertions relative to the reference transcript.</Fn> Alongside our three local runs, I included **[Seed2.0 Lite](https://seed.bytedance.com/en/seed2), [Qwen3.8-Omni Flash](https://docs.qwencloud.com/developer-guides/speech/multimodal-speech), and [Gemini 3.8 Flash](https://ai.google.dev/gemini-api/docs/models/gemini-3.8-flash)** from inclusionAI's published comparisons.<Fn>Published scores come from inclusionAI's [ASR](https://huggingface.co/inclusionAI/Ming-3.0-audio-tiny/blob/3c9578f641b6745abf2d1239dc8419726f37c0e2/assets/benchmark-asr.png), [audio](https://huggingface.co/inclusionAI/Ming-3.0-audio-tiny/blob/3c9578f641b6745abf2d1239dc8419726f37c0e2/assets/benchmark-audio-intelligence.png), and [text](https://huggingface.co/inclusionAI/Ming-3.0-audio-tiny/blob/3c9578f641b6745abf2d1239dc8419726f37c0e2/assets/benchmark-text.png) tables, not local runs; protocols differ. Asterisks mark self-evaluations; dashes mean unreported. Qwen's audio scores are non-thinking; its text mode and published MMAU splits are unspecified (ours is test-mini).</Fn>
+
+<WerHeatmap suite="ming3" />
+
+Tiny's ASR<Fn>Automatic speech recognition: transcribing speech into text.</Fn> scores stayed close to BF16; MMLU-Pro lost about 1.3 percentage points. Its measured throughput was also roughly unchanged: text gained 3.2%, audio-to-text changed by −0.1%. The clear win was memory, from **15.97 to 9.50 GiB** of Thinker model allocation.<Fn>Three-trial medians at client concurrency 512 for text and 1,024 for audio. Model allocation excludes the key-value (KV) cache, workspaces, CUDA graphs, and other allocations. [Workload settings and measurements](https://huggingface.co/twangodev/Ming-3.0-audio-tiny-NVFP4/blob/main/evals/results/performance.csv).</Fn>
+
+The biggest debugging detour was Chinese FLEURS. Tiny NVFP4 initially scored **8.45% CER**. Normalizing number forms and some parenthetical text brought the same saved predictions to **3.43%**. Even original Tiny scored 8.54% under the strict scorer. Much of that apparent gap came from how we counted errors.<Fn>The table uses UltraEval-Audio text normalization with character-level scoring for Chinese, Whisper normalization for English, and explicit answer parsing for multiple choice. These datasets overlap earlier local development and checkpoint selection. The [full report](https://github.com/twangodev/ming3-nvfp4/blob/main/docs/results/full-suite-parity.md) preserves unchanged scorer outputs and explains the remaining gaps. These are local measurements, not an exact reproduction of inclusionAI's results.</Fn>
+
+The weights and model cards are on Hugging Face: [Tiny](https://huggingface.co/twangodev/Ming-3.0-audio-tiny-NVFP4) and [Flash](https://huggingface.co/twangodev/Ming-3.0-audio-flash-NVFP4). The quantization code is [open source under MIT](https://github.com/twangodev/ming3-nvfp4).
