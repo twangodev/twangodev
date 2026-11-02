@@ -1,10 +1,19 @@
 import { describe, expect, it } from 'vitest';
-import { focusRoute, RouteCamera } from './route-camera';
+import { focusRoute, RouteCamera, smoothZoom } from './route-camera';
 import { projectPoint, sampleArc, type View } from './route-picking';
 const base: View = { phi: 0, theta: 0.3, width: 800, height: 800 };
 const arc = { from: [10, -100] as [number, number], to: [20, -80] as [number, number] };
 
 describe('route focus camera', () => {
+	it('smooths zoom consistently across frame rates and settles at the target', () => {
+		const oneFrame = smoothZoom(1, 3, 100);
+		const twoFrames = smoothZoom(smoothZoom(1, 3, 50), 3, 50);
+		expect(oneFrame).toBeGreaterThan(1);
+		expect(oneFrame).toBeLessThan(3);
+		expect(twoFrames).toBeCloseTo(oneFrame, 10);
+		expect(smoothZoom(oneFrame, 3, 2000)).toBe(3);
+		expect(smoothZoom(2, 1, 100)).toBeLessThan(2);
+	});
 	it('zooms a route around the acquisition point without rotating it', () => {
 		const world = sampleArc(arc)[10];
 		const pivot = projectPoint(world, base);

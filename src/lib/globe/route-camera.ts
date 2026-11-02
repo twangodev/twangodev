@@ -1,6 +1,12 @@
 import type { Arc } from 'cobe';
 import { projectPoint, sampleArc, type Point, type View } from './route-picking';
 
+/** Ease toward the requested zoom independently of the rendering frame rate. */
+export function smoothZoom(current: number, target: number, elapsedMs: number): number {
+	const next = target + (current - target) * Math.exp(-Math.max(0, elapsedMs) / 100);
+	return Math.abs(next - target) < 0.0001 ? target : next;
+}
+
 export interface RouteInspectorHandle {
 	update: (view: View, arcs: Arc[]) => void;
 	getView: (base: View, arcs: Arc[], now: number) => View;

@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { ArrowLeftRight, ArrowRight } from '@lucide/svelte';
-	import { RouteCamera } from '$lib/globe/route-camera';
+	import { ArrowLeftRight, ArrowRight, Minus, Plus } from '@lucide/svelte';
+	import { RouteCamera, smoothZoom } from '$lib/globe/route-camera';
 	import '$lib/globe/globe.css';
 	import type { Arc } from 'cobe';
 	import { SvelteMap } from 'svelte/reactivity';
@@ -30,6 +30,9 @@
 	let wasFocused = false;
 	let selected = $state<string | null>(null);
 	let pinned = $state(false);
+	let zoom = $state(1);
+	let displayedZoom = 1;
+	let lastZoomFrame: number | undefined;
 	let path = $state('');
 	let anchor = $state<Point>({ x: 8, y: 48 });
 	let dimensions = $state({ width: 0, height: 0 });
@@ -58,6 +61,11 @@
 		return selected !== null || camera.active;
 	}
 	export function getView(base: View, arcs: Arc[], now: number): View {
+		displayedZoom = reducedMotion
+			? zoom
+			: smoothZoom(displayedZoom, zoom, lastZoomFrame === undefined ? 0 : now - lastZoomFrame);
+		lastZoomFrame = now;
+		base = { ...base, scale: (base.scale ?? 1) * displayedZoom };
 		const index = routeIds.findIndex((id) => id === selected);
 		const view = camera.step(
 			base,
@@ -77,6 +85,11 @@
 			onfocuschange?.(focused);
 		}
 		return view;
+	}
+
+	function setZoom(value: number) {
+		zoom = Math.max(1, Math.min(3, value));
+		clear();
 	}
 
 	export function clear() {
@@ -196,6 +209,37 @@
 	$effect(() => {
 		if (!canvas) return;
 		const element = canvas;
+		let pinchDistance: number | null = null;
+		let pinching = false;
+		function distance(touches: TouchList) {
+			return Math.hypot(
+				touches[0].clientX - touches[1].clientX,
+				touches[0].clientY - touches[1].clientY
+			);
+		}
+		function touchStart(e: TouchEvent) {
+			if (e.touches.length < 2) return;
+			pinching = true;
+			pinchDistance = distance(e.touches);
+			cancel();
+		}
+		function touchMove(e: TouchEvent) {
+			if (e.touches.length < 2 || pinchDistance === null) return;
+			e.preventDefault();
+			const next = distance(e.touches);
+			if (pinchDistance > 0) setZoom(zoom * (next / pinchDistance));
+			pinchDistance = next;
+		}
+		function touchEnd(e: TouchEvent) {
+			if (e.touches.length < 2) pinchDistance = null;
+			if (e.touches.length === 0) pinching = false;
+		}
+		function wheel(e: WheelEvent) {
+			e.preventDefault();
+			const delta =
+				e.deltaY * (e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? element.offsetHeight : 1);
+			setZoom(zoom * Math.exp(-delta * 0.002));
+		}
 		function local(e: PointerEvent): Point {
 			const rect = element.getBoundingClientRect();
 			return {
@@ -204,13 +248,13 @@
 			};
 		}
 		function pointerDown(e: PointerEvent) {
-			if (!e.isPrimary || e.button !== 0) return;
+			if (pinching || !e.isPrimary || e.button !== 0) return;
 			clear();
 			down = { id: e.pointerId, x: e.clientX, y: e.clientY, lastX: e.clientX, lastY: e.clientY };
 			element.setPointerCapture(e.pointerId);
 		}
 		function pointerMove(e: PointerEvent) {
-			if (!e.isPrimary) return;
+			if (pinching || !e.isPrimary) return;
 			if (down) {
 				if (e.pointerId !== down.id) return;
 				if (!dragging && Math.hypot(e.clientX - down.x, e.clientY - down.y) > 6) {
@@ -219,7 +263,11 @@
 					ondragstart();
 					element.style.cursor = 'grabbing';
 				}
-				if (dragging) ondrag(e.clientX - down.lastX, e.clientY - down.lastY);
+				if (dragging)
+					ondrag(
+						(e.clientX - down.lastX) / displayedZoom,
+						(e.clientY - down.lastY) / displayedZoom
+					);
 				down.lastX = e.clientX;
 				down.lastY = e.clientY;
 				return;
@@ -288,6 +336,11 @@
 			if (e.key === 'Escape') clear();
 		}
 		element.addEventListener('pointerdown', pointerDown);
+		element.addEventListener('wheel', wheel, { passive: false });
+		element.addEventListener('touchstart', touchStart, { passive: true });
+		element.addEventListener('touchmove', touchMove, { passive: false });
+		element.addEventListener('touchend', touchEnd);
+		element.addEventListener('touchcancel', touchEnd);
 		element.addEventListener('pointermove', pointerMove);
 		element.addEventListener('pointerup', pointerUp);
 		element.addEventListener('pointercancel', cancel);
@@ -298,6 +351,11 @@
 		window.addEventListener('pointermove', outsideMove);
 		window.addEventListener('blur', cancel);
 		return () => {
+			element.removeEventListener('wheel', wheel);
+			element.removeEventListener('touchstart', touchStart);
+			element.removeEventListener('touchmove', touchMove);
+			element.removeEventListener('touchend', touchEnd);
+			element.removeEventListener('touchcancel', touchEnd);
 			element.removeEventListener('pointerdown', pointerDown);
 			element.removeEventListener('pointermove', pointerMove);
 			element.removeEventListener('pointerup', pointerUp);
@@ -312,6 +370,32 @@
 		};
 	});
 </script>
+
+<div
+	class="absolute right-2 bottom-2 z-20 flex rounded-sm bg-bg/85 p-1 shadow-sm backdrop-blur"
+	aria-label="Globe zoom controls"
+>
+	<button
+		type="button"
+		aria-label="Zoom out"
+		title="Zoom out"
+		disabled={zoom <= 1}
+		onclick={() => setZoom(zoom / 1.25)}
+		class="flex size-8 items-center justify-center rounded-sm text-muted hover:bg-surface hover:text-text focus-visible:outline disabled:opacity-40"
+	>
+		<Minus size={17} aria-hidden="true" />
+	</button>
+	<button
+		type="button"
+		aria-label="Zoom in"
+		title="Zoom in"
+		disabled={zoom >= 3}
+		onclick={() => setZoom(zoom * 1.25)}
+		class="flex size-8 items-center justify-center rounded-sm text-muted hover:bg-surface hover:text-text focus-visible:outline disabled:opacity-40"
+	>
+		<Plus size={17} aria-hidden="true" />
+	</button>
+</div>
 
 <svg
 	aria-hidden="true"
