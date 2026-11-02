@@ -2,7 +2,7 @@
    Keep controls and route tooltips outside these masked visual layers. */
 .globe-edge-fade {
 	mask-image: radial-gradient(
-		ellipse closest-side,
+		circle closest-side,
 		#000 64%,
 		#000f 70%,
 		#000c 80%,
