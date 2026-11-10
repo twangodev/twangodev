@@ -50,6 +50,9 @@
 {#snippet github()}
 	<Link href={site.author.github}>github</Link>
 {/snippet}
+{#snippet huggingface()}
+	<Link href={site.author.huggingface}>hugging face</Link>
+{/snippet}
 {#snippet linkedin()}
 	<Link href={site.author.linkedin}>linkedin</Link>
 {/snippet}
@@ -87,7 +90,7 @@
 			<LinkGroup items={[license, built]} />
 		</Stack>
 		<Stack gap="md" class="sm:items-end">
-			<LinkGroup items={[github, linkedin, x, email]} />
+			<LinkGroup items={[github, huggingface, linkedin, x, email]} class="flex-wrap gap-y-2" />
 			<LinkGroup items={[status, security]} />
 		</Stack>
 	</div>

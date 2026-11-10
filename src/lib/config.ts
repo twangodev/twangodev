@@ -9,6 +9,7 @@ export const site = {
 		name: 'James Ding',
 		url: 'https://twango.dev',
 		github: 'https://github.com/twangodev',
+		huggingface: 'https://huggingface.co/twangodev',
 		linkedin: 'https://linkedin.com/in/jamesding365',
 		x: {
 			username: xUsername,
